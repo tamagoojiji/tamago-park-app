@@ -1,0 +1,83 @@
+/* たまごのパーク攻略 デザインシステム（EP診断ベース） */
+:root {
+  /* カラーパレット */
+  --color-primary: #4A90D9;
+  --color-primary-light: #6FB3F2;
+  --color-primary-dark: #3A7BC8;
+  --color-accent: #F5A623;
+  --color-accent-gold: #FFD700;
+  --color-cta: #E8837C;
+  --color-green: #27AE60;
+  --color-green-dark: #2E7D32;
+  --color-red: #E74C3C;
+  --color-text: #333333;
+  --color-text-sub: #666666;
+  --color-text-light: #888888;
+  --color-bg: #F0F4F8;
+  --color-bg-card: #FFFFFF;
+  --color-bg-section: #F8FAFC;
+  --color-border: #E8EDF2;
+  --color-border-dark: #DDE3EA;
+  --color-footer-bg: #2B3A5C;
+  --color-footer-text: #FFFFFF;
+  --color-coming-soon: #9CA3AF;
+
+  /* フォント */
+  --font-main: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+
+  /* フォントサイズ */
+  --text-xxl: 24px;
+  --text-xl: 22px;
+  --text-lg: 18px;
+  --text-md: 17px;
+  --text-base: 15px;
+  --text-sm: 14px;
+  --text-xs: 13px;
+  --text-xxs: 12px;
+  --text-tiny: 11px;
+
+  /* 余白 */
+  --header-height: 56px;
+  --content-padding: 16px;
+  --section-gap: 24px;
+  --card-padding: 20px;
+  --max-width: 520px;
+
+  /* 角丸 */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 30px;
+
+  /* シャドウ */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  /* 行間 */
+  --leading-heading: 1.4;
+  --leading-body: 1.7;
+}
+
+/* アニメーション */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,104 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100dvh;
+  background: var(--color-bg-card);
+  z-index: 300;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.menu.open {
+  right: 0;
+}
+
+.menuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.menuTitle {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.closeButton {
+  font-size: 18px;
+  color: var(--color-text-light);
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.closeButton:active {
+  color: var(--color-text);
+}
+
+.menuList {
+  list-style: none;
+  padding: 8px 0;
+}
+
+.menuItem {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.menuItem:last-child {
+  border-bottom: none;
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.menuLink:active {
+  background: var(--color-bg-section);
+  transform: scale(0.98);
+}
+
+.menuIcon {
+  font-size: 22px;
+  margin-right: 14px;
+  width: 30px;
+  text-align: center;
+}
+
+.menuLabel {
+  flex: 1;
+}
+
+.comingSoonBadge {
+  font-size: var(--text-tiny);
+  font-weight: 700;
+  color: var(--color-bg-card);
+  background: var(--color-coming-soon);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

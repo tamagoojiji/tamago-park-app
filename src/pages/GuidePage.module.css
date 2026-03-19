@@ -1,0 +1,64 @@
+.container {
+  padding: var(--content-padding);
+  padding-top: 24px;
+  animation: fadeSlideIn 0.5s ease;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  border-left: 4px solid var(--color-accent);
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s;
+}
+
+.card:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-hover);
+}
+
+.cardIcon {
+  font-size: 32px;
+}
+
+.cardTitle {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 3px;
+}
+
+.cardSub {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+}
+
+.backButton {
+  display: block;
+  margin: 28px auto 0;
+  padding: 12px 28px;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: 700;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  transition: all 0.15s;
+}
+
+.backButton:active {
+  transform: scale(0.97);
+}
