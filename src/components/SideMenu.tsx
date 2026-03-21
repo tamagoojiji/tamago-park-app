@@ -4,8 +4,8 @@ import styles from './SideMenu.module.css';
 
 const menuItems: MenuItem[] = [
   { id: 'planning', label: 'プランニング', path: '/planning', icon: '📋', comingSoon: true },
-  { id: 'ep', label: 'EP診断', path: '/ep', icon: '🎢', comingSoon: true },
-  { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️', comingSoon: true },
+  { id: 'ep', label: 'EP診断', path: '/ep', icon: '🎢' },
+  { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
   { id: 'ai', label: 'たまごの相談部屋', path: '/ai', icon: '💬', comingSoon: true },
   { id: 'checklist', label: 'チェックリスト', path: '/checklist', icon: '✅', comingSoon: true },
   { id: 'height', label: '身長制限リスト', path: '/height', icon: '📏', comingSoon: true },

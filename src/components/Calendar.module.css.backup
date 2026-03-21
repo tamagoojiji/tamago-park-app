@@ -31,10 +31,6 @@
   font-size: var(--text-xl);
   font-weight: 800;
   color: var(--color-text);
-  background-image: linear-gradient(transparent 60%, var(--marker-color) 60%);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  padding: 0 6px;
 }
 
 /* カレンダーカード */
@@ -224,10 +220,6 @@
   font-size: var(--text-md);
   font-weight: 800;
   color: var(--color-text);
-  background-image: linear-gradient(transparent 60%, var(--marker-color) 60%);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  padding: 0 4px;
 }
 
 /* 詳細カード 情報行 */

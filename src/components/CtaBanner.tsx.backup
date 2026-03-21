@@ -3,13 +3,6 @@ import styles from './CtaBanner.module.css';
 export default function CtaBanner() {
   return (
     <section className={styles.ctaSection}>
-      {/* セクション見出し */}
-      <div className={styles.sectionHeader}>
-        <span className={styles.sectionDeco}>＼ CHECK ／</span>
-        <br />
-        <span className={styles.sectionTitle}>プランニング案内</span>
-      </div>
-
       {/* Instagram誘導 */}
       <a
         href="https://www.instagram.com/tamago_usj_guide/"

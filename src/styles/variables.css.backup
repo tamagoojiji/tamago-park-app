@@ -57,11 +57,6 @@
   /* 行間 */
   --leading-heading: 1.4;
   --leading-body: 1.7;
-
-  /* 装飾 */
-  --marker-color: rgba(245, 166, 35, 0.3);
-  --marker-color-strong: rgba(245, 166, 35, 0.5);
-  --dashed-border: 2px dashed var(--color-accent);
 }
 
 /* アニメーション */
