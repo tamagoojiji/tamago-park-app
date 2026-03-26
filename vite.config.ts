@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/tamago-park-app/',
+  base: process.env.DEPLOY_TARGET === 'ghpages' ? '/tamago-park-app/' : '/',
 })
