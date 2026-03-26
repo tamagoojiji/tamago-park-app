@@ -30,9 +30,17 @@ export interface MenuItem {
 
 // 認証
 export interface User {
+  id: number;
   email: string;
-  pin?: string;
-  createdAt: string;
+  birthday?: string | null;
+  gender?: string | null;
+  created_at: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  token?: string | null;
+  message?: string | null;
 }
 
 // API設定
