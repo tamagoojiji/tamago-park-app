@@ -7,25 +7,26 @@ import GuidePage from './pages/GuidePage';
 import EpGuidePage from './pages/EpGuidePage';
 import RestaurantGuidePage from './pages/RestaurantGuidePage';
 import PrivacyPage from './pages/PrivacyPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ResetPinPage from './pages/ResetPinPage';
+import WelcomePage from './pages/WelcomePage';
 import { useAuth } from './contexts/AuthContext';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
-const AUTH_PATHS = ['/login', '/register', '/reset-pin'];
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token, isLoading } = useAuth();
   if (isLoading) return null;
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token) return <Navigate to="/welcome" replace />;
   return <>{children}</>;
 }
 
 export default function App() {
   const location = useLocation();
+  const { token, isGuest, isLoading } = useAuth();
+
   const isFullscreen = FULLSCREEN_PATHS.includes(location.pathname);
-  const isAuthPage = AUTH_PATHS.includes(location.pathname);
+
+  // ウェルカム画面: 毎回表示（トークンもゲストモードもない場合）
+  const showWelcome = !token && !isGuest && !isLoading && location.pathname !== '/privacy';
 
   if (isFullscreen) {
     return (
@@ -36,17 +37,21 @@ export default function App() {
     );
   }
 
+  if (showWelcome) {
+    return <WelcomePage />;
+  }
+
+  if (isLoading) return null;
+
   return (
     <>
       <Header />
       <Routes>
         {/* 公開ページ */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/reset-pin" element={<ResetPinPage />} />
         <Route path="/guide" element={<GuidePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/welcome" element={<WelcomePage />} />
 
         {/* 保護ページ（ログイン必須） */}
         <Route path="/planning" element={<ProtectedRoute><ComingSoonPage /></ProtectedRoute>} />
@@ -55,7 +60,7 @@ export default function App() {
         <Route path="/coming-soon" element={<ComingSoonPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
-      {!isAuthPage && <Footer />}
+      <Footer />
     </>
   );
 }

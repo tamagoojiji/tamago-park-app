@@ -1,25 +1,31 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import liff from '@line/liff';
 import type { User } from '../types';
 import { authApi } from '../api/auth';
+
+const LIFF_ID = '2009615065-BrHFffo2';
+const TOKEN_KEY = 'tamago_park_token';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, pin: string) => Promise<void>;
-  register: (email: string, pin: string) => Promise<void>;
+  isLiffReady: boolean;
+  loginWithLine: () => void;
   logout: () => void;
+  skipLogin: () => void;
+  isGuest: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const TOKEN_KEY = 'tamago_park_token';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
-  const [isLoading, setIsLoading] = useState(!!localStorage.getItem(TOKEN_KEY));
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLiffReady, setIsLiffReady] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
 
   const saveToken = (t: string) => {
     localStorage.setItem(TOKEN_KEY, t);
@@ -30,31 +36,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
+    setIsGuest(false);
+    if (liff.isLoggedIn()) {
+      liff.logout();
+    }
   }, []);
 
+  const skipLogin = useCallback(() => {
+    setIsGuest(true);
+    setIsLoading(false);
+  }, []);
+
+  // LIFF初期化
+  useEffect(() => {
+    liff.init({ liffId: LIFF_ID })
+      .then(async () => {
+        setIsLiffReady(true);
+
+        // LIFFログイン済みかつトークンがない場合、自動認証
+        if (liff.isLoggedIn() && !token) {
+          try {
+            const accessToken = liff.getAccessToken();
+            if (accessToken) {
+              const res = await authApi.lineLogin(accessToken);
+              if (res.token) {
+                saveToken(res.token);
+              }
+            }
+          } catch {
+            // LIFFログイン済みだがAPI認証失敗 → ゲストとして続行
+          }
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLiffReady(true);
+        setIsLoading(false);
+      });
+  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+
+  // トークンがあればユーザー情報取得
   useEffect(() => {
     if (!token) {
-      setIsLoading(false);
+      setUser(null);
       return;
     }
     authApi.getMe(token)
       .then(setUser)
-      .catch(() => logout())
-      .finally(() => setIsLoading(false));
-  }, [token, logout]);
+      .catch(() => {
+        localStorage.removeItem(TOKEN_KEY);
+        setToken(null);
+      });
+  }, [token]);
 
-  const login = async (email: string, pin: string) => {
-    const res = await authApi.login(email, pin);
-    if (res.token) saveToken(res.token);
-  };
+  const loginWithLine = useCallback(() => {
+    if (!isLiffReady) return;
 
-  const register = async (email: string, pin: string) => {
-    const res = await authApi.register(email, pin);
-    if (res.token) saveToken(res.token);
-  };
+    if (liff.isLoggedIn()) {
+      // 既にLIFFログイン済み → APIにトークン送信
+      const accessToken = liff.getAccessToken();
+      if (accessToken) {
+        setIsLoading(true);
+        authApi.lineLogin(accessToken)
+          .then((res) => {
+            if (res.token) saveToken(res.token);
+          })
+          .catch(() => {})
+          .finally(() => setIsLoading(false));
+      }
+    } else {
+      // LIFFログインへリダイレクト
+      liff.login();
+    }
+  }, [isLiffReady]);
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{
+      user, token, isLoading, isLiffReady,
+      loginWithLine, logout, skipLogin, isGuest,
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -20,30 +20,24 @@ async function authFetch<T>(endpoint: string, options?: RequestInit): Promise<T>
 }
 
 export const authApi = {
-  register(email: string, pin: string) {
-    return authFetch<AuthResponse>('/auth/register', {
+  lineLogin(accessToken: string) {
+    return authFetch<AuthResponse>('/auth/line', {
       method: 'POST',
-      body: JSON.stringify({ email, pin }),
-    });
-  },
-
-  login(email: string, pin: string) {
-    return authFetch<AuthResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, pin }),
-    });
-  },
-
-  resetPin(email: string) {
-    return authFetch<AuthResponse>('/auth/reset-pin', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ access_token: accessToken }),
     });
   },
 
   getMe(token: string) {
     return authFetch<User>('/auth/me', {
       headers: { Authorization: `Bearer ${token}` },
+    });
+  },
+
+  updateProfile(token: string, birthday: string, gender: string) {
+    return authFetch<AuthResponse>('/auth/profile', {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ birthday, gender }),
     });
   },
 };

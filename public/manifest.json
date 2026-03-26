@@ -2,7 +2,7 @@
   "name": "たまごのパーク攻略",
   "short_name": "パーク攻略",
   "description": "USJ非公式おでかけガイド",
-  "start_url": "/tamago-park-app/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#2B4B8C",

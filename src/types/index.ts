@@ -31,9 +31,10 @@ export interface MenuItem {
 // 認証
 export interface User {
   id: number;
-  email: string;
-  birthday?: string | null;
-  gender?: string | null;
+  line_uid: string;
+  display_name: string | null;
+  birthday: string | null;
+  gender: string | null;
   created_at: string;
 }
 
@@ -41,6 +42,7 @@ export interface AuthResponse {
   success: boolean;
   token?: string | null;
   message?: string | null;
+  is_new?: boolean;
 }
 
 // API設定
