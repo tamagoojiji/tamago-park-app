@@ -37,11 +37,22 @@ export default function App() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #4A90D9 0%, #6FB3F2 50%, #87CEEB 100%)',
+        color: '#fff', fontFamily: 'var(--font-main)', fontSize: '16px',
+      }}>
+        読み込み中...
+      </div>
+    );
+  }
+
   if (showWelcome) {
     return <WelcomePage />;
   }
-
-  if (isLoading) return null;
 
   return (
     <>

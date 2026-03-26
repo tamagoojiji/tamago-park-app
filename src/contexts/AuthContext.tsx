@@ -37,8 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
     setIsGuest(false);
-    if (liff.isLoggedIn()) {
-      liff.logout();
+    try {
+      if (liff.isLoggedIn()) {
+        liff.logout();
+      }
+    } catch {
+      // LIFF未初期化時は無視
     }
   }, []);
 
@@ -47,10 +51,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  // LIFF初期化
+  // LIFF初期化（3秒タイムアウト付き）
   useEffect(() => {
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setIsLoading(false);
+      }
+    };
+
+    // タイムアウト: 3秒で強制完了
+    const timer = setTimeout(() => {
+      setIsLiffReady(true);
+      finish();
+    }, 3000);
+
     liff.init({ liffId: LIFF_ID })
       .then(async () => {
+        clearTimeout(timer);
         setIsLiffReady(true);
 
         // LIFFログイン済みかつトークンがない場合、自動認証
@@ -67,12 +86,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // LIFFログイン済みだがAPI認証失敗 → ゲストとして続行
           }
         }
-        setIsLoading(false);
+        finish();
       })
       .catch(() => {
+        clearTimeout(timer);
         setIsLiffReady(true);
-        setIsLoading(false);
+        finish();
       });
+
+    return () => clearTimeout(timer);
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   // トークンがあればユーザー情報取得
