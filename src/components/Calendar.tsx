@@ -5,7 +5,8 @@ import { fetchShows, type ShowData } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { privateEvents } from '../data/private-events';
+import { fetchPrivateEvents } from '../data/private-events';
+import type { PrivateEvent } from '../data/private-events';
 import { getHoldMinutes } from '../data/shows';
 import styles from './Calendar.module.css';
 
@@ -57,6 +58,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [weather, setWeather] = useState<DailyWeather[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
   const [showsLoading, setShowsLoading] = useState(false);
+  const [privateEvents, setPrivateEvents] = useState<Record<string, PrivateEvent>>({});
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -72,6 +74,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     fetchWeather()
       .then(setWeather)
       .catch((e) => console.error('天気取得エラー:', e));
+  }, []);
+
+  // 貸切データ取得
+  useEffect(() => {
+    fetchPrivateEvents().then(setPrivateEvents);
   }, []);
 
   // ショーデータ取得（ショータブ選択時）
