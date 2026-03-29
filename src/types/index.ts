@@ -17,7 +17,16 @@ export interface WeatherInfo {
 }
 
 // タブ情報
-export type CalendarTab = 'hours' | 'annual-pass' | 'events' | 'tickets' | 'crowd' | 'private';
+export type CalendarTab = 'hours' | 'annual-pass' | 'events' | 'tickets' | 'crowd' | 'private' | 'shows';
+
+// プランニング
+export interface PlanItem {
+  id: string;
+  showName: string;
+  time: string;       // "14:00"
+  holdTime?: string;   // "13:30"（場所取り開始）
+  holdMinutes: number; // 場所取り分数
+}
 
 // メニュー項目
 export interface MenuItem {

@@ -1,14 +1,17 @@
 import { useState, useMemo, useEffect } from 'react';
-import type { CalendarTab } from '../types';
+import type { CalendarTab, PlanItem } from '../types';
 import { fetchWeather, weatherCodeToEmoji, type DailyWeather } from '../api/weather';
+import { fetchShows, type ShowData } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
 import { privateEvents } from '../data/private-events';
+import { getHoldMinutes } from '../data/shows';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string }[] = [
   { id: 'hours', label: '営業時間', icon: '🕐' },
+  { id: 'shows', label: 'ショー', icon: '🎭' },
   { id: 'annual-pass', label: '年パス除外日', icon: '🎫' },
   { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
@@ -18,9 +21,23 @@ const tabs: { id: CalendarTab; label: string; icon: string }[] = [
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
+// 時刻文字列から分数に変換 "14:00" → 840
+function timeToMinutes(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+// 分数から時刻文字列に変換 840 → "14:00"
+function minutesToTime(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 function getTabEmptyMessage(tab: CalendarTab): string {
   switch (tab) {
     case 'hours': return '日付をタップすると営業時間が見れます';
+    case 'shows': return 'ショースケジュールを読み込み中...';
     case 'annual-pass': return '○ 利用可 / ✕ 除外日';
     case 'events': return 'イベント情報は準備中です';
     case 'tickets': return '1デイ・スタジオ・パス（大人）の価格';
@@ -29,10 +46,17 @@ function getTabEmptyMessage(tab: CalendarTab): string {
   }
 }
 
-export default function Calendar() {
+interface CalendarProps {
+  planItems?: PlanItem[];
+  onAddPlan?: (item: PlanItem) => void;
+}
+
+export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [activeTab, setActiveTab] = useState<CalendarTab>('hours');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [weather, setWeather] = useState<DailyWeather[]>([]);
+  const [shows, setShows] = useState<ShowData[]>([]);
+  const [showsLoading, setShowsLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -49,6 +73,38 @@ export default function Calendar() {
       .then(setWeather)
       .catch((e) => console.error('天気取得エラー:', e));
   }, []);
+
+  // ショーデータ取得（ショータブ選択時）
+  useEffect(() => {
+    if (activeTab === 'shows' && shows.length === 0) {
+      setShowsLoading(true);
+      fetchShows()
+        .then(setShows)
+        .catch((e) => console.error('ショー取得エラー:', e))
+        .finally(() => setShowsLoading(false));
+    }
+  }, [activeTab, shows.length]);
+
+  // プランに追加済みか判定
+  const isPlanAdded = (showName: string, time: string) => {
+    return planItems.some(p => p.showName === showName && p.time === time);
+  };
+
+  // ショーの時間をタップしてプランに追加
+  const handleAddShowToPlan = (showName: string, time: string) => {
+    if (!onAddPlan || isPlanAdded(showName, time)) return;
+    const holdMin = getHoldMinutes(showName);
+    const holdTime = holdMin > 0
+      ? minutesToTime(timeToMinutes(time) - holdMin)
+      : undefined;
+    onAddPlan({
+      id: `${showName}_${time}`,
+      showName,
+      time,
+      holdTime,
+      holdMinutes: holdMin,
+    });
+  };
 
   const weatherMap = useMemo(() => {
     const map = new Map<string, DailyWeather>();
@@ -291,12 +347,51 @@ export default function Calendar() {
         ))}
       </div>
 
-      {/* タブ全体の説明 */}
-      <div className={styles.tabContent}>
-        <p className={styles.tabPlaceholder}>
-          {getTabEmptyMessage(activeTab)}
-        </p>
-      </div>
+      {/* タブコンテンツ */}
+      {activeTab === 'shows' ? (
+        <div className={styles.tabContent}>
+          {showsLoading ? (
+            <p className={styles.tabPlaceholder}>ショースケジュールを読み込み中...</p>
+          ) : shows.length === 0 ? (
+            <p className={styles.tabPlaceholder}>ショーデータを取得できませんでした</p>
+          ) : (
+            <div className={styles.showList}>
+              {shows.map((show) => (
+                <div key={show.name} className={styles.showItem}>
+                  <div className={styles.showName}>{show.name}</div>
+                  <div className={styles.showTimes}>
+                    {show.times.map((time) => {
+                      const added = isPlanAdded(show.name, time);
+                      return (
+                        <button
+                          key={time}
+                          className={`${styles.showTimeBtn} ${added ? styles.showTimeBtnAdded : ''}`}
+                          onClick={() => handleAddShowToPlan(show.name, time)}
+                          disabled={!onAddPlan}
+                        >
+                          {time}
+                          {added && <span className={styles.showTimeCheck}>✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {getHoldMinutes(show.name) > 0 && (
+                    <div className={styles.showHoldInfo}>
+                      場所取り: {getHoldMinutes(show.name)}分前
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className={styles.tabContent}>
+          <p className={styles.tabPlaceholder}>
+            {getTabEmptyMessage(activeTab)}
+          </p>
+        </div>
+      )}
     </section>
   );
 }

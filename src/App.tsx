@@ -3,19 +3,26 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ComingSoonPage from './pages/ComingSoonPage';
+import PlanningPage from './pages/PlanningPage';
 import GuidePage from './pages/GuidePage';
 import EpGuidePage from './pages/EpGuidePage';
 import RestaurantGuidePage from './pages/RestaurantGuidePage';
 import PrivacyPage from './pages/PrivacyPage';
 import WelcomePage from './pages/WelcomePage';
+import ProfilePage from './pages/ProfilePage';
 import { useAuth } from './contexts/AuthContext';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { token, isLoading } = useAuth();
+  const { token, user, isLoading } = useAuth();
+  const location = useLocation();
   if (isLoading) return null;
   if (!token) return <Navigate to="/welcome" replace />;
+  // プロフィール未設定 → 初回のみプロフィール画面へ
+  if (user && !user.birthday && !user.gender) {
+    return <Navigate to="/profile" state={{ from: location.pathname }} replace />;
+  }
   return <>{children}</>;
 }
 
@@ -63,9 +70,10 @@ export default function App() {
         <Route path="/guide" element={<GuidePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* 保護ページ（ログイン必須） */}
-        <Route path="/planning" element={<ProtectedRoute><ComingSoonPage /></ProtectedRoute>} />
+        <Route path="/planning" element={<ProtectedRoute><PlanningPage /></ProtectedRoute>} />
         <Route path="/checklist" element={<ProtectedRoute><ComingSoonPage /></ProtectedRoute>} />
 
         <Route path="/coming-soon" element={<ComingSoonPage />} />

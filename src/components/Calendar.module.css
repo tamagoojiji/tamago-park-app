@@ -346,10 +346,79 @@
   padding: 4px 0;
 }
 
+/* ショースケジュール一覧 */
+.showList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.showItem {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.showItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.showName {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.showTimes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.showTimeBtn {
+  padding: 6px 14px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  background: #E3F0FC;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.showTimeBtn:active {
+  transform: scale(0.95);
+}
+
+.showTimeBtn:disabled {
+  cursor: default;
+}
+
+.showTimeBtnAdded {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.showTimeCheck {
+  font-size: 10px;
+}
+
+.showHoldInfo {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
 /* タブ */
 .tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin-bottom: 12px;
 }

@@ -1,0 +1,123 @@
+.container {
+  animation: fadeSlideIn 0.5s ease;
+}
+
+/* タイムライン */
+.timeline {
+  padding: var(--content-padding);
+  padding-bottom: 0;
+}
+
+.timelineTitle {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 12px;
+  background-image: linear-gradient(transparent 60%, var(--marker-color) 60%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  display: inline-block;
+  padding: 0 4px;
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.timeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.timeText {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.timeLine {
+  flex: 1;
+  width: 2px;
+  background: var(--color-border);
+  margin-top: 6px;
+  min-height: 16px;
+}
+
+.itemContent {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0 0 12px;
+}
+
+.holdLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-accent);
+  background: #FFF3E0;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+.holdItem .timeText {
+  color: var(--color-accent);
+}
+
+.holdItem .timeLine {
+  background: var(--color-accent);
+  opacity: 0.3;
+}
+
+.showLabel {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.removeBtn {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-text-light);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.removeBtn:active {
+  transform: scale(0.9);
+  color: var(--color-red);
+  border-color: var(--color-red);
+}
