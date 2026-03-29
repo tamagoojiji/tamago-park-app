@@ -15,6 +15,7 @@ interface AuthContextType {
   loginWithLine: () => void;
   logout: () => void;
   skipLogin: () => void;
+  updateProfile: (birthday: string, gender: string) => Promise<void>;
   isGuest: boolean;
 }
 
@@ -111,6 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, [token]);
 
+  const updateProfile = useCallback(async (birthday: string, gender: string) => {
+    if (!token) throw new Error('Not authenticated');
+    const res = await authApi.updateProfile(token, birthday, gender);
+    if (res.token) saveToken(res.token);
+    // ユーザー情報を再取得
+    const updated = await authApi.getMe(res.token || token);
+    setUser(updated);
+  }, [token]);
+
   const loginWithLine = useCallback(() => {
     if (!isLiffReady) return;
 
@@ -135,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, token, isLoading, isLiffReady,
-      loginWithLine, logout, skipLogin, isGuest,
+      loginWithLine, logout, skipLogin, updateProfile, isGuest,
     }}>
       {children}
     </AuthContext.Provider>

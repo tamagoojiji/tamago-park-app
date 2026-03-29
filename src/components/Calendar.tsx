@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { CalendarTab, PlanItem } from '../types';
 import { fetchWeather, weatherCodeToEmoji, type DailyWeather } from '../api/weather';
-import { fetchShows, type ShowData } from '../api/shows';
+import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
@@ -58,6 +58,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [weather, setWeather] = useState<DailyWeather[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
   const [showsLoading, setShowsLoading] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState<string | null>(null);
   const [privateEvents, setPrivateEvents] = useState<Record<string, PrivateEvent>>({});
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
@@ -86,7 +87,10 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     if (activeTab === 'shows' && shows.length === 0) {
       setShowsLoading(true);
       fetchShows()
-        .then(setShows)
+        .then((result: ShowsResult) => {
+          setShows(result.shows);
+          setScheduleDate(result.scheduleDate);
+        })
         .catch((e) => console.error('ショー取得エラー:', e))
         .finally(() => setShowsLoading(false));
     }
@@ -363,6 +367,14 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             <p className={styles.tabPlaceholder}>ショーデータを取得できませんでした</p>
           ) : (
             <div className={styles.showList}>
+              {scheduleDate && (
+                <p className={styles.scheduleDateInfo}>
+                  {new Date(scheduleDate + 'T00:00:00').toLocaleDateString('ja-JP', {
+                    month: 'long',
+                    day: 'numeric',
+                  })}分の情報
+                </p>
+              )}
               {shows.map((show) => (
                 <div key={show.name} className={styles.showItem}>
                   <div className={styles.showName}>{show.name}</div>
