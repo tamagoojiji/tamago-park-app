@@ -3,8 +3,8 @@ import type { MenuItem } from '../types';
 import styles from './SideMenu.module.css';
 
 const menuItems: MenuItem[] = [
-  { id: 'planning', label: 'プランニング', path: '/planning', icon: '📋' },
-  { id: 'ep', label: 'EP診断', path: '/ep', icon: '🎢' },
+  { id: 'planning', label: '自分のプランを作成', path: '/planning', icon: '📋' },
+  { id: 'ep', label: 'エクスプレス・パス診断', path: '/ep', icon: '🎢' },
   { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
   { id: 'ai', label: 'たまごの相談部屋', path: '/ai', icon: '💬', comingSoon: true },
   { id: 'checklist', label: 'チェックリスト', path: '/checklist', icon: '✅', comingSoon: true },

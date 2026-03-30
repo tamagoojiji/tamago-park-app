@@ -8,23 +8,28 @@ export interface ShowData {
 export interface ShowsResult {
   shows: ShowData[];
   scheduleDate: string; // "2026-03-30"
+  availableDates: string[]; // ["2026-03-30", "2026-03-31", ...]
 }
 
 interface ShowsResponse {
   shows: ShowData[];
   count: number;
   scheduleDate: string;
-  fetchedAt: string;
+  availableDates: string[];
 }
 
-export async function fetchShows(): Promise<ShowsResult> {
-  const res = await fetch(`${AUTH_BASE}/shows`);
+export async function fetchShows(date?: string): Promise<ShowsResult> {
+  const url = date
+    ? `${AUTH_BASE}/shows?date=${date}`
+    : `${AUTH_BASE}/shows`;
+  const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Shows API Error: ${res.status}`);
   }
   const data: ShowsResponse = await res.json();
   return {
-    shows: data.shows.filter(s => s.times.length > 0),
+    shows: data.shows,
     scheduleDate: data.scheduleDate,
+    availableDates: data.availableDates,
   };
 }

@@ -49,10 +49,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSkip = () => {
-    navigate(redirectTo, { replace: true });
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.confetti} />
@@ -137,17 +133,11 @@ export default function ProfilePage() {
             >
               {isSubmitting ? '保存中...' : '設定する'}
             </button>
-            <button
-              className={styles.skipButton}
-              onClick={handleSkip}
-            >
-              あとで設定する
-            </button>
           </div>
         </div>
 
         <p className={styles.note}>
-          ※ 入力は任意です。あとからいつでも変更できます。
+          ※ プランニング機能をご利用いただくために、プロフィールの設定をお願いしています
         </p>
       </div>
     </div>

@@ -12,12 +12,12 @@ import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string }[] = [
   { id: 'hours', label: '営業時間', icon: '🕐' },
-  { id: 'shows', label: 'ショー', icon: '🎭' },
-  { id: 'annual-pass', label: '年パス除外日', icon: '🎫' },
-  { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
   { id: 'crowd', label: '混雑予想', icon: '👥' },
+  { id: 'annual-pass', label: '年パス除外日', icon: '🎫' },
   { id: 'private', label: '貸切', icon: '🔒' },
+  { id: 'events', label: 'イベント', icon: '🎉' },
+  { id: 'shows', label: 'ショー', icon: '🎭' },
 ];
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
@@ -59,6 +59,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [shows, setShows] = useState<ShowData[]>([]);
   const [showsLoading, setShowsLoading] = useState(false);
   const [scheduleDate, setScheduleDate] = useState<string | null>(null);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [privateEvents, setPrivateEvents] = useState<Record<string, PrivateEvent>>({});
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
@@ -82,19 +83,20 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     fetchPrivateEvents().then(setPrivateEvents);
   }, []);
 
-  // ショーデータ取得（ショータブ選択時）
+  // ショーデータ取得（ショータブ選択時 + 日付変更時）
   useEffect(() => {
-    if (activeTab === 'shows' && shows.length === 0) {
-      setShowsLoading(true);
-      fetchShows()
-        .then((result: ShowsResult) => {
-          setShows(result.shows);
-          setScheduleDate(result.scheduleDate);
-        })
-        .catch((e) => console.error('ショー取得エラー:', e))
-        .finally(() => setShowsLoading(false));
-    }
-  }, [activeTab, shows.length]);
+    if (activeTab !== 'shows') return;
+    const date = selectedDate || today;
+    setShowsLoading(true);
+    fetchShows(date)
+      .then((result: ShowsResult) => {
+        setShows(result.shows);
+        setScheduleDate(result.scheduleDate);
+        setAvailableDates(result.availableDates);
+      })
+      .catch((e) => console.error('ショー取得エラー:', e))
+      .finally(() => setShowsLoading(false));
+  }, [activeTab, selectedDate, today]);
 
   // プランに追加済みか判定
   const isPlanAdded = (showName: string, time: string) => {
@@ -191,6 +193,20 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
 
   return (
     <section className={styles.calendarSection}>
+      {/* タブ */}
+      <div className={styles.tabs}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            <span className={styles.tabIcon}>{tab.icon}</span>
+            <span className={styles.tabLabel}>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
       {/* 月ナビゲーション */}
       <div className={styles.monthNav}>
         <button className={styles.navButton} onClick={() => changeMonth(-1)}>
@@ -250,6 +266,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     {activeTab === 'private' && privateEvents[dateStr] && (
                       <span className={styles.privateLabel}>貸切</span>
                     )}
+                    {activeTab === 'shows' && availableDates.includes(dateStr) && (
+                      <span className={styles.showAvailableLabel}>🎭</span>
+                    )}
                   </>
                 )}
               </div>
@@ -258,7 +277,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
         </div>
       </div>
 
-      {/* 日付選択時の詳細（全情報をまとめて表示） */}
+      {/* 日付選択時の詳細 */}
       {selectedDate && (
         <div className={styles.detailCard}>
           <div className={styles.detailHeader}>
@@ -343,28 +362,17 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           </div>
         </div>
       )}
-
-      {/* タブ */}
-      <div className={styles.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className={styles.tabIcon}>{tab.icon}</span>
-            <span className={styles.tabLabel}>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-
       {/* タブコンテンツ */}
       {activeTab === 'shows' ? (
         <div className={styles.tabContent}>
           {showsLoading ? (
             <p className={styles.tabPlaceholder}>ショースケジュールを読み込み中...</p>
           ) : shows.length === 0 ? (
-            <p className={styles.tabPlaceholder}>ショーデータを取得できませんでした</p>
+            <p className={styles.tabPlaceholder}>
+              {scheduleDate
+                ? `${new Date(scheduleDate + 'T00:00:00').toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })}のスケジュールはまだありません`
+                : '日付をタップしてショースケジュールを確認'}
+            </p>
           ) : (
             <div className={styles.showList}>
               {scheduleDate && (
