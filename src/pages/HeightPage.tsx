@@ -64,9 +64,12 @@ export default function HeightPage() {
 
           return (
             <div key={r.name} className={`${styles.rideCard} ${childHeight > 0 ? styles[`status_${status}`] : ''}`}>
-              <div className={styles.rideHeader}>
-                <span className={styles.rideName}>{r.name}</span>
-                <span className={styles.rideArea}>{r.area}</span>
+              <div className={styles.rideTop}>
+                {r.image && <img src={r.image} alt={r.name} className={styles.rideImage} loading="lazy" />}
+                <div className={styles.rideHeader}>
+                  <span className={styles.rideName}>{r.name}</span>
+                  <span className={styles.rideArea}>{r.area}</span>
+                </div>
               </div>
               <div className={styles.rideInfo}>
                 <span className={styles.heightBadge}>
