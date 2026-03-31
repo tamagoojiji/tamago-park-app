@@ -19,7 +19,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token, user, isLoading } = useAuth();
   const location = useLocation();
   if (isLoading) return null;
-  if (!token) return <Navigate to="/welcome" replace />;
+  if (!token) {
+    // ログイン後に戻れるようにパスを保存
+    localStorage.setItem('tamago_park_redirect', location.pathname);
+    return <Navigate to="/welcome" replace />;
+  }
   // プロフィール未設定 → 初回のみプロフィール画面へ
   if (user && !user.birthday && !user.gender) {
     return <Navigate to="/profile" state={{ from: location.pathname }} replace />;
@@ -29,12 +33,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { token, isGuest, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   const isFullscreen = FULLSCREEN_PATHS.includes(location.pathname);
-
-  // ウェルカム画面: 毎回表示（トークンもゲストモードもない場合）
-  const showWelcome = !token && !isGuest && !isLoading && location.pathname !== '/privacy';
 
   if (isFullscreen) {
     return (
@@ -56,10 +57,6 @@ export default function App() {
         読み込み中...
       </div>
     );
-  }
-
-  if (showWelcome) {
-    return <WelcomePage />;
   }
 
   return (

@@ -14,9 +14,7 @@ interface AuthContextType {
   isLiffReady: boolean;
   loginWithLine: () => void;
   logout: () => void;
-  skipLogin: () => void;
   updateProfile: (birthday: string, gender: string) => Promise<void>;
-  isGuest: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,8 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [isLoading, setIsLoading] = useState(true);
   const [isLiffReady, setIsLiffReady] = useState(false);
-  const [isGuest, setIsGuest] = useState(false);
-
   const saveToken = (t: string) => {
     localStorage.setItem(TOKEN_KEY, t);
     setToken(t);
@@ -37,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
-    setIsGuest(false);
     try {
       if (liff.isLoggedIn()) {
         liff.logout();
@@ -45,11 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // LIFF未初期化時は無視
     }
-  }, []);
-
-  const skipLogin = useCallback(() => {
-    setIsGuest(true);
-    setIsLoading(false);
   }, []);
 
   // LIFF初期化（3秒タイムアウト付き）
@@ -145,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, token, isLoading, isLiffReady,
-      loginWithLine, logout, skipLogin, updateProfile, isGuest,
+      loginWithLine, logout, updateProfile,
     }}>
       {children}
     </AuthContext.Provider>

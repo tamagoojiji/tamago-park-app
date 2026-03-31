@@ -1,8 +1,27 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './WelcomePage.module.css';
 
+const REDIRECT_KEY = 'tamago_park_redirect';
+
 export default function WelcomePage() {
-  const { loginWithLine, skipLogin, isLiffReady } = useAuth();
+  const { token, loginWithLine, isLiffReady } = useAuth();
+  const navigate = useNavigate();
+
+  // ログイン済みなら保存パスへリダイレクト
+  useEffect(() => {
+    if (token) {
+      const redirect = localStorage.getItem(REDIRECT_KEY) || '/';
+      localStorage.removeItem(REDIRECT_KEY);
+      navigate(redirect, { replace: true });
+    }
+  }, [token, navigate]);
+
+  const handleSkip = () => {
+    localStorage.removeItem(REDIRECT_KEY);
+    navigate('/', { replace: true });
+  };
 
   return (
     <div className={styles.container}>
@@ -47,7 +66,7 @@ export default function WelcomePage() {
             LINEでログイン
           </button>
 
-          <button className={styles.skipButton} onClick={skipLogin}>
+          <button className={styles.skipButton} onClick={handleSkip}>
             ログインせずに使う
           </button>
         </div>
