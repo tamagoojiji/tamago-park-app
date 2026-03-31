@@ -163,7 +163,7 @@
   flex-shrink: 0;
 }
 
-.skipButton {
+.backButton {
   width: 100%;
   padding: 13px;
   background: transparent;
@@ -177,12 +177,34 @@
   transition: border-color 0.2s, background 0.2s;
 }
 
-.skipButton:hover {
+.backButton:hover {
   border-color: var(--color-primary-light);
   background: var(--color-bg-section);
 }
 
-.note {
+.reasonBox {
+  background: var(--color-bg-section);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.reasonTitle {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 6px;
+}
+
+.reasonText {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.privacy {
   margin-top: 16px;
   font-size: var(--text-xxs);
   color: var(--color-text-light);

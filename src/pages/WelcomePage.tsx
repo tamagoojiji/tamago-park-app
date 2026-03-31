@@ -9,7 +9,6 @@ export default function WelcomePage() {
   const { token, loginWithLine, isLiffReady } = useAuth();
   const navigate = useNavigate();
 
-  // ログイン済みなら保存パスへリダイレクト
   useEffect(() => {
     if (token) {
       const redirect = localStorage.getItem(REDIRECT_KEY) || '/';
@@ -17,11 +16,6 @@ export default function WelcomePage() {
       navigate(redirect, { replace: true });
     }
   }, [token, navigate]);
-
-  const handleSkip = () => {
-    localStorage.removeItem(REDIRECT_KEY);
-    navigate('/', { replace: true });
-  };
 
   return (
     <div className={styles.container}>
@@ -36,22 +30,17 @@ export default function WelcomePage() {
           />
         </div>
 
-        <h1 className={styles.title}>たまごのパーク攻略</h1>
-        <p className={styles.subtitle}>USJをもっと楽しく、もっと賢く</p>
+        <h1 className={styles.title}>ログインが必要です</h1>
+        <p className={styles.subtitle}>
+          この機能を使うにはLINEログインが必要です
+        </p>
 
-        <div className={styles.features}>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>📅</span>
-            <span className={styles.featureText}>カレンダー</span>
-          </div>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>🎢</span>
-            <span className={styles.featureText}>EP診断</span>
-          </div>
-          <div className={styles.feature}>
-            <span className={styles.featureIcon}>🍽️</span>
-            <span className={styles.featureText}>レストラン</span>
-          </div>
+        <div className={styles.reasonBox}>
+          <p className={styles.reasonTitle}>ログインが必要な理由</p>
+          <p className={styles.reasonText}>
+            過去の診断結果やプランニングデータを<br />
+            あなた自身で確認・管理できるようにするためです。
+          </p>
         </div>
 
         <div className={styles.buttons}>
@@ -66,13 +55,14 @@ export default function WelcomePage() {
             LINEでログイン
           </button>
 
-          <button className={styles.skipButton} onClick={handleSkip}>
-            ログインせずに使う
+          <button className={styles.backButton} onClick={() => navigate(-1)}>
+            戻る
           </button>
         </div>
 
-        <p className={styles.note}>
-          ログインするとプランニングや<br />マイリスト保存が使えます
+        <p className={styles.privacy}>
+          あなたのデータは運営側からは閲覧できません。<br />
+          データはご自身の確認用としてのみ保存されます。
         </p>
       </div>
     </div>
