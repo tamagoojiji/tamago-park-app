@@ -2,7 +2,7 @@
 // 0 = 場所取り不要（グリーティング等）
 export const showTemplates: Record<string, { holdMinutes: number }> = {
   'NO LIMIT! パレード ～Discover U!!! バージョン～': { holdMinutes: 90 },
-  'アルティメット・ブルース・バッシュ ～音楽の色～': { holdMinutes: 30 },
+  'アルティメット・ブルース・バッシュ ～音楽の色～': { holdMinutes: 15 },
   'ウィキッド ～オズの魔女たち～': { holdMinutes: 15 },
   'ウォーターワールド': { holdMinutes: 30 },
   'クロミ・ライブ ～ Discover Me Discover U!!! ～': { holdMinutes: 60 },

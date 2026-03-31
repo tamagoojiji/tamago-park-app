@@ -10,6 +10,7 @@ import RestaurantGuidePage from './pages/RestaurantGuidePage';
 import PrivacyPage from './pages/PrivacyPage';
 import WelcomePage from './pages/WelcomePage';
 import ProfilePage from './pages/ProfilePage';
+import HeightPage from './pages/HeightPage';
 import { useAuth } from './contexts/AuthContext';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/planning" element={<ProtectedRoute><PlanningPage /></ProtectedRoute>} />
         <Route path="/checklist" element={<ProtectedRoute><ComingSoonPage /></ProtectedRoute>} />
 
+        <Route path="/height" element={<HeightPage />} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>

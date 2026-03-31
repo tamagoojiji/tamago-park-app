@@ -18,6 +18,7 @@ body {
   line-height: var(--leading-body);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  padding-top: env(safe-area-inset-top);
 }
 
 a {
