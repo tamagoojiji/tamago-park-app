@@ -41,7 +41,7 @@ export const checklistItems: ChecklistItem[] = [
   // === 秋（9〜11月）※ハロウィーン期間 ===
   { id: 'au1', category: 'autumn', name: '薄手の上着', description: '朝晩の温度差が大きいです' },
   { id: 'au2', category: 'autumn', name: 'ストール', description: 'ショー待ちの冷え対策に' },
-  { id: 'au3', category: 'autumn', name: '⚠️ スリッパはNG', description: 'ハロウィーン期間は走って逃げる場面あり！歩きやすい靴で来てください' },
+  { id: 'au3', category: 'autumn', name: '⚠️ スリッパはNG', description: 'ハロウィーンで人が多く、足を踏まれたりする場面があるので歩きやすい靴で来てください' },
 
   // === 冬（12〜2月） ===
   { id: 'w1', category: 'winter', name: 'ネックウォーマー', description: 'マフラーは外す指示が出るため推奨！' },
