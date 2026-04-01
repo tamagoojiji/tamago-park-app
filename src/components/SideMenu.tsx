@@ -7,7 +7,7 @@ const menuItems: MenuItem[] = [
   { id: 'ep', label: 'エクスプレス・パス診断', path: '/ep', icon: '🎢' },
   { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
   { id: 'ai', label: 'たまごの相談部屋', path: '/ai', icon: '💬', comingSoon: true },
-  { id: 'checklist', label: 'チェックリスト', path: '/checklist', icon: '✅', comingSoon: true },
+  { id: 'checklist', label: 'チェックリスト', path: '/checklist', icon: '✅' },
   { id: 'height', label: '身長制限リスト', path: '/height', icon: '📏' },
   { id: 'tickets', label: 'チケット値段一覧', path: '/tickets', icon: '🎟️', comingSoon: true },
   { id: 'guide', label: 'プランニング案内', path: '/guide', icon: '📸' },

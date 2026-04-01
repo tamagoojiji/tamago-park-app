@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import PlanningPage from './pages/PlanningPage';
+import ChecklistPage from './pages/ChecklistPage';
 import GuidePage from './pages/GuidePage';
 import EpGuidePage from './pages/EpGuidePage';
 import RestaurantGuidePage from './pages/RestaurantGuidePage';
@@ -72,7 +73,7 @@ export default function App() {
 
         {/* 保護ページ（ログイン必須） */}
         <Route path="/planning" element={<ProtectedRoute><PlanningPage /></ProtectedRoute>} />
-        <Route path="/checklist" element={<ProtectedRoute><ComingSoonPage /></ProtectedRoute>} />
+        <Route path="/checklist" element={<ChecklistPage />} />
 
         <Route path="/height" element={<HeightPage />} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />

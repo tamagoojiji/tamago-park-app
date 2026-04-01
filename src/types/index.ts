@@ -54,6 +54,17 @@ export interface AuthResponse {
   is_new?: boolean;
 }
 
+// チェックリスト
+export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+export type ChecklistCategory = 'essential' | 'basic' | 'spring' | 'summer' | 'autumn' | 'winter' | 'rain';
+
+export interface ChecklistItem {
+  id: string;
+  category: ChecklistCategory;
+  name: string;
+  description: string;
+}
+
 // API設定
 export interface ApiConfig {
   baseUrl: string;
