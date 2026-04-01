@@ -16,14 +16,70 @@
   font-weight: 800;
   color: var(--color-text);
   text-align: center;
-  margin: 0 0 4px;
+  margin: 0 0 16px;
 }
 
-.subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-text-sub);
-  text-align: center;
-  margin: 0 0 16px;
+/* 季節選択 */
+.seasonSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.seasonButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.seasonButton:active {
+  transform: scale(0.97);
+}
+
+.seasonButtonActive {
+  border-color: var(--color-primary);
+  background: #EBF4FF;
+  box-shadow: 0 2px 8px rgba(74, 144, 217, 0.2);
+}
+
+.seasonButtonIcon {
+  font-size: 18px;
+}
+
+.seasonButtonLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.seasonNowBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--color-cta);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 印刷ヘッダー（画面では非表示） */
+.printHeader {
+  display: none;
 }
 
 /* 進捗バー */
@@ -233,7 +289,32 @@
   margin-bottom: 0;
 }
 
-/* リセットボタン */
+/* ボタンエリア */
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.printButton {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.printButton:active {
+  background: var(--color-primary-dark);
+}
+
 .resetButton {
   display: block;
   width: 100%;
@@ -244,10 +325,110 @@
   color: var(--color-text-light);
   font-size: var(--text-sm);
   cursor: pointer;
-  margin-bottom: 32px;
   transition: background 0.2s;
 }
 
 .resetButton:active {
   background: var(--color-bg-section);
+}
+
+/* ========== 印刷用スタイル ========== */
+@media print {
+  /* ヘッダー・フッター・ボタン類を非表示 */
+  .seasonSelector,
+  .progressSection,
+  .toggleRow,
+  .actionButtons {
+    display: none !important;
+  }
+
+  .page {
+    padding: 0;
+    padding-top: 0;
+    min-height: auto;
+    background: #fff;
+  }
+
+  .container {
+    max-width: 100%;
+    animation: none;
+  }
+
+  .title {
+    display: none;
+  }
+
+  /* 印刷ヘッダーを表示 */
+  .printHeader {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #4A90D9;
+    color: #fff;
+    border-radius: 12px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .printTitle {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .printSeason {
+    font-size: 16px;
+    margin-top: 4px;
+  }
+
+  .printFooter {
+    font-size: 11px;
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  /* カード影を消す */
+  .itemList {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .toggleLabel {
+    box-shadow: none;
+  }
+
+  /* チェックボックスを空で表示 */
+  .checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #999;
+    border-radius: 3px;
+    background: #fff;
+  }
+
+  /* チェック済みの取り消し線を解除（印刷は未チェック状態で） */
+  .itemChecked {
+    background: #fff;
+  }
+
+  .itemChecked .itemName {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .item {
+    padding: 8px 12px;
+  }
+
+  .categorySection {
+    margin-bottom: 12px;
+  }
+
+  .memo {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

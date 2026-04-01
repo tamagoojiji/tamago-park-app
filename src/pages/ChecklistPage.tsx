@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { checklistItems, getSeason, getActiveCategories, categoryLabels } from '../data/checklist';
-import type { ChecklistCategory } from '../types';
+import type { ChecklistCategory, Season } from '../types';
 import styles from './ChecklistPage.module.css';
 
 const STORAGE_KEY = 'tamago_checklist_checked';
+
+const seasonOptions: { value: Season; label: string; icon: string }[] = [
+  { value: 'spring', label: '春（3〜5月）', icon: '🌸' },
+  { value: 'summer', label: '夏（6〜8月）', icon: '☀️' },
+  { value: 'autumn', label: '秋（9〜11月）', icon: '🍂' },
+  { value: 'winter', label: '冬（12〜2月）', icon: '❄️' },
+];
 
 export default function ChecklistPage() {
   const now = new Date();
   const currentSeason = getSeason(now.getMonth() + 1);
 
+  const [selectedSeason, setSelectedSeason] = useState<Season>(currentSeason);
   const [checked, setChecked] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -25,7 +33,7 @@ export default function ChecklistPage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
   }, [checked]);
 
-  const activeCategories = getActiveCategories(currentSeason, showRain, showKids);
+  const activeCategories = getActiveCategories(selectedSeason, showRain, showKids);
   const activeItems = checklistItems.filter(item => activeCategories.includes(item.category));
 
   const totalCount = activeItems.length;
@@ -38,6 +46,10 @@ export default function ChecklistPage() {
 
   function resetAll() {
     setChecked({});
+  }
+
+  function handlePrint() {
+    window.print();
   }
 
   function renderCategory(category: ChecklistCategory) {
@@ -73,13 +85,34 @@ export default function ChecklistPage() {
     );
   }
 
+  const seasonInfo = categoryLabels[selectedSeason];
+
   return (
     <main className={styles.page}>
       <div className={styles.container}>
         <h1 className={styles.title}>✅ 持ち物チェックリスト</h1>
-        <p className={styles.subtitle}>
-          {categoryLabels[currentSeason].icon} 現在の季節: {categoryLabels[currentSeason].label}
-        </p>
+
+        {/* 季節選択 */}
+        <div className={styles.seasonSelector}>
+          {seasonOptions.map(opt => (
+            <button
+              key={opt.value}
+              className={`${styles.seasonButton} ${selectedSeason === opt.value ? styles.seasonButtonActive : ''}`}
+              onClick={() => setSelectedSeason(opt.value)}
+            >
+              <span className={styles.seasonButtonIcon}>{opt.icon}</span>
+              <span className={styles.seasonButtonLabel}>{opt.label}</span>
+              {opt.value === currentSeason && <span className={styles.seasonNowBadge}>今</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* 印刷ヘッダー（画面では非表示、印刷時のみ表示） */}
+        <div className={styles.printHeader}>
+          <div className={styles.printTitle}>USJ 完璧準備リスト</div>
+          <div className={styles.printSeason}>{seasonInfo.icon} {seasonInfo.label}</div>
+          <div className={styles.printFooter}>Planning by たまご</div>
+        </div>
 
         {/* 進捗バー */}
         <div className={styles.progressSection}>
@@ -126,10 +159,15 @@ export default function ChecklistPage() {
           <p>公式アプリへのチケット登録は、入場時は必要なく、入場後の「ニンテンドー整理券」「よやくのり」に必要になります！</p>
         </div>
 
-        {/* リセット */}
-        <button className={styles.resetButton} onClick={resetAll}>
-          チェックをリセット
-        </button>
+        {/* 印刷・リセットボタン */}
+        <div className={styles.actionButtons}>
+          <button className={styles.printButton} onClick={handlePrint}>
+            🖨️ チェックリストを印刷
+          </button>
+          <button className={styles.resetButton} onClick={resetAll}>
+            チェックをリセット
+          </button>
+        </div>
       </div>
     </main>
   );
