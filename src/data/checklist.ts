@@ -26,7 +26,7 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'k3', category: 'kids', name: '着替え（子ども用）', description: '食べこぼし・水濡れ対策に1セットあると安心' },
   { id: 'k4', category: 'kids', name: 'おやつ（未就学児向け）', description: '飴・ラムネ・ビスケット等はOK ⚠️じゃがりこ等のスナック菓子はNG' },
   { id: 'k5', category: 'kids', name: '迷子対策グッズ', description: '名前タグやGPSトラッカーなど。人混みではぐれやすいです' },
-  { id: 'k6', category: 'kids', name: 'ベビーカーハンギングフック', description: 'ベビーカーに荷物やお土産袋を吊るせて両手が空きます' },
+  { id: 'k6', category: 'kids', name: 'ベビーカー用フック', description: 'ベビーカーに荷物やお土産袋を吊るせて両手が空きます' },
 
   // === 春（3〜5月） ===
   { id: 'sp1', category: 'spring', name: '日焼け止め', description: '春後半から紫外線が強くなります' },
