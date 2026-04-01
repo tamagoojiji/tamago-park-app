@@ -19,12 +19,13 @@ export default function ChecklistPage() {
   });
 
   const [showRain, setShowRain] = useState(false);
+  const [showKids, setShowKids] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
   }, [checked]);
 
-  const activeCategories = getActiveCategories(currentSeason, showRain);
+  const activeCategories = getActiveCategories(currentSeason, showRain, showKids);
   const activeItems = checklistItems.filter(item => activeCategories.includes(item.category));
 
   const totalCount = activeItems.length;
@@ -91,8 +92,18 @@ export default function ChecklistPage() {
           <span className={styles.progressText}>{checkedCount}/{totalCount}（{progress}%）</span>
         </div>
 
-        {/* 雨トグル */}
+        {/* トグル */}
         <div className={styles.toggleRow}>
+          <label className={styles.toggleLabel}>
+            <span>👶 子連れアイテムを表示</span>
+            <input
+              type="checkbox"
+              checked={showKids}
+              onChange={() => setShowKids(!showKids)}
+              className={styles.toggleInput}
+            />
+            <span className={styles.toggleSwitch} />
+          </label>
           <label className={styles.toggleLabel}>
             <span>☔ 雨・水濡れ対策を表示</span>
             <input

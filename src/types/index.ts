@@ -56,7 +56,7 @@ export interface AuthResponse {
 
 // チェックリスト
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
-export type ChecklistCategory = 'essential' | 'basic' | 'spring' | 'summer' | 'autumn' | 'winter' | 'rain';
+export type ChecklistCategory = 'essential' | 'basic' | 'kids' | 'spring' | 'summer' | 'autumn' | 'winter' | 'rain';
 
 export interface ChecklistItem {
   id: string;

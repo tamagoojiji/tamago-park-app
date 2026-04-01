@@ -57,8 +57,11 @@
   text-align: right;
 }
 
-/* 雨トグル */
+/* トグル */
 .toggleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 20px;
 }
 

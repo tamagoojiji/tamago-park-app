@@ -18,6 +18,15 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'b7', category: 'basic', name: 'レジャーシート', description: 'パレード待ちや地蔵スタイルに' },
   { id: 'b8', category: 'basic', name: 'パワーアップバンド', description: '※以前購入したものがあれば忘れずに！' },
   { id: 'b9', category: 'basic', name: '魔法の杖（ハリーポッター）', description: '※持っている場合は忘れずに！' },
+  { id: 'b10', category: 'basic', name: '常備薬', description: '頭痛薬・胃薬など。パーク内では買えません' },
+
+  // === 子連れ ===
+  { id: 'k1', category: 'kids', name: '抱っこ紐', description: 'ベビーカーが入れないエリアやアトラクション待ちに' },
+  { id: 'k2', category: 'kids', name: 'おむつ・おしりふき', description: 'ベビーセンターにも用意がありますが持参が安心' },
+  { id: 'k3', category: 'kids', name: '着替え（子ども用）', description: '食べこぼし・水濡れ対策に1セットあると安心' },
+  { id: 'k4', category: 'kids', name: 'おやつ（未就学児向け）', description: '飴・ラムネ・ビスケット等はOK ⚠️じゃがりこ等のスナック菓子はNG' },
+  { id: 'k5', category: 'kids', name: '迷子対策グッズ', description: '名前タグやGPSトラッカーなど。人混みではぐれやすいです' },
+  { id: 'k6', category: 'kids', name: 'ベビーカーハンギングフック', description: 'ベビーカーに荷物やお土産袋を吊るせて両手が空きます' },
 
   // === 春（3〜5月） ===
   { id: 'sp1', category: 'spring', name: '日焼け止め', description: '春後半から紫外線が強くなります' },
@@ -64,8 +73,10 @@ export function getSeason(month: number): Season {
   return 'winter';
 }
 
-export function getActiveCategories(season: Season, includeRain: boolean): ChecklistCategory[] {
-  const categories: ChecklistCategory[] = ['essential', 'basic', season];
+export function getActiveCategories(season: Season, includeRain: boolean, includeKids: boolean): ChecklistCategory[] {
+  const categories: ChecklistCategory[] = ['essential', 'basic'];
+  if (includeKids) categories.push('kids');
+  categories.push(season);
   if (includeRain) categories.push('rain');
   return categories;
 }
@@ -73,6 +84,7 @@ export function getActiveCategories(season: Season, includeRain: boolean): Check
 export const categoryLabels: Record<ChecklistCategory, { label: string; icon: string; color: string }> = {
   essential: { label: '必須', icon: '🔴', color: '#E74C3C' },
   basic: { label: '基本', icon: '🔵', color: '#4A90D9' },
+  kids: { label: '子連れ', icon: '👶', color: '#AB47BC' },
   spring: { label: '春（3〜5月）', icon: '🌸', color: '#F48FB1' },
   summer: { label: '夏（6〜8月）', icon: '☀️', color: '#FF9800' },
   autumn: { label: '秋（9〜11月）', icon: '🍂', color: '#FF7043' },
