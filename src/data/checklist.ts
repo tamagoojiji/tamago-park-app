@@ -38,9 +38,10 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'su11', category: 'summer', name: '荷物を入れる大きな袋', description: '濡れた服や荷物をまとめるのに便利' },
   { id: 'su12', category: 'summer', name: 'カッパ', description: '水かけイベントで濡れたくない場合に' },
 
-  // === 秋（9〜11月） ===
+  // === 秋（9〜11月）※ハロウィーン期間 ===
   { id: 'au1', category: 'autumn', name: '薄手の上着', description: '朝晩の温度差が大きいです' },
   { id: 'au2', category: 'autumn', name: 'ストール', description: 'ショー待ちの冷え対策に' },
+  { id: 'au3', category: 'autumn', name: '⚠️ スリッパはNG', description: 'ハロウィーン期間は走って逃げる場面あり！歩きやすい靴で来てください' },
 
   // === 冬（12〜2月） ===
   { id: 'w1', category: 'winter', name: 'ネックウォーマー', description: 'マフラーは外す指示が出るため推奨！' },
