@@ -24,12 +24,19 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'sp2', category: 'spring', name: '薄手の上着', description: '朝晩の温度差が大きいです' },
   { id: 'sp3', category: 'spring', name: '花粉症の薬', description: '花粉シーズンの方は忘れずに' },
 
-  // === 夏（6〜8月） ===
-  { id: 'su1', category: 'summer', name: '日焼け止め', description: '日差しが強いので必須です' },
-  { id: 'su2', category: 'summer', name: '帽子', description: '熱中症対策に' },
-  { id: 'su3', category: 'summer', name: '冷却タオル・ハンディファン', description: '待ち時間の暑さ対策に' },
-  { id: 'su4', category: 'summer', name: '替えのTシャツ', description: '汗や水濡れ対策に' },
-  { id: 'su5', category: 'summer', name: '虫除けスプレー', description: '夕方以降は蚊が出ます' },
+  // === 夏（6〜8月）※パレードなどで濡れる場合あり ===
+  { id: 'su1', category: 'summer', name: '飲み物', description: 'ペットボトル・水筒OK、何本でもOK ⚠️アルコール・缶瓶・スタバ等のコップは禁止' },
+  { id: 'su2', category: 'summer', name: '帽子', description: '熱中症対策に必須です' },
+  { id: 'su3', category: 'summer', name: '日焼け止め', description: '日差しが強いのでこまめに塗り直しを' },
+  { id: 'su4', category: 'summer', name: '塩分タブレット', description: '熱中症予防に。汗をかいたらこまめに補給' },
+  { id: 'su5', category: 'summer', name: '日傘', description: '待ち時間の日差し対策に' },
+  { id: 'su6', category: 'summer', name: 'ハンディファン', description: '待ち時間の暑さ対策に' },
+  { id: 'su7', category: 'summer', name: 'タオル', description: '汗拭き用に' },
+  { id: 'su8', category: 'summer', name: 'バスタオル', description: '水かけイベント後の体拭きに' },
+  { id: 'su9', category: 'summer', name: '着替え', description: 'パレードなどで濡れる場合は下着も持っていくと安心' },
+  { id: 'su10', category: 'summer', name: 'スリッパ', description: '靴が濡れた時の履き替え用に' },
+  { id: 'su11', category: 'summer', name: '荷物を入れる大きな袋', description: '濡れた服や荷物をまとめるのに便利' },
+  { id: 'su12', category: 'summer', name: 'カッパ', description: '水かけイベントで濡れたくない場合に' },
 
   // === 秋（9〜11月） ===
   { id: 'au1', category: 'autumn', name: '薄手の上着', description: '朝晩の温度差が大きいです' },
