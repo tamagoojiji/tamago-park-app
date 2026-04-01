@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { heightRestrictions, type HeightRestriction } from '../data/height-restrictions';
 import styles from './HeightPage.module.css';
 
-const HEIGHT_OPTIONS = [0, 92, 102, 107, 122, 132];
+const HEIGHT_OPTIONS = [0, 91, 92, 102, 107, 122, 132];
 
 export default function HeightPage() {
   const [childHeight, setChildHeight] = useState<number>(0);
@@ -10,6 +10,7 @@ export default function HeightPage() {
   // 身長でフィルタ: 単独 or 付き添いありで乗れるかを判定
   const getRideStatus = (r: HeightRestriction): 'alone' | 'with_adult' | 'ng' => {
     if (childHeight === 0) return 'alone'; // フィルタなし
+    if (r.note) return 'alone'; // 身長制限なし（一人で座れたらOK等）
     if (childHeight >= r.aloneMin) return 'alone';
     if (r.withAdultMin > 0 && childHeight >= r.withAdultMin) return 'with_adult';
     return 'ng';
@@ -28,6 +29,7 @@ export default function HeightPage() {
   return (
     <main className={styles.container}>
       <h1 className={styles.title}>身長制限リスト</h1>
+      <p className={styles.shoeNotice}>※ 靴を履いた状態での身長です</p>
 
       {/* 身長フィルタ */}
       <div className={styles.filterCard}>
@@ -45,13 +47,13 @@ export default function HeightPage() {
               className={`${styles.heightBtn} ${childHeight === h ? styles.heightBtnActive : ''}`}
               onClick={() => setChildHeight(h)}
             >
-              {h}cm
+              {h === 91 ? '92cm未満' : `${h}cm以下`}
             </button>
           ))}
         </div>
         {childHeight > 0 && (
           <p className={styles.filterResult}>
-            {childHeight}cm → <strong>{rideableCount}件</strong>のアトラクションに乗れます
+            {childHeight === 91 ? '92cm未満' : `${childHeight}cm`} → <strong>{rideableCount}件</strong>のアトラクションに乗れます
           </p>
         )}
       </div>
@@ -65,7 +67,7 @@ export default function HeightPage() {
           return (
             <div key={r.name} className={`${styles.rideCard} ${childHeight > 0 ? styles[`status_${status}`] : ''}`}>
               <div className={styles.rideTop}>
-                {r.image && <img src={r.image} alt={r.name} className={styles.rideImage} loading="lazy" />}
+                {r.image && <img src={`${import.meta.env.BASE_URL}${r.image.replace(/^\//, '')}`} alt={r.name} className={styles.rideImage} loading="lazy" />}
                 <div className={styles.rideHeader}>
                   <span className={styles.rideName}>{r.name}</span>
                   <span className={styles.rideArea}>{r.area}</span>
@@ -73,8 +75,13 @@ export default function HeightPage() {
               </div>
               <div className={styles.rideInfo}>
                 <span className={styles.heightBadge}>
-                  {r.aloneMin}cm~
+                  {r.note ? r.note : `${r.aloneMin}cm~`}
                 </span>
+                {r.withAdultMin === 0 && r.aloneMin > 0 && !r.note && (
+                  <span className={styles.withAdultBadge}>
+                    付き添いあり 制限なし
+                  </span>
+                )}
                 {r.withAdultMin > 0 && r.withAdultMin < r.aloneMin && (
                   <span className={styles.withAdultBadge}>
                     付き添いあり {r.withAdultMin}cm~
@@ -87,6 +94,7 @@ export default function HeightPage() {
               <div className={styles.rideTags}>
                 {r.childSwap && <span className={styles.tag}>チャイルドスイッチ</span>}
                 {r.singleRider && <span className={styles.tag}>シングルライダー</span>}
+                {r.strollerOk && <span className={styles.tag}>ベビーカーOK</span>}
               </div>
             </div>
           );

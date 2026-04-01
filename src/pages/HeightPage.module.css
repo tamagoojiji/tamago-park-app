@@ -15,6 +15,18 @@
   padding: 0 4px;
 }
 
+.shoeNotice {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-red);
+  background: #FFF0F0;
+  border: 2px solid var(--color-red);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
 /* フィルタ */
 .filterCard {
   background: var(--color-bg-card);

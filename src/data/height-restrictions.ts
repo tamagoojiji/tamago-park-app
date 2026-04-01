@@ -10,38 +10,51 @@ export interface HeightRestriction {
   childSwap: boolean;
   singleRider: boolean;
   image: string;
+  note?: string; // 身長cm以外の制限（例: 一人で座れたら）
+  strollerOk?: boolean; // ベビーカーそのままでOK
 }
 
 export const heightRestrictions: HeightRestriction[] = [
   // --- 132cm以上 ---
-  { name: 'ハリウッド・ドリーム・ザ・ライド', aloneMin: 132, withAdultMin: 132, area: 'ハリウッド', childSwap: true, singleRider: true, image: '' },
-  { name: 'ハリウッド・ドリーム・ザ・ライド ～バックドロップ～', aloneMin: 132, withAdultMin: 132, area: 'ハリウッド', childSwap: true, singleRider: false, image: '' },
-  { name: 'ザ・フライング・ダイナソー', aloneMin: 132, withAdultMin: 132, area: 'ジュラシック・パーク', childSwap: true, singleRider: true, image: '' },
+  { name: 'ハリウッド・ドリーム・ザ・ライド', aloneMin: 132, withAdultMin: 132, area: 'ハリウッド', childSwap: true, singleRider: true, image: '/images/attractions/2.jpg' },
+  { name: 'ハリウッド・ドリーム・ザ・ライド ～バックドロップ～', aloneMin: 132, withAdultMin: 132, area: 'ハリウッド', childSwap: true, singleRider: false, image: '/images/attractions/1.jpg' },
+  { name: 'ザ・フライング・ダイナソー', aloneMin: 132, withAdultMin: 132, area: 'ジュラシック・パーク', childSwap: true, singleRider: true, image: '/images/attractions/26.jpg' },
 
   // --- 122cm以上（単独） / 付き添いあり条件 ---
-  { name: 'スペース・ファンタジー・ザ・ライド', aloneMin: 122, withAdultMin: 102, area: 'ハリウッド', childSwap: true, singleRider: false, image: '' },
+  // 期間限定コラボ: 2026/1/30〜8/17 → 終了後「スペース・ファンタジー・ザ・ライド」に戻す（画像も31.jpgに）
+  { name: 'スペース・ファンタジー・ザ・ライド ～CLUB ZEDD REMIX～', aloneMin: 122, withAdultMin: 102, area: 'ハリウッド', childSwap: true, singleRider: true, image: '/images/attractions/44.jpg' },
 
   // --- 122cm以上 ---
-  { name: 'ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー™', aloneMin: 122, withAdultMin: 122, area: 'ウィザーディング・ワールド', childSwap: true, singleRider: true, image: '' },
+  { name: 'ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー™', aloneMin: 122, withAdultMin: 122, area: 'ウィザーディング・ワールド', childSwap: true, singleRider: true, image: '/images/attractions/17.jpg' },
 
   // --- 107cm以上（単独） / 付き添いあり条件 ---
-  { name: 'アメージング・アドベンチャー・オブ・スパイダーマン・ザ・ライド 4K3D', aloneMin: 122, withAdultMin: 102, area: 'ニューヨーク', childSwap: true, singleRider: true, image: '' },
-  { name: 'ジュラシック・パーク・ザ・ライド', aloneMin: 122, withAdultMin: 107, area: 'ジュラシック・パーク', childSwap: true, singleRider: true, image: '' },
-  { name: 'ジョーズ', aloneMin: 122, withAdultMin: 0, area: 'アミティ・ビレッジ', childSwap: true, singleRider: true, image: '' },
-  { name: 'ミニオン・ハチャメチャ・ライド', aloneMin: 122, withAdultMin: 102, area: 'ミニオン・パーク', childSwap: true, singleRider: true, image: '' },
+  { name: 'ジュラシック・パーク・ザ・ライド', aloneMin: 122, withAdultMin: 107, area: 'ジュラシック・パーク', childSwap: true, singleRider: true, image: '/images/attractions/25.jpg' },
+  { name: 'ジョーズ', aloneMin: 122, withAdultMin: 0, area: 'アミティ・ビレッジ', childSwap: true, singleRider: true, image: '/images/attractions/19.jpg' },
+  { name: 'ミニオン・ハチャメチャ・ライド', aloneMin: 122, withAdultMin: 102, area: 'ミニオン・パーク', childSwap: true, singleRider: true, image: '/images/attractions/28.jpg' },
+  { name: 'ミニオン・ハチャメチャ・ミッション ～大悪党への道～', aloneMin: 122, withAdultMin: 0, area: 'ミニオン・パーク', childSwap: false, singleRider: false, image: '/images/attractions/29.jpg', strollerOk: true },
 
   // --- 102cm以上 ---
-  { name: 'フライト・オブ・ザ・ヒッポグリフ™', aloneMin: 122, withAdultMin: 92, area: 'ウィザーディング・ワールド', childSwap: true, singleRider: false, image: '' },
-  { name: 'マリオカート ～クッパの挑戦状～™', aloneMin: 122, withAdultMin: 107, area: 'スーパー・ニンテンドー・ワールド', childSwap: true, singleRider: true, image: '' },
-  { name: 'ヨッシー・アドベンチャー™', aloneMin: 122, withAdultMin: 92, area: 'スーパー・ニンテンドー・ワールド', childSwap: true, singleRider: false, image: '' },
-  { name: 'ドンキーコングのクレイジー・トロッコ™', aloneMin: 122, withAdultMin: 107, area: 'ドンキーコング・カントリー', childSwap: true, singleRider: false, image: '' },
+  { name: 'フライト・オブ・ザ・ヒッポグリフ™', aloneMin: 122, withAdultMin: 92, area: 'ウィザーディング・ワールド', childSwap: true, singleRider: false, image: '/images/attractions/18.jpg' },
+  { name: 'マリオカート ～クッパの挑戦状～™', aloneMin: 122, withAdultMin: 107, area: 'スーパー・ニンテンドー・ワールド', childSwap: true, singleRider: true, image: '/images/attractions/22.jpg' },
+  { name: 'ヨッシー・アドベンチャー™', aloneMin: 122, withAdultMin: 92, area: 'スーパー・ニンテンドー・ワールド', childSwap: true, singleRider: false, image: '/images/attractions/21.jpg' },
+  { name: 'ドンキーコングのクレイジー・トロッコ™', aloneMin: 122, withAdultMin: 107, area: 'ドンキーコング・カントリー', childSwap: true, singleRider: true, image: '/images/attractions/23.jpg' },
 
   // --- ワンダーランド系 ---
-  { name: 'エルモのゴーゴー・スケートボード', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: true, image: '' },
-  { name: 'エルモのバブル・バブル', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '' },
-  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '' },
-  { name: 'フライング・スヌーピー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '' },
-  { name: 'ハローキティのカップケーキ・ドリーム', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '' },
-  { name: 'ミニオン・ハチャメチャ・アイス', aloneMin: 122, withAdultMin: 92, area: 'ミニオン・パーク', childSwap: true, singleRider: false, image: '' },
-  { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '' },
+  { name: 'エルモのゴーゴー・スケートボード', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: true, image: '/images/attractions/11.jpg' },
+  { name: 'エルモのバブル・バブル', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/13.jpg' },
+  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/10.jpg' },
+  { name: 'フライング・スヌーピー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/5.jpg' },
+  { name: 'ハローキティのカップケーキ・ドリーム', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/8.jpg' },
+  { name: 'ミニオン・ハチャメチャ・アイス', aloneMin: 122, withAdultMin: 92, area: 'ミニオン・パーク', childSwap: true, singleRider: false, image: '/images/attractions/30.jpg' },
+  { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/12.jpg' },
+
+  // --- 一人で座れたらOK ---
+  { name: 'セサミストリート 4-D ムービーマジック™', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/34.jpg', note: '一人で座れたらOK' },
+  { name: 'シュレック 4-D アドベンチャー™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/35.jpg', note: '一人で座れたらOK' },
+  { name: '名探偵コナン 4-D ライブ・ショー', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '', note: '一人で座れたらOK' },
+];
+
+// 過去のアトラクション（クローズ済み）
+export const closedAttractions: HeightRestriction[] = [
+  { name: 'アメージング・アドベンチャー・オブ・スパイダーマン・ザ・ライド 4K3D', aloneMin: 122, withAdultMin: 102, area: 'ニューヨーク', childSwap: true, singleRider: true, image: '' },
 ];
