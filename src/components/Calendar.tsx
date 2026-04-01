@@ -7,6 +7,7 @@ import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
 import { fetchPrivateEvents } from '../data/private-events';
 import type { PrivateEvent } from '../data/private-events';
+import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { getHoldMinutes } from '../data/shows';
 import styles from './Calendar.module.css';
 
@@ -18,6 +19,7 @@ const tabs: { id: CalendarTab; label: string; icon: string }[] = [
   { id: 'private', label: '貸切', icon: '🔒' },
   { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'shows', label: 'ショー', icon: '🎭' },
+  { id: 'closure', label: '休止情報', icon: '🚧' },
 ];
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
@@ -44,6 +46,7 @@ function getTabEmptyMessage(tab: CalendarTab): string {
     case 'tickets': return '1デイ・スタジオ・パス（大人）の価格';
     case 'crowd': return '混雑予想データは準備中です';
     case 'private': return '貸切マークの日は閉園が早まります';
+    case 'closure': return '休止中のアトラクション情報';
   }
 }
 
@@ -61,6 +64,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [scheduleDate, setScheduleDate] = useState<string | null>(null);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [privateEvents, setPrivateEvents] = useState<Record<string, PrivateEvent>>({});
+  const [closuresData, setClosuresData] = useState<ClosuresData | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -81,6 +85,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   // 貸切データ取得
   useEffect(() => {
     fetchPrivateEvents().then(setPrivateEvents);
+  }, []);
+
+  // 休止情報取得
+  useEffect(() => {
+    fetchClosures().then(setClosuresData);
   }, []);
 
   // ショーデータ取得（ショータブ選択時 + 日付変更時）
@@ -269,6 +278,12 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     {activeTab === 'shows' && availableDates.includes(dateStr) && (
                       <span className={styles.showAvailableLabel}>🎭</span>
                     )}
+                    {activeTab === 'closure' && closuresData && (() => {
+                      const count = getClosuresForDate(closuresData, dateStr).length;
+                      return count > 0 ? (
+                        <span className={styles.closureLabel}>{count}件</span>
+                      ) : null;
+                    })()}
                   </>
                 )}
               </div>
@@ -360,10 +375,57 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               <span className={styles.infoValue}>なし</span>
             )}
           </div>
+
+          {/* 休止情報 */}
+          <div className={styles.infoRow}>
+            <span className={styles.infoIcon}>🚧</span>
+            <span className={styles.infoLabel}>休止</span>
+            {closuresData ? (() => {
+              const closures = getClosuresForDate(closuresData, selectedDate);
+              return closures.length > 0 ? (
+                <span className={`${styles.infoValue} ${styles.textOrange}`}>{closures.length}件休止中</span>
+              ) : (
+                <span className={styles.infoValue}>なし</span>
+              );
+            })() : (
+              <span className={`${styles.infoValue} ${styles.textGray}`}>読込中</span>
+            )}
+          </div>
         </div>
       )}
       {/* タブコンテンツ */}
-      {activeTab === 'shows' ? (
+      {activeTab === 'closure' ? (
+        <div className={styles.tabContent}>
+          {!closuresData ? (
+            <p className={styles.tabPlaceholder}>休止情報を読み込み中...</p>
+          ) : (() => {
+            const dateStr = selectedDate || today;
+            const closures = getClosuresForDate(closuresData, dateStr);
+            return closures.length === 0 ? (
+              <p className={styles.tabPlaceholder}>
+                {new Date(dateStr + 'T00:00:00').toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })}は休止中のアトラクションはありません
+              </p>
+            ) : (
+              <div className={styles.closureList}>
+                <p className={styles.closureCount}>
+                  🚧 {closures.length}件のアトラクションが休止中
+                </p>
+                {closures.map((c) => (
+                  <div key={c.name} className={styles.closureItem}>
+                    <span className={styles.closureName}>{c.name}</span>
+                    <span className={styles.closurePeriod}>{c.period}</span>
+                  </div>
+                ))}
+                {closuresData.updated && (
+                  <p className={styles.closureUpdated}>
+                    最終更新: {closuresData.updated}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      ) : activeTab === 'shows' ? (
         <div className={styles.tabContent}>
           {showsLoading ? (
             <p className={styles.tabPlaceholder}>ショースケジュールを読み込み中...</p>

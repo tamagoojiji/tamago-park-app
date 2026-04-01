@@ -175,7 +175,8 @@
 .today .excludedLabel,
 .today .availableLabel,
 .today .priceLabel,
-.today .privateLabel {
+.today .privateLabel,
+.today .closureLabel {
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -310,6 +311,7 @@
 .textRed { color: var(--color-red); font-weight: 700; }
 .textGreen { color: var(--color-green); }
 .textGray { color: var(--color-text-light); font-weight: 600; }
+.textOrange { color: #e67e22; font-weight: 700; }
 
 /* 詳細カード 右側を縦並びにする */
 .infoValueCol {
@@ -494,6 +496,61 @@
 .tabHint {
   font-size: var(--text-xxs);
   color: var(--color-coming-soon);
+}
+
+/* 休止情報ラベル（カレンダーセル） */
+.closureLabel {
+  font-size: 10px;
+  font-weight: 800;
+  color: #e67e22;
+  line-height: 1;
+}
+
+/* 休止情報一覧（タブコンテンツ） */
+.closureList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.closureCount {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: #e67e22;
+  margin-bottom: 4px;
+}
+
+.closureItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.closureItem:last-of-type {
+  border-bottom: none;
+}
+
+.closureName {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.closurePeriod {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  font-weight: 600;
+  text-align: right;
+  max-width: 50%;
+}
+
+.closureUpdated {
+  font-size: var(--text-xxs);
+  color: var(--color-text-light);
+  text-align: right;
+  margin-top: 4px;
 }
 
 @media (max-width: 380px) {
