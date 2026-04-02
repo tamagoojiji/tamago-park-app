@@ -464,6 +464,8 @@
   font-size: var(--text-tiny);
   font-weight: 700;
   color: var(--color-text-sub);
+  white-space: pre-line;
+  text-align: center;
 }
 
 .activeTab {
