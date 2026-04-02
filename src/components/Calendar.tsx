@@ -293,7 +293,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       </div>
 
       {/* 日付選択時の詳細 */}
-      {selectedDate && activeTab !== 'shows' && (
+      {selectedDate && activeTab !== 'shows' && activeTab !== 'closure' && (
         <div className={styles.detailCard}>
           <div className={styles.detailHeader}>
             <span className={styles.detailDate}>
