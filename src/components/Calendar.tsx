@@ -19,7 +19,7 @@ const tabs: { id: CalendarTab; label: string; icon: string }[] = [
   { id: 'private', label: '貸切', icon: '🔒' },
   { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'shows', label: 'ショー', icon: '🎭' },
-  { id: 'closure', label: 'アトラクション\n休止情報', icon: '🚧' },
+  { id: 'closure', label: '休止情報', icon: '🚧' },
 ];
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
