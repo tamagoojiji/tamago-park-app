@@ -4,7 +4,7 @@ import liff from '@line/liff';
 import type { User } from '../types';
 import { authApi } from '../api/auth';
 
-const LIFF_ID = '2009615065-BrHFffo2';
+const LIFF_ID = '2009683881-0kiDOQrd';
 const TOKEN_KEY = 'tamago_park_token';
 
 interface AuthContextType {
