@@ -535,9 +535,10 @@
 }
 
 .closureName {
-  font-size: var(--text-sm);
+  font-size: var(--text-xxs);
   font-weight: 700;
   color: var(--color-text);
+  line-height: 1.4;
 }
 
 .closurePeriod {
