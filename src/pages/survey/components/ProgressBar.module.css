@@ -1,0 +1,43 @@
+.container {
+  margin-bottom: 20px;
+}
+
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.stepDot {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-border);
+  transition: background 0.3s;
+}
+
+.stepDotActive {
+  background: var(--color-primary);
+}
+
+.stepDotDone {
+  background: var(--color-green);
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stepName {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stepCount {
+  font-size: var(--text-xxs);
+  color: var(--color-text-light);
+}

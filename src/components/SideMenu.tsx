@@ -3,6 +3,7 @@ import type { MenuItem } from '../types';
 import styles from './SideMenu.module.css';
 
 const menuItems: MenuItem[] = [
+  { id: 'survey', label: 'プランニングアンケート', path: '/survey', icon: '📝' },
   { id: 'planning', label: '自分のプランを作成', path: '/planning', icon: '📋' },
   { id: 'ep', label: 'エクスプレス・パス診断', path: '/ep', icon: '🎢' },
   { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
