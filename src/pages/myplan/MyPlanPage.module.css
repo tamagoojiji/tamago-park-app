@@ -1,0 +1,116 @@
+.page {
+  padding: var(--content-padding);
+  padding-top: calc(var(--header-height) + 16px);
+  padding-bottom: 100px;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.draftNotice {
+  background: #FFF9E6;
+  border: 1px solid #FFE082;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: var(--text-xxs);
+  color: #856404;
+  text-align: center;
+}
+
+.stepContent {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.navButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.prevButton {
+  flex: 1;
+  padding: 14px;
+  background: #fff;
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.prevButton:active {
+  background: var(--color-bg-section);
+}
+
+.nextButton {
+  flex: 2;
+  padding: 14px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(74, 144, 217, 0.35);
+}
+
+.nextButton:active {
+  transform: scale(0.98);
+}
+
+.nextButton:disabled {
+  background: #B0C4DE;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.memoSection {
+  margin-top: 20px;
+}
+
+.memoLabel {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.memoInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-family: var(--font-main);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.memoInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}

@@ -14,6 +14,8 @@ import ProfilePage from './pages/ProfilePage';
 import HeightPage from './pages/HeightPage';
 import SurveyPage from './pages/survey/SurveyPage';
 import SurveyCompletePage from './pages/survey/SurveyCompletePage';
+import MyPlanPage from './pages/myplan/MyPlanPage';
+import MyPlanHistoryPage from './pages/myplan/MyPlanHistoryPage';
 import { useAuth } from './contexts/AuthContext';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
@@ -77,6 +79,8 @@ export default function App() {
         <Route path="/survey" element={<ProtectedRoute><SurveyPage /></ProtectedRoute>} />
         <Route path="/survey/complete" element={<ProtectedRoute><SurveyCompletePage /></ProtectedRoute>} />
         <Route path="/planning" element={<ProtectedRoute><PlanningPage /></ProtectedRoute>} />
+        <Route path="/myplan" element={<ProtectedRoute><MyPlanPage /></ProtectedRoute>} />
+        <Route path="/myplan/history" element={<ProtectedRoute><MyPlanHistoryPage /></ProtectedRoute>} />
         <Route path="/checklist" element={<ChecklistPage />} />
 
         <Route path="/height" element={<HeightPage />} />

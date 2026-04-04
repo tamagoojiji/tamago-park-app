@@ -1,0 +1,131 @@
+import { useMemo } from 'react';
+import type { MyPlanAttraction, MyPlanShow } from '../../../types/myplan';
+import styles from './components.module.css';
+
+interface TimeSlot {
+  time: string;
+  label: string;
+  type: 'attraction' | 'show' | 'hold';
+  name: string;
+  durationMinutes?: number;
+}
+
+interface Props {
+  openTime: string;
+  closeTime: string;
+  attractions: MyPlanAttraction[];
+  shows: MyPlanShow[];
+  onRemoveAttraction?: (name: string) => void;
+  onRemoveShow?: (name: string, time: string) => void;
+  editable?: boolean;
+  id?: string;
+}
+
+export default function TimelineView({
+  openTime, closeTime, attractions, shows,
+  onRemoveAttraction, onRemoveShow, editable = false, id,
+}: Props) {
+  const timeSlots = useMemo(() => generateTimeSlots(openTime, closeTime), [openTime, closeTime]);
+
+  const items = useMemo(() => {
+    const all: TimeSlot[] = [];
+
+    for (const show of shows) {
+      if (show.holdTime && show.holdMinutes > 0) {
+        all.push({ time: show.holdTime, label: `(場所取り) ${show.name}`, type: 'hold', name: show.name });
+      }
+      all.push({ time: show.time, label: show.name, type: 'show', name: show.name, durationMinutes: 30 });
+    }
+
+    for (const attr of attractions) {
+      all.push({
+        time: attr.startTime,
+        label: attr.name,
+        type: 'attraction',
+        name: attr.name,
+        durationMinutes: attr.durationMinutes,
+      });
+    }
+
+    all.sort((a, b) => a.time.localeCompare(b.time));
+    return all;
+  }, [attractions, shows]);
+
+  const itemsBySlot = useMemo(() => {
+    const map = new Map<string, TimeSlot[]>();
+    for (const item of items) {
+      // 30分刻みのスロットに丸める
+      const [h, m] = item.time.split(':').map(Number);
+      const roundedM = m < 30 ? '00' : '30';
+      const slotKey = `${String(h).padStart(2, '0')}:${roundedM}`;
+      if (!map.has(slotKey)) map.set(slotKey, []);
+      map.get(slotKey)!.push(item);
+    }
+    return map;
+  }, [items]);
+
+  return (
+    <div className={styles.timeline} id={id}>
+      {timeSlots.map((slot) => {
+        const slotItems = itemsBySlot.get(slot) || [];
+        const hasItems = slotItems.length > 0;
+
+        return (
+          <div key={slot} className={styles.timelineRow}>
+            <div className={styles.timelineTimeCol}>
+              <span className={styles.timelineTime}>{slot}</span>
+              <div className={styles.timelineLine} />
+            </div>
+            <div className={styles.timelineContent}>
+              {hasItems ? (
+                slotItems.map((item, i) => (
+                  <div
+                    key={`${item.name}-${item.time}-${i}`}
+                    className={`${styles.timelineCard} ${
+                      item.type === 'hold' ? styles.timelineCardHold :
+                      item.type === 'show' ? styles.timelineCardShow :
+                      styles.timelineCardAttraction
+                    }`}
+                  >
+                    <div className={styles.timelineCardTime}>{item.time}</div>
+                    <div className={styles.timelineCardName}>{item.label}</div>
+                    {item.durationMinutes && item.type !== 'hold' && (
+                      <div className={styles.timelineCardDuration}>{item.durationMinutes}分</div>
+                    )}
+                    {editable && item.type !== 'hold' && (
+                      <button
+                        className={styles.timelineRemoveBtn}
+                        onClick={() => {
+                          if (item.type === 'attraction') onRemoveAttraction?.(item.name);
+                          if (item.type === 'show') onRemoveShow?.(item.name, item.time);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className={styles.timelineEmpty} />
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function generateTimeSlots(open: string, close: string): string[] {
+  const [oh, om] = open.split(':').map(Number);
+  const [ch, cm] = close.split(':').map(Number);
+  const start = oh * 60 + (om < 30 ? 0 : 30);
+  const end = ch * 60 + cm;
+  const slots: string[] = [];
+  for (let t = start; t <= end; t += 30) {
+    const h = Math.floor(t / 60);
+    const m = t % 60;
+    slots.push(`${String(h).padStart(2, '0')}:${String(m === 0 ? '00' : '30')}`);
+  }
+  return slots;
+}

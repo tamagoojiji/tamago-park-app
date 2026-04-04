@@ -1,0 +1,141 @@
+.page {
+  padding: var(--content-padding);
+  padding-top: calc(var(--header-height) + 16px);
+  padding-bottom: 100px;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.loading {
+  text-align: center;
+  color: var(--color-text-light);
+  padding: 40px 0;
+}
+
+.newPlanButton {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(74, 144, 217, 0.35);
+  margin-bottom: 24px;
+}
+
+.newPlanButton:active {
+  transform: scale(0.98);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--color-text-light);
+}
+
+.emptyHint {
+  font-size: var(--text-xs);
+  margin-top: 4px;
+}
+
+.monthGroup {
+  margin-bottom: 24px;
+}
+
+.monthTitle {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 10px;
+  padding: 6px 12px;
+  background: rgba(74, 144, 217, 0.08);
+  border-radius: var(--radius-sm);
+}
+
+.planCard {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.planDate {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.planHours {
+  font-size: var(--text-xxs);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.planStats {
+  display: flex;
+  gap: 14px;
+  font-size: var(--text-xs);
+  color: var(--color-text-sub);
+  margin-bottom: 12px;
+}
+
+.planActions {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton {
+  flex: 1;
+  padding: 10px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.editButton:active {
+  transform: scale(0.97);
+}
+
+.deleteButton {
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid var(--color-red);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+.deleteButton:active {
+  background: #FEE2E2;
+}
