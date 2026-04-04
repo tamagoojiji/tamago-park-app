@@ -3,12 +3,13 @@ import type { AuthResponse, User } from '../types';
 const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-world.com';
 
 async function authFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const { headers: optHeaders, ...restOptions } = options || {};
   const res = await fetch(`${AUTH_BASE}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
-      ...options?.headers,
+      ...(optHeaders as Record<string, string>),
     },
-    ...options,
+    ...restOptions,
   });
 
   if (!res.ok) {
