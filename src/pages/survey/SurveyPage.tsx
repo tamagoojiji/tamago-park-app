@@ -30,9 +30,15 @@ interface EventEntry {
   end: string;
 }
 
+const PW_KEY = 'tamago_survey_pw';
+const SURVEY_PW = 'tamago1216';
+
 export default function SurveyPage() {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(PW_KEY) === 'ok');
+  const [pwInput, setPwInput] = useState('');
+  const [pwError, setPwError] = useState('');
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<SurveyFormData>(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
@@ -159,6 +165,55 @@ export default function SurveyPage() {
   };
 
   const isLastStep = step === STEPS.length - 1;
+
+  if (!unlocked) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <h1 className={styles.title}>プランニングアンケート</h1>
+          <p style={{ textAlign: 'center', color: 'var(--color-text-sub)', fontSize: 'var(--text-sm)', marginBottom: 16 }}>
+            パスワードを入力してください
+          </p>
+          <input
+            type="password"
+            value={pwInput}
+            onChange={(e) => setPwInput(e.target.value)}
+            placeholder="パスワード"
+            style={{
+              width: '100%', padding: 14, border: '2px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-md)',
+              boxSizing: 'border-box', marginBottom: 12,
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (pwInput === SURVEY_PW) {
+                  sessionStorage.setItem(PW_KEY, 'ok');
+                  setUnlocked(true);
+                } else {
+                  setPwError('パスワードが違います');
+                }
+              }
+            }}
+          />
+          {pwError && <div className={styles.error}>{pwError}</div>}
+          <button
+            className={styles.nextButton}
+            style={{ width: '100%', marginTop: 8 }}
+            onClick={() => {
+              if (pwInput === SURVEY_PW) {
+                sessionStorage.setItem(PW_KEY, 'ok');
+                setUnlocked(true);
+              } else {
+                setPwError('パスワードが違います');
+              }
+            }}
+          >
+            開く
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
