@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { myplanApi } from '../../api/myplan';
 import type { MyPlan, MyPlanAttraction, MyPlanShow } from '../../types/myplan';
-import { DRAFT_KEY } from '../../types/myplan';
+import { DRAFT_KEY, defaultPlanName } from '../../types/myplan';
 import { heightRestrictions } from '../../data/height-restrictions';
 import PlanProgressBar from './components/PlanProgressBar';
 import StepDateSelect from './components/StepDateSelect';
@@ -39,6 +39,7 @@ export default function MyPlanPage() {
   const [attractions, setAttractions] = useState<MyPlanAttraction[]>(draft?.attractions || []);
   const [selectedShows, setSelectedShows] = useState<string[]>(draft?.selectedShows || []);
   const [showSchedule, setShowSchedule] = useState<MyPlanShow[]>(draft?.showSchedule || []);
+  const [planName, setPlanName] = useState(draft?.planName || '');
   const [memo, setMemo] = useState(draft?.memo || '');
   const [savedId, setSavedId] = useState<number | undefined>(editId);
 
@@ -53,6 +54,7 @@ export default function MyPlanPage() {
       setSelectedAttractions(plan.attractions.map((a) => a.name));
       setShowSchedule(plan.shows);
       setSelectedShows(plan.shows.map((s) => s.name));
+      setPlanName(plan.name || defaultPlanName(plan.date));
       setMemo(plan.memo || '');
     }).catch(() => {});
   }, [editId, token]);
@@ -60,15 +62,18 @@ export default function MyPlanPage() {
   // 下書き保存（localStorage）
   useEffect(() => {
     if (!date) return;
-    const draftData = { date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, memo };
+    const draftData = { date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, planName, memo };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  }, [date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, memo]);
+  }, [date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, planName, memo]);
 
   const handleDateChange = useCallback((d: string, open: string, close: string) => {
     setDate(d);
     setOpenTime(open);
     setCloseTime(close);
-  }, []);
+    if (!planName || planName === defaultPlanName(date)) {
+      setPlanName(defaultPlanName(d));
+    }
+  }, [planName, date]);
 
   // アトラクション選択が変わったらattractions配列を同期
   const handleAttractionSelectionChange = useCallback((names: string[]) => {
@@ -95,6 +100,7 @@ export default function MyPlanPage() {
   };
 
   const buildPlan = (): MyPlan => ({
+    name: planName || defaultPlanName(date),
     date,
     attractions,
     shows: showSchedule,
@@ -171,6 +177,16 @@ export default function MyPlanPage() {
                 onChangeAttractions={setAttractions}
                 onChangeShows={setShowSchedule}
               />
+              <div className={styles.memoSection}>
+                <label className={styles.memoLabel}>プラン名</label>
+                <input
+                  type="text"
+                  className={styles.memoInput}
+                  value={planName}
+                  onChange={(e) => setPlanName(e.target.value)}
+                  placeholder="例: 2026年4月5日パークプラン"
+                />
+              </div>
               <div className={styles.memoSection}>
                 <label className={styles.memoLabel}>メモ（任意）</label>
                 <textarea

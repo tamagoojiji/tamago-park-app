@@ -9,6 +9,33 @@ interface Props {
   onChange: (names: string[]) => void;
 }
 
+const SHOW_IMAGES: Record<string, string> = {
+  'NO LIMIT! パレード': '/images/shows/NO LIMIT!パレード.jpg',
+  'アルティメット・ブルース・バッシュ': '/images/shows/アルティメット・ブルース・バッシュ〜音楽の色〜.jpg',
+  'ウィキッド': '/images/shows/ウィキッド〜オズの魔女たち〜.jpg',
+  'ウォーターワールド': '/images/shows/ウォーターワールド.jpg',
+  'おさるのジョージ': '/images/shows/おさるのジョージ.jpg',
+  'オリバンダー': '/images/shows/オリバンダーの店.jpg',
+  'キティ': '/images/shows/キティのリボンコレクション.jpg',
+  'ジュラシック・ワールド・ディノ・エンカウンター': '/images/shows/ジュラシック・ワールド ディノ・エンカウンター.jpg',
+  'ジュラシック・ワールド・ベイビー・ディノ': '/images/shows/ジュラシック・ワールド ベイビー・ティノ・アドベンチャー.jpg',
+  'ジュラシック・ワールド・ラプター・アラート': '/images/shows/ジュラシック・ワールド ラプター・アラート.jpg',
+  'シング・オン・ツアー': '/images/shows/シング・オン・ツアー.jpg',
+  'パワー・オブ・ロック': '/images/shows/パワーオブロック〜ユー・ロック〜.jpg',
+  'モッピーのラッキー・ダンス・パーティ': '/images/shows/モッピーのラッキー・ダンス・パーティ.jpg',
+  'ユニバーサル・モンスター・ライブ・ロックンロール・ショー': '/images/shows/ユニバーサル・モンスター・ライブ・ロックンロール・ショー.jpg',
+  'ユニバーサル・ワンダーランド': '/images/shows/ユニバーサル・ワンダーランド〜レッツ・スマイル・トゥギャザー〜(セサミストリート).jpg',
+  '名探偵コナン': '/images/shows/名探偵コナン４Dライブショー.png',
+};
+
+function getShowImage(name: string): string | undefined {
+  if (SHOW_IMAGES[name]) return SHOW_IMAGES[name];
+  for (const [key, path] of Object.entries(SHOW_IMAGES)) {
+    if (name.includes(key) || key.includes(name)) return path;
+  }
+  return undefined;
+}
+
 export default function StepShowSelect({ date, selected, onChange }: Props) {
   const [shows, setShows] = useState<ShowData[] | null>(null);
   const fetchedRef = useRef('');
@@ -56,7 +83,9 @@ export default function StepShowSelect({ date, selected, onChange }: Props) {
       <h2 className={styles.stepTitle}>ショーを選択</h2>
       <p className={styles.stepDescription}>見たいショーをチェック（{selected.length}件選択中）</p>
 
-      {shows!.map((show) => (
+      {shows!.map((show) => {
+        const image = getShowImage(show.name);
+        return (
         <label key={show.name} className={styles.checkItem}>
           <input
             type="checkbox"
@@ -64,14 +93,19 @@ export default function StepShowSelect({ date, selected, onChange }: Props) {
             onChange={() => toggle(show.name)}
           />
           <span className={styles.checkItemImage}>
-            <span className={styles.checkItemPlaceholder}>🎭</span>
+            {image ? (
+              <img src={image} alt="" width={40} height={40} />
+            ) : (
+              <span className={styles.checkItemPlaceholder}>🎭</span>
+            )}
           </span>
           <span className={styles.checkItemLabel}>
             {show.name}
             <span className={styles.showTimesHint}>{show.times.length}回公演</span>
           </span>
         </label>
-      ))}
+        );
+      })}
     </div>
   );
 }

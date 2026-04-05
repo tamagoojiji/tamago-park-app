@@ -73,6 +73,9 @@ export default function MyPlanHistoryPage() {
               </h2>
               {monthPlans.map((plan) => (
                 <div key={plan.id} className={styles.planCard}>
+                  {plan.name && (
+                    <div className={styles.planName}>{plan.name}</div>
+                  )}
                   <div className={styles.planHeader}>
                     <span className={styles.planDate}>📅 {plan.date}</span>
                     <span className={styles.planHours}>{plan.openTime}〜{plan.closeTime}</span>

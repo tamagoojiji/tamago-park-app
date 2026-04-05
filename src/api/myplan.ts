@@ -22,7 +22,15 @@ export const myplanApi = {
   create(token: string, plan: MyPlan) {
     return myplanFetch<{ success: boolean; id: number }>('/myplan', token, {
       method: 'POST',
-      body: JSON.stringify(plan),
+      body: JSON.stringify({
+        name: plan.name,
+        date: plan.date,
+        attractions: plan.attractions,
+        shows: plan.shows,
+        openTime: plan.openTime,
+        closeTime: plan.closeTime,
+        memo: plan.memo,
+      }),
     });
   },
 

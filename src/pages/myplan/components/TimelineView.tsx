@@ -54,7 +54,6 @@ export default function TimelineView({
   const itemsBySlot = useMemo(() => {
     const map = new Map<string, TimeSlot[]>();
     for (const item of items) {
-      // 30分刻みのスロットに丸める
       const [h, m] = item.time.split(':').map(Number);
       const roundedM = m < 30 ? '00' : '30';
       const slotKey = `${String(h).padStart(2, '0')}:${roundedM}`;
@@ -64,19 +63,38 @@ export default function TimelineView({
     return map;
   }, [items]);
 
+  // 場所取り範囲（場所取り開始〜ショー直前のスロット）をオレンジにする
+  const holdRangeSlots = useMemo(() => {
+    const rangeSet = new Set<string>();
+    for (const show of shows) {
+      if (!show.holdTime || show.holdMinutes <= 0) continue;
+      const holdStart = timeToMinutes(show.holdTime);
+      const showStart = timeToMinutes(show.time);
+      for (const slot of timeSlots) {
+        const slotMin = timeToMinutes(slot);
+        // 場所取り開始スロット〜ショー直前スロットまでオレンジ
+        if (slotMin >= holdStart && slotMin < showStart) {
+          rangeSet.add(slot);
+        }
+      }
+    }
+    return rangeSet;
+  }, [shows, timeSlots]);
+
   return (
     <div className={styles.timeline} id={id}>
       {timeSlots.map((slot) => {
         const slotItems = itemsBySlot.get(slot) || [];
         const hasItems = slotItems.length > 0;
+        const isHoldRange = holdRangeSlots.has(slot);
 
         return (
           <div key={slot} className={styles.timelineRow}>
             <div className={styles.timelineTimeCol}>
               <span className={styles.timelineTime}>{slot}</span>
-              <div className={styles.timelineLine} />
+              <div className={`${styles.timelineLine} ${isHoldRange ? styles.timelineLineHold : ''}`} />
             </div>
-            <div className={styles.timelineContent}>
+            <div className={`${styles.timelineContent} ${isHoldRange && !hasItems ? styles.timelineContentHold : ''}`}>
               {hasItems ? (
                 slotItems.map((item, i) => (
                   <div
@@ -106,7 +124,7 @@ export default function TimelineView({
                   </div>
                 ))
               ) : (
-                <div className={styles.timelineEmpty} />
+                <div className={isHoldRange ? styles.timelineHoldFiller : styles.timelineEmpty} />
               )}
             </div>
           </div>
@@ -128,4 +146,9 @@ function generateTimeSlots(open: string, close: string): string[] {
     slots.push(`${String(h).padStart(2, '0')}:${String(m === 0 ? '00' : '30')}`);
   }
   return slots;
+}
+
+function timeToMinutes(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
 }

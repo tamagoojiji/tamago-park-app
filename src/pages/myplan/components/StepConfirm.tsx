@@ -59,6 +59,7 @@ export default function StepConfirm({ plan, editingId, onSaved, onGoBack }: Prop
     <div className={styles.stepSection}>
       <h2 className={styles.stepTitle}>プラン確認</h2>
 
+      <div className={styles.confirmPlanName}>{plan.name}</div>
       <div className={styles.confirmHeader}>
         <div className={styles.confirmDate}>📅 {plan.date}</div>
         <div className={styles.confirmHours}>🕐 {plan.openTime}〜{plan.closeTime}</div>
@@ -87,7 +88,8 @@ export default function StepConfirm({ plan, editingId, onSaved, onGoBack }: Prop
         <div className={styles.savedNotice}>
           プランを保存しました！
           <p className={styles.savedWarning}>
-            サーバーの障害やメンテナンスでデータが失われる場合があります。大切なプランは画像やPDFでも保存することをおすすめします。
+            サーバーの障害やメンテナンスでデータが失われる場合があります。<br />
+            大切なプランは画像やPDFでも保存することをおすすめします。
           </p>
         </div>
       )}

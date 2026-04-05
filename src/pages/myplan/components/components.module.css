@@ -46,6 +46,8 @@
 /* === Step共通 === */
 .stepSection {
   text-align: left;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .stepTitle {
@@ -75,7 +77,9 @@
 
 /* === 日付選択 === */
 .dateInput {
+  display: block;
   width: 100%;
+  max-width: 100%;
   padding: 14px;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -83,6 +87,7 @@
   font-family: var(--font-main);
   box-sizing: border-box;
   background: #fff;
+  -webkit-appearance: none;
 }
 
 .dateInput:focus {
@@ -111,14 +116,15 @@
 /* === 警告バナー === */
 .warningBanner {
   background: #FFF3E0;
-  border: 1px solid #FFB74D;
+  border: 2px solid var(--color-red);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   margin-bottom: 16px;
-  font-size: var(--text-xxs);
+  font-size: 16px;
   font-weight: 600;
-  color: #E65100;
+  color: var(--color-accent);
   text-align: center;
+  line-height: 1.6;
 }
 
 /* === チェックリスト項目 === */
@@ -144,6 +150,8 @@
   border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   transition: background 0.15s;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .checkItem:active {
@@ -256,6 +264,8 @@
   background: var(--color-bg-card);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .timelineRow {
@@ -290,6 +300,28 @@
 .timelineContent {
   flex: 1;
   padding-bottom: 4px;
+}
+
+/* 場所取り範囲（場所取り〜ショー直前）のオレンジ表示 */
+.timelineRowHoldRange {
+}
+
+.timelineContentHold {
+  background: #FFF3E0;
+  border-radius: var(--radius-sm);
+}
+
+.timelineLineHold {
+  background: var(--color-accent) !important;
+  opacity: 0.5;
+}
+
+.timelineHoldFiller {
+  height: 20px;
+  background: #FFF3E0;
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  opacity: 0.6;
 }
 
 .timelineEmpty {
@@ -523,6 +555,14 @@
 }
 
 /* === 確認画面 === */
+.confirmPlanName {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
 .confirmHeader {
   display: flex;
   justify-content: space-between;

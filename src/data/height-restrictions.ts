@@ -49,9 +49,8 @@ export const heightRestrictions: HeightRestriction[] = [
   { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/12.jpg' },
 
   // --- 一人で座れたらOK ---
-  { name: 'セサミストリート 4-D ムービーマジック™', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/34.jpg', note: '一人で座れたらOK' },
+  { name: 'セサミストリート 4-D ムービーマジック™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/34.jpg', note: '一人で座れたらOK' },
   { name: 'シュレック 4-D アドベンチャー™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/35.jpg', note: '一人で座れたらOK' },
-  { name: '名探偵コナン 4-D ライブ・ショー', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '', note: '一人で座れたらOK' },
 ];
 
 // 過去のアトラクション（クローズ済み）

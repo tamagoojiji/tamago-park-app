@@ -22,8 +22,10 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
     return () => { cancelled = true; };
   }, [date]);
 
-  const closedNames = useMemo(
-    () => new Set(closures.map((c) => c.name)),
+  const normalize = (s: string) => s.replace(/[™®©]/g, '').trim();
+
+  const closedNormalized = useMemo(
+    () => new Set(closures.map((c) => normalize(c.name))),
     [closures],
   );
 
@@ -49,11 +51,17 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
       <h2 className={styles.stepTitle}>アトラクションを選択</h2>
       <p className={styles.stepDescription}>乗りたいアトラクションをチェック（{selected.length}件選択中）</p>
 
-      {Array.from(grouped.entries()).map(([area, attractions]) => (
+      {Array.from(grouped.entries()).map(([area, attractions]) => {
+        const sorted = [...attractions].sort((a, b) => {
+          const aClosed = closedNormalized.has(normalize(a.name)) ? 1 : 0;
+          const bClosed = closedNormalized.has(normalize(b.name)) ? 1 : 0;
+          return aClosed - bClosed;
+        });
+        return (
         <div key={area} className={styles.areaGroup}>
           <h3 className={styles.areaTitle}>{area}</h3>
-          {attractions.map((a) => {
-            const isClosed = closedNames.has(a.name);
+          {sorted.map((a) => {
+            const isClosed = closedNormalized.has(normalize(a.name));
             return (
               <label
                 key={a.name}
@@ -80,7 +88,8 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
             );
           })}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

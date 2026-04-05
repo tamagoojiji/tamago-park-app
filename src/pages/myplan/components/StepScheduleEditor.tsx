@@ -63,7 +63,8 @@ export default function StepScheduleEditor({
       <h2 className={styles.stepTitle}>タイムスケジュール編集</h2>
 
       <div className={styles.warningBanner}>
-        待ち時間は日によって大きく異なります。余裕を持ったスケジュールをおすすめします。
+        待ち時間は日によって大きく異なります。<br />
+        余裕を持ったスケジュールをおすすめします。
       </div>
 
       {/* 未配置アトラクション */}

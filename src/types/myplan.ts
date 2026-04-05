@@ -15,6 +15,7 @@ export interface MyPlanShow {
 
 export interface MyPlan {
   id?: number;
+  name: string;            // "2026年4月5日パークプラン"
   date: string;            // "2026-04-18"
   attractions: MyPlanAttraction[];
   shows: MyPlanShow[];
@@ -23,6 +24,11 @@ export interface MyPlan {
   memo?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export function defaultPlanName(date: string): string {
+  const [y, m, d] = date.split('-').map(Number);
+  return `${y}年${m}月${d}日パークプラン`;
 }
 
 export const MYPLAN_STEPS = [
