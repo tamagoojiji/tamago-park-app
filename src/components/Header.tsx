@@ -1,14 +1,25 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SideMenu from './SideMenu';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  const handleLogoClick = () => {
+    if (!isHome) navigate('/');
+  };
 
   return (
     <>
       <header className={styles.header}>
-        <h1 className={styles.title}>
+        <h1
+          className={`${styles.title} ${isHome ? '' : styles.clickable}`}
+          onClick={handleLogoClick}
+        >
           <img
             src={`${import.meta.env.BASE_URL}images/header-logo.png`}
             alt="たまごのパーク攻略"
