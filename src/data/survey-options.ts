@@ -147,17 +147,6 @@ export const SHOW_OPTIONS = [
   '名探偵コナン４Dライブショー',
 ] as const;
 
-// Q18: 季節系ショー・パレード（固定選択肢）
-export const SEASONAL_SHOW_OPTIONS = [
-  'NO LIMIT! パレード',
-  'ユニバーサル・スペクタクル・ナイトパレード',
-  'アルティメット・ブルース・バッシュ',
-  'ライト・ヒア、ライト・ナウ！',
-  'パワーアップバンド・キーチャレンジ',
-  'ワンド・マジック',
-  'ストリート・エンターテイメント',
-  '季節限定ショー（あれば見たい）',
-] as const;
 
 // Q19: グリーティング
 export const GREETING_OPTIONS = [

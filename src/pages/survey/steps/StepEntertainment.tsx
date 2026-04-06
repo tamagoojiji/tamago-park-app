@@ -3,66 +3,62 @@ import type { SurveyFormData } from '../../../types/survey';
 import type { ShowData } from '../../../api/shows';
 import QuestionCard from '../components/QuestionCard';
 import { MultiSelect, type MultiSelectOption } from '../components/FormComponents';
-import { SHOW_OPTIONS, SEASONAL_SHOW_OPTIONS, GREETING_OPTIONS } from '../../../data/survey-options';
-
-interface EventEntry {
-  name: string;
-  start: string;
-  end: string;
-}
+import { SHOW_OPTIONS, GREETING_OPTIONS } from '../../../data/survey-options';
 
 interface Props {
   data: SurveyFormData;
   onChange: (patch: Partial<SurveyFormData>) => void;
   shows: ShowData[];
-  events: EventEntry[];
-  visitDate: string;
 }
 
-export default function StepEntertainment({ data, onChange, shows, events, visitDate }: Props) {
-  // 来園日に公演があるショー名のセット
-  const activeShowNames = useMemo(
-    () => new Set(shows.map((s) => s.name)),
+// 常設ショー名のセット（部分一致判定用）
+const PERMANENT_NAMES = new Set<string>(SHOW_OPTIONS);
+
+function isPermanent(showName: string): boolean {
+  if (PERMANENT_NAMES.has(showName)) return true;
+  for (const perm of PERMANENT_NAMES) {
+    if (showName.includes(perm) || perm.includes(showName)) return true;
+  }
+  return false;
+}
+
+export default function StepEntertainment({ data, onChange, shows }: Props) {
+  // 常設ショー選択肢にステータスバッジを付与
+  const showOptions: MultiSelectOption[] = useMemo(() => {
+    if (shows.length === 0) return SHOW_OPTIONS.map((name) => ({ value: name }));
+
+    return SHOW_OPTIONS.map((name) => {
+      const isActive = shows.some(s => s.name.includes(name) || name.includes(s.name));
+      return {
+        value: name,
+        badge: isActive ? undefined : 'この日は公演なし',
+        badgeType: isActive ? undefined : 'closed' as const,
+      };
+    });
+  }, [shows]);
+
+  // 季節系 = shows APIの全ショーから常設を除外
+  const seasonalOptions: MultiSelectOption[] = useMemo(() => {
+    if (shows.length === 0) return [];
+    return shows
+      .filter((s) => !isPermanent(s.name))
+      .map((s) => ({
+        value: s.name,
+        badge: '開催中',
+        badgeType: 'active' as const,
+      }));
+  }, [shows]);
+
+  const permanentActiveCount = useMemo(
+    () => shows.filter((s) => isPermanent(s.name)).length,
     [shows]
   );
-
-  // ショー名の部分一致判定
-  const isShowActive = (name: string) => {
-    if (shows.length === 0) return true; // データ未取得時はバッジなし
-    return activeShowNames.has(name) ||
-      shows.some(s => s.name.includes(name) || name.includes(s.name));
-  };
-
-  // 常設ショー選択肢にステータスバッジを付与
-  const showOptions: MultiSelectOption[] = SHOW_OPTIONS.map((name) => ({
-    value: name,
-    badge: !isShowActive(name) && shows.length > 0 ? 'この日は公演なし' : undefined,
-    badgeType: !isShowActive(name) && shows.length > 0 ? 'closed' as const : undefined,
-  }));
-
-  // 季節系ショー固定選択肢にバッジ付与
-  const seasonalShowOptions: MultiSelectOption[] = SEASONAL_SHOW_OPTIONS.map((name) => ({
-    value: name,
-    badge: !isShowActive(name) && shows.length > 0 ? 'この日は公演なし' : undefined,
-    badgeType: !isShowActive(name) && shows.length > 0 ? 'closed' as const : undefined,
-  }));
-
-  // 来園日に開催中のイベント
-  const activeEventOptions: MultiSelectOption[] = useMemo(() => {
-    if (!visitDate) return events.map((e) => ({ value: e.name }));
-    return events
-      .filter((e) => e.start <= visitDate && e.end >= visitDate)
-      .map((e) => ({ value: e.name, badge: '開催中', badgeType: 'active' as const }));
-  }, [events, visitDate]);
-
-  // Q18: 季節系ショー + 動的イベントを結合
-  const seasonalOptions = [...seasonalShowOptions, ...activeEventOptions];
 
   return (
     <>
       <QuestionCard
         label="Q17. ショーやパレードは見たい？（常設）"
-        note={shows.length > 0 ? `来園日に${shows.length}件のショーが公演予定` : undefined}
+        note={shows.length > 0 ? `来園日に${permanentActiveCount}件の常設ショーが公演予定` : undefined}
       >
         <MultiSelect
           name="shows"
@@ -74,7 +70,7 @@ export default function StepEntertainment({ data, onChange, shows, events, visit
 
       <QuestionCard
         label="Q18. ショーやパレードは見たい？（季節・期間限定）"
-        note={activeEventOptions.length > 0 ? `来園日に${activeEventOptions.length}件のイベントが開催中` : undefined}
+        note={seasonalOptions.length > 0 ? `来園日に${seasonalOptions.length}件の季節ショーが開催中` : 'ショー情報を読み込み中...'}
       >
         <MultiSelect
           name="seasonal_events"

@@ -23,13 +23,6 @@ import StepExtras from './steps/StepExtras';
 import styles from './SurveyPage.module.css';
 
 const DRAFT_KEY = 'tamago_survey_draft';
-
-interface EventEntry {
-  name: string;
-  start: string;
-  end: string;
-}
-
 const PW_KEY = 'tamago_survey_pw';
 const SURVEY_PW = 'tamago1216';
 
@@ -78,7 +71,6 @@ export default function SurveyPage() {
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
   const [_restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
-  const [events, setEvents] = useState<EventEntry[]>([]);
   const fetchedDateRef = useRef('');
 
   // localStorage下書き保存
@@ -107,13 +99,6 @@ export default function SurveyPage() {
     }).catch(() => setRestaurants([]));
   }, [primaryDate]);
 
-  // イベントデータを読み込み
-  useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/events.json`)
-      .then((res) => res.json())
-      .then((data) => setEvents(data.events || []))
-      .catch(() => setEvents([]));
-  }, []);
 
   const handleChange = useCallback((patch: Partial<SurveyFormData>) => {
     setFormData((prev) => ({ ...prev, ...patch }));
@@ -174,8 +159,6 @@ export default function SurveyPage() {
             data={formData}
             onChange={handleChange}
             shows={shows}
-            events={events}
-            visitDate={primaryDate}
           />
         );
       case 6:
