@@ -11,7 +11,17 @@ interface Props {
 
 export default function StepBasicInfo({ data, onChange }: Props) {
   const addDate = () => {
-    onChange({ visit_dates: [...data.visit_dates, { date: '', start_time: '' }] });
+    let nextDate = '';
+    // 初日が設定されていれば翌日を自動セット
+    if (data.visit_dates.length > 0) {
+      const lastDate = data.visit_dates[data.visit_dates.length - 1].date;
+      if (lastDate) {
+        const d = new Date(lastDate);
+        d.setDate(d.getDate() + 1);
+        nextDate = d.toISOString().split('T')[0];
+      }
+    }
+    onChange({ visit_dates: [...data.visit_dates, { date: nextDate, start_time: '' }] });
   };
 
   const updateDate = (index: number, patch: Partial<VisitDateEntry>) => {

@@ -1,6 +1,6 @@
 import type { SurveyFormData } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { SingleSelect } from '../components/FormComponents';
+import { SingleSelect, OtherComment } from '../components/FormComponents';
 import {
   LINEUP_TIME_OPTIONS,
   END_TIME_OPTIONS,
@@ -33,6 +33,7 @@ export default function StepSchedule({ data, onChange }: Props) {
           value={data.end_time}
           onChange={(v) => onChange({ end_time: v })}
         />
+        <OtherComment fieldName="end_time" data={data} onChange={onChange} show={data.end_time === 'その他'} />
       </QuestionCard>
     </>
   );

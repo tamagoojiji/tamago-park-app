@@ -25,8 +25,8 @@ export interface SurveyFormData {
   // Step 3: 宿泊・交通・チケット・EP
   accommodation: string;           // Q6
   transportation: string;          // Q7
-  tickets: string[];               // Q8
-  ticket_other_comment: string;    // Q8: その他コメント
+  ticket_purchased: string;        // Q8: 購入済みかどうか
+  tickets: string[];               // Q8: チケット種別
   express_pass: string;            // Q9
 
   // Step 4: スケジュール (Q10削除)
@@ -47,7 +47,11 @@ export interface SurveyFormData {
   // Step 7: 食事
   morning_meal: string;            // Q20
   lunch: string;                   // Q21
+  lunch_food_types: string[];      // Q21: ランチ何系
+  lunch_comment: string;           // Q21: 食べたいものコメント
   dinner: string;                  // Q22
+  dinner_food_types: string[];     // Q22: ディナー何系
+  dinner_comment: string;          // Q22: 食べたいものコメント
   food_preferences: string;        // Q23
   allergies: string;               // Q24
 
@@ -64,6 +68,9 @@ export interface SurveyFormData {
   referral_introducer: string;     // Q33: Instagram発信者名
   referral_acquaintance: string;   // Q33: 知り合いのアカウント
   meet_ok: string;                 // Q34
+
+  // 全項目共通: 「その他」選択時のコメント
+  other_comments: Record<string, string>;
 }
 
 export interface PartyInfo {
@@ -92,8 +99,8 @@ export const INITIAL_SURVEY: SurveyFormData = {
   child_heights: [],
   accommodation: '',
   transportation: '',
+  ticket_purchased: '',
   tickets: [],
-  ticket_other_comment: '',
   express_pass: '',
   lineup_time: '',
   end_time: '',
@@ -106,7 +113,11 @@ export const INITIAL_SURVEY: SurveyFormData = {
   greetings: [],
   morning_meal: '',
   lunch: '',
+  lunch_food_types: [],
+  lunch_comment: '',
   dinner: '',
+  dinner_food_types: [],
+  dinner_comment: '',
   food_preferences: '',
   allergies: '',
   budget_level: '',
@@ -121,6 +132,7 @@ export const INITIAL_SURVEY: SurveyFormData = {
   referral_introducer: '',
   referral_acquaintance: '',
   meet_ok: '',
+  other_comments: {},
 };
 
 // ステップ定義

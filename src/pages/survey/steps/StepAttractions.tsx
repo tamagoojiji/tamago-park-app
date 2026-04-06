@@ -10,6 +10,7 @@ import {
   MAIN_ACTIVITY_OPTIONS,
   THRILL_ATTRACTION_OPTIONS,
   KIDS_ATTRACTION_OPTIONS,
+  YOYAKUNORI_ATTRACTIONS,
 } from '../../../data/survey-options';
 
 interface Props {
@@ -42,7 +43,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
   );
 
   // アトラクション選択肢にバッジを付与（休止中は一番下へ）
-  const buildOptions = (opts: readonly string[]): MultiSelectOption[] => {
+  const buildOptions = (opts: readonly string[], showYoyakunori = false): MultiSelectOption[] => {
     const mapped = opts.map((name) => {
       const isClosed = closedNames.has(name);
       const restriction = getRestriction(name);
@@ -50,9 +51,12 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
         ? Math.min(restriction.aloneMin || 999, restriction.withAdultMin || 999)
         : 0;
       const heightWarning = minChildHeight !== null && minRequired > 0 && minChildHeight < minRequired;
+      const isYoyakunori = showYoyakunori && YOYAKUNORI_ATTRACTIONS.has(name);
+      const displayLabel = isYoyakunori ? `${name}（よやくのり対象）` : name;
 
       return {
         value: name,
+        label: displayLabel,
         disabled: isClosed,
         badge: isClosed
           ? '休止中'
@@ -97,7 +101,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
       <QuestionCard label="Q16. このアトラクションは外せない！（キッズ系）">
         <MultiSelect
           name="kids_attractions"
-          options={buildOptions(KIDS_ATTRACTION_OPTIONS)}
+          options={buildOptions(KIDS_ATTRACTION_OPTIONS, true)}
           values={data.kids_attractions}
           onChange={(v) => onChange({ kids_attractions: v })}
         />

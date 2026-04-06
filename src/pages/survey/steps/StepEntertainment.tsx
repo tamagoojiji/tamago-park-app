@@ -42,11 +42,7 @@ export default function StepEntertainment({ data, onChange, shows }: Props) {
     if (shows.length === 0) return [];
     return shows
       .filter((s) => !isPermanent(s.name))
-      .map((s) => ({
-        value: s.name,
-        badge: '開催中',
-        badgeType: 'active' as const,
-      }));
+      .map((s) => ({ value: s.name }));
   }, [shows]);
 
   const permanentActiveCount = useMemo(

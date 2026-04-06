@@ -1,4 +1,29 @@
+import type { SurveyFormData } from '../../../types/survey';
 import styles from './FormComponents.module.css';
+
+// --- OtherComment: 「その他」選択時のコメント入力欄 ---
+interface OtherCommentProps {
+  fieldName: string;
+  data: SurveyFormData;
+  onChange: (patch: Partial<SurveyFormData>) => void;
+  show: boolean;
+}
+
+export function OtherComment({ fieldName, data, onChange, show }: OtherCommentProps) {
+  if (!show) return null;
+  const value = data.other_comments[fieldName] || '';
+  return (
+    <div style={{ marginTop: 8 }}>
+      <input
+        type="text"
+        className={styles.textInput}
+        value={value}
+        onChange={(e) => onChange({ other_comments: { ...data.other_comments, [fieldName]: e.target.value } })}
+        placeholder="その他の詳細を入力してください"
+      />
+    </div>
+  );
+}
 
 // --- TextInput ---
 interface TextInputProps {

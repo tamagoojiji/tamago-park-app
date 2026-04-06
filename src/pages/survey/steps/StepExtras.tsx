@@ -1,6 +1,6 @@
 import type { SurveyFormData } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { SingleSelect, MultiSelect, TextInput } from '../components/FormComponents';
+import { SingleSelect, MultiSelect, TextInput, OtherComment } from '../components/FormComponents';
 import {
   BUDGET_OPTIONS,
   POWER_UP_BAND_OPTIONS,
@@ -37,6 +37,7 @@ export default function StepExtras({ data, onChange }: Props) {
             詳細をその他へ記載してください（種類・人数など）
           </div>
         )}
+        <OtherComment fieldName="budget_level" data={data} onChange={onChange} show={data.budget_level === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q26. パワーアップバンド購入予定ですか？">
@@ -46,6 +47,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.power_up_band}
           onChange={(v) => onChange({ power_up_band: v })}
         />
+        <OtherComment fieldName="power_up_band" data={data} onChange={onChange} show={data.power_up_band === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q27. ハリーポッター魔法の杖購入予定ですか？">
@@ -55,6 +57,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.magic_wand}
           onChange={(v) => onChange({ magic_wand: v })}
         />
+        <OtherComment fieldName="magic_wand" data={data} onChange={onChange} show={data.magic_wand === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q28. クラブユニバーサルのアカウントは作成済みですか？">
@@ -64,6 +67,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.club_universal}
           onChange={(v) => onChange({ club_universal: v })}
         />
+        <OtherComment fieldName="club_universal" data={data} onChange={onChange} show={data.club_universal === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q29. ユニバ公式アプリはダウンロードできていますか？">
@@ -73,6 +77,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.official_app}
           onChange={(v) => onChange({ official_app: v })}
         />
+        <OtherComment fieldName="official_app" data={data} onChange={onChange} show={data.official_app === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q30. 公式アプリにチケット登録は終わっていますか？">
@@ -82,6 +87,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.ticket_registered}
           onChange={(v) => onChange({ ticket_registered: v })}
         />
+        <OtherComment fieldName="ticket_registered" data={data} onChange={onChange} show={data.ticket_registered === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q31. 特別な要望や期待はある？">
@@ -133,6 +139,7 @@ export default function StepExtras({ data, onChange }: Props) {
             />
           </div>
         )}
+        <OtherComment fieldName="referral_source" data={data} onChange={onChange} show={data.referral_source.includes('その他')} />
       </QuestionCard>
 
       <QuestionCard label="Q34. 当日、会っても大丈夫？">
@@ -142,6 +149,7 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.meet_ok}
           onChange={(v) => onChange({ meet_ok: v })}
         />
+        <OtherComment fieldName="meet_ok" data={data} onChange={onChange} show={data.meet_ok === 'その他'} />
       </QuestionCard>
     </>
   );

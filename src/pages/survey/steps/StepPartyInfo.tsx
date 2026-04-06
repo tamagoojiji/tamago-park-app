@@ -141,7 +141,7 @@ export default function StepPartyInfo({ data, onChange }: Props) {
       </QuestionCard>
 
       {hasChildren && (
-        <QuestionCard label="Q5. おこさんの身長は？" note="アトラクションの身長制限の確認に使います">
+        <QuestionCard label="Q5. おこさんの身長は？" note="靴を履いた身長をお願いします。アトラクションの身長制限の確認に使います">
           {data.child_heights.map((entry, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, minWidth: 80 }}>{entry.label}</span>

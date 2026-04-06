@@ -45,15 +45,19 @@ export const TRANSPORTATION_OPTIONS = [
   'その他',
 ] as const;
 
-// Q8: チケット
+// Q8: チケット購入確認
+export const TICKET_PURCHASED_OPTIONS = [
+  '購入済み',
+  'まだ購入していない',
+  '年パス保有者',
+] as const;
+
+// Q8: チケット種別
 export const TICKET_OPTIONS = [
   'ワンデイ',
   '2デイ',
   '1.5デイ',
   '夜間貸切ナイト',
-  '年パス保有者',
-  '年パス購入予定',
-  'まだ買ってない',
   'その他',
 ] as const;
 
@@ -137,7 +141,16 @@ export const KIDS_ATTRACTION_OPTIONS = [
   'プレイング・ウィズ おさるのジョージ',
 ] as const;
 
-// Q17: 常設ショー
+// Q16: よやくのり対象アトラクション
+export const YOYAKUNORI_ATTRACTIONS = new Set([
+  'フライング・スヌーピー',
+  'エルモのゴーゴー・スケートボード',
+  'モッピーのバルーン・トリップ',
+  'エルモのバブル・バブル',
+  'エルモのリトル・ドライブ',
+]);
+
+// Q17: 常設ショー・体験
 export const SHOW_OPTIONS = [
   'ユニバーサル・モンスター・ライブ・ロックンロール・ショー',
   'ウォーターワールド',
@@ -145,6 +158,9 @@ export const SHOW_OPTIONS = [
   'シング・オン・ツアー',
   'おさるのジョージ',
   '名探偵コナン４Dライブショー',
+  'オリバンダーの店',
+  'スヌーピーのフライング・エース・アドベンチャー・フォト・オポチュニティ',
+  'ハローキティのリボン・コレクション',
 ] as const;
 
 
@@ -183,6 +199,19 @@ export const DINNER_OPTIONS = [
   'シティーウォーク',
   '食べたいものあり',
   'その他',
+] as const;
+
+// Q21/Q22: 食事ジャンル（食べ歩き・簡単なレストラン選択時）
+export const FOOD_TYPE_OPTIONS = [
+  'サンド系',
+  'ハンバーガー',
+  'ピザ',
+  'パスタ',
+  '中華',
+  'コラボ飯',
+  'ブリトー',
+  'プレート系',
+  '和食',
 ] as const;
 
 // Q25: 課金レベル

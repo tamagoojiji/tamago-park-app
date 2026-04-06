@@ -1,9 +1,10 @@
 import type { SurveyFormData } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { SingleSelect, MultiSelect, TextInput } from '../components/FormComponents';
+import { SingleSelect, MultiSelect, OtherComment } from '../components/FormComponents';
 import {
   ACCOMMODATION_OPTIONS,
   TRANSPORTATION_OPTIONS,
+  TICKET_PURCHASED_OPTIONS,
   TICKET_OPTIONS,
   EXPRESS_PASS_OPTIONS,
 } from '../../../data/survey-options';
@@ -14,6 +15,8 @@ interface Props {
 }
 
 export default function StepLogistics({ data, onChange }: Props) {
+  const showTicketTypes = data.ticket_purchased === '購入済み' || data.ticket_purchased === 'まだ購入していない';
+
   return (
     <>
       <QuestionCard label="Q6. 宿泊施設はどこですか？">
@@ -23,6 +26,7 @@ export default function StepLogistics({ data, onChange }: Props) {
           value={data.accommodation}
           onChange={(v) => onChange({ accommodation: v })}
         />
+        <OtherComment fieldName="accommodation" data={data} onChange={onChange} show={data.accommodation === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q7. ユニバへ来る手段は？">
@@ -32,22 +36,28 @@ export default function StepLogistics({ data, onChange }: Props) {
           value={data.transportation}
           onChange={(v) => onChange({ transportation: v })}
         />
+        <OtherComment fieldName="transportation" data={data} onChange={onChange} show={data.transportation === 'その他'} />
       </QuestionCard>
 
       <QuestionCard label="Q8. チケットはどれを購入されますか？（購入していますか）">
-        <MultiSelect
-          name="tickets"
-          options={TICKET_OPTIONS.map((o) => ({ value: o }))}
-          values={data.tickets}
-          onChange={(v) => onChange({ tickets: v })}
+        <SingleSelect
+          name="ticket_purchased"
+          options={TICKET_PURCHASED_OPTIONS}
+          value={data.ticket_purchased}
+          onChange={(v) => onChange({ ticket_purchased: v })}
         />
-        {data.tickets.includes('その他') && (
-          <div style={{ marginTop: 8 }}>
-            <TextInput
-              value={data.ticket_other_comment}
-              onChange={(v) => onChange({ ticket_other_comment: v })}
-              placeholder="その他の詳細を入力してください"
+        {showTicketTypes && (
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-sub)', marginBottom: 8 }}>
+              {data.ticket_purchased === '購入済み' ? 'どのチケットを購入しましたか？' : 'どのチケットにする予定ですか？'}
+            </div>
+            <MultiSelect
+              name="tickets"
+              options={TICKET_OPTIONS.map((o) => ({ value: o }))}
+              values={data.tickets}
+              onChange={(v) => onChange({ tickets: v })}
             />
+            <OtherComment fieldName="tickets" data={data} onChange={onChange} show={data.tickets.includes('その他')} />
           </div>
         )}
       </QuestionCard>
@@ -59,6 +69,7 @@ export default function StepLogistics({ data, onChange }: Props) {
           value={data.express_pass}
           onChange={(v) => onChange({ express_pass: v })}
         />
+        <OtherComment fieldName="express_pass" data={data} onChange={onChange} show={data.express_pass === 'その他'} />
       </QuestionCard>
     </>
   );
