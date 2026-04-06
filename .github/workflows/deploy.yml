@@ -30,6 +30,8 @@ jobs:
 
       - run: npm ci
 
+      - run: npx tsc -b --clean || true
+
       - run: npm run build
         env:
           DEPLOY_TARGET: ghpages
