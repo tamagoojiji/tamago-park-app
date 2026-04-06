@@ -14,6 +14,9 @@ interface Props {
 // 常設ショー名のセット（部分一致判定用）
 const PERMANENT_NAMES = new Set<string>(SHOW_OPTIONS);
 
+// API未掲載の常設ショー（バッジ判定を免除）
+const API_EXEMPT_SHOWS = new Set(['名探偵コナン４Dライブショー']);
+
 function isPermanent(showName: string): boolean {
   if (PERMANENT_NAMES.has(showName)) return true;
   for (const perm of PERMANENT_NAMES) {
@@ -28,6 +31,7 @@ export default function StepEntertainment({ data, onChange, shows }: Props) {
     if (shows.length === 0) return SHOW_OPTIONS.map((name) => ({ value: name }));
 
     return SHOW_OPTIONS.map((name) => {
+      if (API_EXEMPT_SHOWS.has(name)) return { value: name };
       const isActive = shows.some(s => s.name.includes(name) || name.includes(s.name));
       return {
         value: name,
