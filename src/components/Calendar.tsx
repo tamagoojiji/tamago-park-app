@@ -5,8 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { fetchPrivateEvents } from '../data/private-events';
-import type { PrivateEvent } from '../data/private-events';
+import { fetchAllEvents, getEventsForDate, hasPrivateEventOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { getHoldMinutes } from '../data/shows';
 import styles from './Calendar.module.css';
@@ -63,7 +62,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [showsLoading, setShowsLoading] = useState(false);
   const [scheduleDate, setScheduleDate] = useState<string | null>(null);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
-  const [privateEvents, setPrivateEvents] = useState<Record<string, PrivateEvent>>({});
+  const [parkEvents, setParkEvents] = useState<ParkEvent[]>([]);
   const [closuresData, setClosuresData] = useState<ClosuresData | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
@@ -82,9 +81,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       .catch((e) => console.error('天気取得エラー:', e));
   }, []);
 
-  // 貸切データ取得
+  // イベント・貸切データ取得
   useEffect(() => {
-    fetchPrivateEvents().then(setPrivateEvents);
+    fetchAllEvents().then(setParkEvents);
   }, []);
 
   // 休止情報取得
@@ -272,8 +271,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                         {ticketPrices[dateStr].toLocaleString()}
                       </span>
                     )}
-                    {activeTab === 'private' && privateEvents[dateStr] && (
+                    {activeTab === 'private' && hasPrivateEventOnDate(parkEvents, dateStr) && (
                       <span className={styles.privateLabel}>貸切</span>
+                    )}
+                    {activeTab === 'events' && hasEventOnDate(parkEvents, dateStr) && (
+                      <span className={styles.showAvailableLabel}>🎪</span>
                     )}
                     {activeTab === 'shows' && availableDates.includes(dateStr) && (
                       <span className={styles.showAvailableLabel}>🎭</span>
@@ -352,7 +354,18 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           <div className={styles.infoRow}>
             <span className={styles.infoIcon}>🎉</span>
             <span className={styles.infoLabel}>イベント</span>
-            <span className={`${styles.infoValue} ${styles.textGray}`}>準備中</span>
+            {(() => {
+              const dayEvents = getEventsForDate(parkEvents, selectedDate).filter(e => e.category !== 'private');
+              return dayEvents.length > 0 ? (
+                <div className={styles.infoValueCol}>
+                  {dayEvents.map(e => (
+                    <span key={e.id}>{e.name}</span>
+                  ))}
+                </div>
+              ) : (
+                <span className={styles.infoValue}>なし</span>
+              );
+            })()}
           </div>
 
           {/* 混雑予想 */}
@@ -366,14 +379,21 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           <div className={styles.infoRow}>
             <span className={styles.infoIcon}>🔒</span>
             <span className={styles.infoLabel}>貸切</span>
-            {privateEvents[selectedDate] ? (
-              <div className={styles.infoValueCol}>
-                <span className={styles.textRed}>{privateEvents[selectedDate].name}</span>
-                <span className={styles.infoSubText}>{privateEvents[selectedDate].time}</span>
-              </div>
-            ) : (
-              <span className={styles.infoValue}>なし</span>
-            )}
+            {(() => {
+              const privateEvts = getEventsForDate(parkEvents, selectedDate).filter(e => e.category === 'private');
+              return privateEvts.length > 0 ? (
+                <div className={styles.infoValueCol}>
+                  {privateEvts.map(e => (
+                    <div key={e.id}>
+                      <span className={styles.textRed}>{e.name}</span>
+                      {e.summary && <span className={styles.infoSubText}>{e.summary}</span>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <span className={styles.infoValue}>なし</span>
+              );
+            })()}
           </div>
 
           {/* 休止情報 */}
@@ -421,6 +441,33 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     最終更新: {closuresData.updated}
                   </p>
                 )}
+              </div>
+            );
+          })()}
+        </div>
+      ) : activeTab === 'events' ? (
+        <div className={styles.tabContent}>
+          {parkEvents.length === 0 ? (
+            <p className={styles.tabPlaceholder}>イベント情報はまだありません</p>
+          ) : (() => {
+            const dateStr = selectedDate || today;
+            const dayEvents = getEventsForDate(parkEvents, dateStr);
+            return dayEvents.length === 0 ? (
+              <p className={styles.tabPlaceholder}>
+                {new Date(dateStr + 'T00:00:00').toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })}のイベントはありません
+              </p>
+            ) : (
+              <div className={styles.showList}>
+                {dayEvents.map(evt => (
+                  <div key={evt.id} className={styles.showItem}>
+                    <div className={styles.showName}>
+                      {evt.category === 'private' ? '🔒' : evt.category === 'other' ? '📋' : '🎪'} {evt.name}
+                    </div>
+                    {evt.summary && (
+                      <div className={styles.showHoldInfo}>{evt.summary}</div>
+                    )}
+                  </div>
+                ))}
               </div>
             );
           })()}
