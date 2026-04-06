@@ -7,16 +7,28 @@ export const SERVICE_TYPES = [
   'アテンド希望',
 ] as const;
 
+// Q3: 来園日ごとの開始時間
+export const VISIT_START_TIME_OPTIONS = [
+  '朝から',
+  '昼から',
+  '14時から(貸切イベント)',
+  '15時から',
+] as const;
+
 // Q4: 年齢カテゴリ
 export const PARTY_CATEGORIES = [
   { key: 'adults', label: '大人' },
   { key: 'highschool', label: '高校生' },
   { key: 'middleschool', label: '中学生' },
-  { key: 'elementary_upper', label: '小学生（4〜6年生）' },
-  { key: 'elementary_lower', label: '小学生（1〜3年生）' },
-  { key: 'preschool', label: '5〜6歳' },
-  { key: 'toddler', label: '0歳〜4歳' },
+  { key: 'elementary', label: '小学生' },
+  { key: 'young_children', label: '0歳〜6歳' },
 ] as const;
+
+// Q4: 小学生の学年選択肢
+export const ELEMENTARY_GRADE_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+
+// Q4: 幼児の年齢選択肢
+export const YOUNG_CHILDREN_AGE_OPTIONS = [0, 1, 2, 3, 4, 5, 6] as const;
 
 // Q6: 宿泊
 export const ACCOMMODATION_OPTIONS = [
@@ -39,7 +51,7 @@ export const TICKET_OPTIONS = [
   '2デイ',
   '1.5デイ',
   '夜間貸切ナイト',
-  '年パス',
+  '年パス保有者',
   '年パス購入予定',
   'まだ買ってない',
   'その他',
@@ -49,15 +61,6 @@ export const TICKET_OPTIONS = [
 export const EXPRESS_PASS_OPTIONS = [
   'なし',
   'あり',
-  'その他',
-] as const;
-
-// Q10: 開始時間
-export const START_TIME_OPTIONS = [
-  'オープンから',
-  '昼前から',
-  '昼過ぎから',
-  '15時から',
   'その他',
 ] as const;
 
@@ -131,8 +134,7 @@ export const KIDS_ATTRACTION_OPTIONS = [
   'セサミのビッグ・ドライブ',
   'ハローキティのカップケーキ・ドリーム',
   'ミニオン・ハチャメチャ・アイス',
-  'おさるのジョージ ～おじさんを関西弁～',
-  'プレイング・ウィズおさるのジョージ',
+  'プレイング・ウィズ おさるのジョージ',
 ] as const;
 
 // Q17: 常設ショー・パレード
@@ -153,9 +155,9 @@ export const SHOW_OPTIONS = [
 export const GREETING_OPTIONS = [
   'いいえ',
   'ミニオン',
-  'セサミ',
+  'セサミストリート',
   'ピーナッツ',
-  '長ぐつネコ',
+  '長ぐつをはいたネコ',
   'シュレック',
 ] as const;
 
@@ -202,7 +204,7 @@ export const POWER_UP_BAND_OPTIONS = [
   'その他',
 ] as const;
 
-// Q27: 魔法の���
+// Q27: 魔法の杖
 export const MAGIC_WAND_OPTIONS = [
   '購入予定',
   '持参',
@@ -255,6 +257,7 @@ export const REFERRAL_OPTIONS = [
   'Youtube',
   'Warpcast',
   'Instagram発信者紹介',
+  '知り合いからの紹介',
   'その他',
 ] as const;
 

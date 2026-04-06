@@ -44,7 +44,29 @@ export default function SurveyPage() {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
       try {
-        return { ...INITIAL_SURVEY, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        // 旧データ（visit_date: string）からの移行
+        if (parsed.visit_date && !parsed.visit_dates) {
+          parsed.visit_dates = [{ date: parsed.visit_date, start_time: parsed.start_time || '' }];
+          delete parsed.visit_date;
+          delete parsed.start_time;
+        }
+        // 旧PartyInfoからの移行
+        if (parsed.party && ('elementary_upper' in parsed.party || 'elementary_lower' in parsed.party)) {
+          const p = parsed.party;
+          parsed.party = {
+            adults: p.adults || 0,
+            highschool: p.highschool || 0,
+            middleschool: p.middleschool || 0,
+            elementary: (p.elementary_upper || 0) + (p.elementary_lower || 0),
+            young_children: (p.preschool || 0) + (p.toddler || 0),
+          };
+          // child_heights をリセット（旧形式はテキストだったため）
+          if (typeof parsed.child_heights === 'string') {
+            parsed.child_heights = [];
+          }
+        }
+        return { ...INITIAL_SURVEY, ...parsed };
       } catch { /* ignore */ }
     }
     return { ...INITIAL_SURVEY };
@@ -55,7 +77,7 @@ export default function SurveyPage() {
   // 自動反映データ
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
-  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
+  const [_restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const [events, setEvents] = useState<EventEntry[]>([]);
   const fetchedDateRef = useRef('');
 
@@ -64,25 +86,26 @@ export default function SurveyPage() {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
   }, [formData]);
 
+  // 初日の日付を取得（データfetchに使用）
+  const primaryDate = formData.visit_dates.length > 0 ? formData.visit_dates[0].date : '';
+
   // 来園日が変わったらデータをfetch
   useEffect(() => {
-    const date = formData.visit_date;
-    if (!date || date === fetchedDateRef.current) return;
-    fetchedDateRef.current = date;
+    if (!primaryDate || primaryDate === fetchedDateRef.current) return;
+    fetchedDateRef.current = primaryDate;
 
-    // 並列fetch
     fetchClosures().then((data) => {
-      setClosures(getClosuresForDate(data, date));
+      setClosures(getClosuresForDate(data, primaryDate));
     });
 
-    fetchShows(date).then((result) => {
+    fetchShows(primaryDate).then((result) => {
       setShows(result.shows);
     }).catch(() => setShows([]));
 
-    fetchRestaurants(date).then((result) => {
+    fetchRestaurants(primaryDate).then((result) => {
       setRestaurants(result.restaurants);
     }).catch(() => setRestaurants([]));
-  }, [formData.visit_date]);
+  }, [primaryDate]);
 
   // イベントデータを読み込み
   useEffect(() => {
@@ -98,7 +121,7 @@ export default function SurveyPage() {
 
   const canProceed = (): boolean => {
     if (step === 0) {
-      return !!formData.name && !!formData.service_type && !!formData.visit_date;
+      return !!formData.name && !!formData.service_type && formData.visit_dates.length > 0 && !!formData.visit_dates[0].date;
     }
     return true;
   };
@@ -152,11 +175,11 @@ export default function SurveyPage() {
             onChange={handleChange}
             shows={shows}
             events={events}
-            visitDate={formData.visit_date}
+            visitDate={primaryDate}
           />
         );
       case 6:
-        return <StepDining data={formData} onChange={handleChange} restaurants={restaurants} />;
+        return <StepDining data={formData} onChange={handleChange} />;
       case 7:
         return <StepExtras data={formData} onChange={handleChange} />;
       default:
@@ -222,7 +245,7 @@ export default function SurveyPage() {
 
         <ProgressBar currentStep={step} />
 
-        {formData.visit_date && step === 0 && (
+        {primaryDate && step === 0 && (
           <div className={styles.draftNotice}>
             入力内容は自動で下書き保存されます
           </div>

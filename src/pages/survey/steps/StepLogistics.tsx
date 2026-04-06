@@ -1,6 +1,6 @@
 import type { SurveyFormData } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { SingleSelect, MultiSelect } from '../components/FormComponents';
+import { SingleSelect, MultiSelect, TextInput } from '../components/FormComponents';
 import {
   ACCOMMODATION_OPTIONS,
   TRANSPORTATION_OPTIONS,
@@ -34,13 +34,22 @@ export default function StepLogistics({ data, onChange }: Props) {
         />
       </QuestionCard>
 
-      <QuestionCard label="Q8. チケットは何を購入されてますか？">
+      <QuestionCard label="Q8. チケットはどれを購入されますか？（購入していますか）">
         <MultiSelect
           name="tickets"
           options={TICKET_OPTIONS.map((o) => ({ value: o }))}
           values={data.tickets}
           onChange={(v) => onChange({ tickets: v })}
         />
+        {data.tickets.includes('その他') && (
+          <div style={{ marginTop: 8 }}>
+            <TextInput
+              value={data.ticket_other_comment}
+              onChange={(v) => onChange({ ticket_other_comment: v })}
+              placeholder="その他の詳細を入力してください"
+            />
+          </div>
+        )}
       </QuestionCard>
 
       <QuestionCard label="Q9. エクスプレスパス購入は？">

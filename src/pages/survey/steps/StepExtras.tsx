@@ -28,6 +28,15 @@ export default function StepExtras({ data, onChange }: Props) {
           value={data.budget_level}
           onChange={(v) => onChange({ budget_level: v })}
         />
+        {data.budget_level === 'エクスプレスパス購入予定' && (
+          <div style={{
+            marginTop: 8, padding: '8px 12px', background: '#FFF3CD',
+            borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-xs)',
+            color: '#856404', fontWeight: 500,
+          }}>
+            詳細をその他へ記載してください（種類・人数など）
+          </div>
+        )}
       </QuestionCard>
 
       <QuestionCard label="Q26. パワーアップバンド購入予定ですか？">
@@ -100,6 +109,30 @@ export default function StepExtras({ data, onChange }: Props) {
           values={data.referral_source}
           onChange={(v) => onChange({ referral_source: v })}
         />
+        {data.referral_source.includes('Instagram発信者紹介') && (
+          <div style={{ marginTop: 8 }}>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-sub)', marginBottom: 4 }}>
+              紹介してくれた方のお名前・アカウントを教えてください
+            </div>
+            <TextInput
+              value={data.referral_introducer}
+              onChange={(v) => onChange({ referral_introducer: v })}
+              placeholder="例: @usj_guide"
+            />
+          </div>
+        )}
+        {data.referral_source.includes('知り合いからの紹介') && (
+          <div style={{ marginTop: 8 }}>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-sub)', marginBottom: 4 }}>
+              もしよろしければ、紹介してくれた方のアカウントを教えていただけると嬉しいです（任意）
+            </div>
+            <TextInput
+              value={data.referral_acquaintance}
+              onChange={(v) => onChange({ referral_acquaintance: v })}
+              placeholder="例: @friend_account"
+            />
+          </div>
+        )}
       </QuestionCard>
 
       <QuestionCard label="Q34. 当日、会っても大丈夫？">

@@ -1,5 +1,4 @@
 import type { SurveyFormData } from '../../../types/survey';
-import type { RestaurantInfo } from '../../../api/restaurants';
 import QuestionCard from '../components/QuestionCard';
 import { SingleSelect, TextInput } from '../components/FormComponents';
 import {
@@ -11,28 +10,11 @@ import {
 interface Props {
   data: SurveyFormData;
   onChange: (patch: Partial<SurveyFormData>) => void;
-  restaurants: RestaurantInfo[];
 }
 
-export default function StepDining({ data, onChange, restaurants }: Props) {
-  const openCount = restaurants.filter((r) => r.open_time).length;
-
+export default function StepDining({ data, onChange }: Props) {
   return (
     <>
-      {restaurants.length > 0 && (
-        <div style={{
-          background: '#E3F0FC',
-          borderRadius: 'var(--radius-sm)',
-          padding: '12px 16px',
-          marginBottom: 16,
-          fontSize: 'var(--text-xs)',
-          color: 'var(--color-primary-dark)',
-          fontWeight: 600,
-        }}>
-          来園日は {openCount} 店舗が営業予定です
-        </div>
-      )}
-
       <QuestionCard label="Q20. モーニングはどうする？">
         <SingleSelect
           name="morning_meal"

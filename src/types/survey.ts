@@ -1,23 +1,35 @@
 // アンケート回答データの型定義
 
+export interface VisitDateEntry {
+  date: string;       // YYYY-MM-DD
+  start_time: string; // 朝から / 昼から / 14時から(貸切イベント) / 15時から
+}
+
+export interface ChildHeightEntry {
+  label: string;   // "小学3年生" or "3歳"
+  height: string;  // "120" etc
+}
+
 export interface SurveyFormData {
   // Step 1: 基本情報
   name: string;                    // Q1
   service_type: string;            // Q2
-  visit_date: string;              // Q3 (YYYY-MM-DD)
+  visit_dates: VisitDateEntry[];   // Q3 (複数日+各日の開始時間)
 
   // Step 2: 参加メンバー
   party: PartyInfo;                // Q4
-  child_heights: string;           // Q5
+  elementary_grades: number[];     // Q4: 各小学生の学年 (1-6)
+  young_children_ages: number[];   // Q4: 各幼児の年齢 (0-6)
+  child_heights: ChildHeightEntry[]; // Q5
 
   // Step 3: 宿泊・交通・チケット・EP
   accommodation: string;           // Q6
   transportation: string;          // Q7
   tickets: string[];               // Q8
+  ticket_other_comment: string;    // Q8: その他コメント
   express_pass: string;            // Q9
 
-  // Step 4: スケジュール
-  start_time: string;              // Q10
+  // Step 4: スケジュール (Q10削除)
   lineup_time: string;             // Q11
   end_time: string;                // Q12
 
@@ -49,6 +61,8 @@ export interface SurveyFormData {
   special_requests: string;        // Q31
   unknown_terms: string[];         // Q32
   referral_source: string[];       // Q33
+  referral_introducer: string;     // Q33: Instagram発信者名
+  referral_acquaintance: string;   // Q33: 知り合いのアカウント
   meet_ok: string;                 // Q34
 }
 
@@ -56,33 +70,31 @@ export interface PartyInfo {
   adults: number;
   highschool: number;
   middleschool: number;
-  elementary_upper: number;  // 小学4-6
-  elementary_lower: number;  // 小学1-3
-  preschool: number;         // 5-6歳
-  toddler: number;           // 0-4歳
+  elementary: number;       // 小学生（合算）
+  young_children: number;   // 0〜6歳（合算）
 }
 
 export const EMPTY_PARTY: PartyInfo = {
   adults: 0,
   highschool: 0,
   middleschool: 0,
-  elementary_upper: 0,
-  elementary_lower: 0,
-  preschool: 0,
-  toddler: 0,
+  elementary: 0,
+  young_children: 0,
 };
 
 export const INITIAL_SURVEY: SurveyFormData = {
   name: '',
   service_type: '',
-  visit_date: '',
+  visit_dates: [],
   party: { ...EMPTY_PARTY },
-  child_heights: '',
+  elementary_grades: [],
+  young_children_ages: [],
+  child_heights: [],
   accommodation: '',
   transportation: '',
   tickets: [],
+  ticket_other_comment: '',
   express_pass: '',
-  start_time: '',
   lineup_time: '',
   end_time: '',
   favorite_characters: [],
@@ -106,6 +118,8 @@ export const INITIAL_SURVEY: SurveyFormData = {
   special_requests: '',
   unknown_terms: [],
   referral_source: [],
+  referral_introducer: '',
+  referral_acquaintance: '',
   meet_ok: '',
 };
 

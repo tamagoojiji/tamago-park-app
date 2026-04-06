@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { SurveyFormData } from '../../../types/survey';
+import type { SurveyFormData, ChildHeightEntry } from '../../../types/survey';
 import type { ClosureEntry } from '../../../data/closures';
 import type { HeightRestriction } from '../../../data/height-restrictions';
 import { heightRestrictions } from '../../../data/height-restrictions';
@@ -18,10 +18,11 @@ interface Props {
   closures: ClosureEntry[];
 }
 
-// 身長をパースしてリスト化（"110cm, 95cm" → [110, 95]）
-function parseHeights(text: string): number[] {
-  const nums = text.match(/\d+/g);
-  return nums ? nums.map(Number) : [];
+// ChildHeightEntry[] から身長数値リストを取得
+function extractHeights(entries: ChildHeightEntry[]): number[] {
+  return entries
+    .map((e) => parseInt(e.height, 10))
+    .filter((n) => !isNaN(n) && n > 0);
 }
 
 // アトラクションの身長制限を取得
@@ -32,7 +33,7 @@ function getRestriction(name: string): HeightRestriction | undefined {
 }
 
 export default function StepAttractions({ data, onChange, closures }: Props) {
-  const childHeights = useMemo(() => parseHeights(data.child_heights), [data.child_heights]);
+  const childHeights = useMemo(() => extractHeights(data.child_heights), [data.child_heights]);
   const minChildHeight = childHeights.length > 0 ? Math.min(...childHeights) : null;
 
   const closedNames = useMemo(
@@ -40,9 +41,9 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
     [closures]
   );
 
-  // アトラクション選択肢にバッジを付与
-  const buildOptions = (opts: readonly string[]): MultiSelectOption[] =>
-    opts.map((name) => {
+  // アトラクション選択肢にバッジを付与（休止中は一番下へ）
+  const buildOptions = (opts: readonly string[]): MultiSelectOption[] => {
+    const mapped = opts.map((name) => {
       const isClosed = closedNames.has(name);
       const restriction = getRestriction(name);
       const minRequired = restriction
@@ -61,6 +62,8 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
         badgeType: isClosed ? 'closed' as const : heightWarning ? 'height' as const : undefined,
       };
     });
+    return mapped.sort((a, b) => (a.disabled ? 1 : 0) - (b.disabled ? 1 : 0));
+  };
 
   return (
     <>
