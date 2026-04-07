@@ -190,7 +190,7 @@ export default function SurveyPage() {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
-          <h1 className={styles.title}>プランニングアンケート</h1>
+          <h1 className={styles.title}>プランニング依頼者専用</h1>
           <p style={{ textAlign: 'center', color: 'var(--color-text-sub)', fontSize: 'var(--text-sm)', marginBottom: 16 }}>
             パスワードを入力してください
           </p>
@@ -238,7 +238,7 @@ export default function SurveyPage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>プランニングアンケート</h1>
+        <h1 className={styles.title}>プランニング依頼者専用</h1>
 
         <ProgressBar currentStep={step} />
 

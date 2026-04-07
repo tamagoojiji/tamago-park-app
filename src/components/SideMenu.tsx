@@ -4,7 +4,7 @@ import styles from './SideMenu.module.css';
 
 const menuItems: MenuItem[] = [
   { id: 'home', label: 'ホーム', path: '/', icon: '🏠' },
-  { id: 'survey', label: 'プランニングアンケート', path: '/survey', icon: '📝' },
+  { id: 'survey', label: 'プランニング依頼者専用', path: '/survey', icon: '📝' },
   { id: 'myplan', label: 'マイプラン作成', path: '/myplan', icon: '📋' },
   { id: 'myplan-history', label: 'マイプラン履歴', path: '/myplan/history', icon: '📂' },
   { id: 'planning', label: 'ショースケジュール', path: '/planning', icon: '🎭' },

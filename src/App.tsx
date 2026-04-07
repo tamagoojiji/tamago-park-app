@@ -12,6 +12,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import WelcomePage from './pages/WelcomePage';
 import ProfilePage from './pages/ProfilePage';
 import HeightPage from './pages/HeightPage';
+import PlanningPortalPage from './pages/survey/PlanningPortalPage';
 import SurveyPage from './pages/survey/SurveyPage';
 import SurveyCompletePage from './pages/survey/SurveyCompletePage';
 import MyPlanPage from './pages/myplan/MyPlanPage';
@@ -109,7 +110,8 @@ export default function App() {
         <Route path="/profile" element={<ProfilePage />} />
 
         {/* 保護ページ（ログイン必須） */}
-        <Route path="/survey" element={<ProtectedRoute><SurveyPage /></ProtectedRoute>} />
+        <Route path="/survey" element={<ProtectedRoute><PlanningPortalPage /></ProtectedRoute>} />
+        <Route path="/survey/form" element={<ProtectedRoute><SurveyPage /></ProtectedRoute>} />
         <Route path="/survey/complete" element={<ProtectedRoute><SurveyCompletePage /></ProtectedRoute>} />
         <Route path="/planning" element={<ProtectedRoute><PlanningPage /></ProtectedRoute>} />
         <Route path="/myplan" element={<ProtectedRoute><MyPlanPage /></ProtectedRoute>} />
