@@ -43,16 +43,19 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
   );
 
   // アトラクション選択肢にバッジを付与（休止中は一番下へ）
-  const buildOptions = (opts: readonly string[], showYoyakunori = false): MultiSelectOption[] => {
+  const buildOptions = (opts: readonly string[], showYoyakunori = false, useWithAdult = false): MultiSelectOption[] => {
     const mapped = opts.map((name) => {
       const isClosed = closedNames.has(name);
       const restriction = getRestriction(name);
       const minRequired = restriction
-        ? Math.min(restriction.aloneMin || 999, restriction.withAdultMin || 999)
+        ? useWithAdult
+          ? (restriction.withAdultMin || 0)
+          : Math.min(restriction.aloneMin || 999, restriction.withAdultMin || 999)
         : 0;
       const heightWarning = minChildHeight !== null && minRequired > 0 && minChildHeight < minRequired;
       const isYoyakunori = showYoyakunori && YOYAKUNORI_ATTRACTIONS.has(name);
-      const displayLabel = isYoyakunori ? `${name}（よやくのり対象）` : name;
+      const heightLabel = useWithAdult && restriction?.withAdultMin ? ` [${restriction.withAdultMin}cm〜]` : '';
+      const displayLabel = (isYoyakunori ? `${name}（よやくのり対象）` : name) + heightLabel;
 
       return {
         value: name,
@@ -99,9 +102,15 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
       </QuestionCard>
 
       <QuestionCard label="Q16. このアトラクションは外せない！（キッズ系）">
+        <div style={{
+          background: '#E3F0FC', borderRadius: 'var(--radius-sm)',
+          padding: '8px 12px', marginBottom: 10, fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-primary-dark)',
+        }}>
+          ※ 同伴者ありの場合の身長制限です
+        </div>
         <MultiSelect
           name="kids_attractions"
-          options={buildOptions(KIDS_ATTRACTION_OPTIONS, true)}
+          options={buildOptions(KIDS_ATTRACTION_OPTIONS, true, true)}
           values={data.kids_attractions}
           onChange={(v) => onChange({ kids_attractions: v })}
         />

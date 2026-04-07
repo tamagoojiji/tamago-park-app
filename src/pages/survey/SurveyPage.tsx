@@ -71,6 +71,7 @@ export default function SurveyPage() {
   // 自動反映データ
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
+  const [showsLoaded, setShowsLoaded] = useState(false);
   const [_restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const fetchedDateRef = useRef('');
 
@@ -91,9 +92,11 @@ export default function SurveyPage() {
       setClosures(getClosuresForDate(data, primaryDate));
     });
 
+    setShowsLoaded(false);
     fetchShows(primaryDate).then((result) => {
       setShows(result.shows);
-    }).catch(() => setShows([]));
+      setShowsLoaded(true);
+    }).catch(() => { setShows([]); setShowsLoaded(true); });
 
     fetchRestaurants(primaryDate).then((result) => {
       setRestaurants(result.restaurants);
@@ -169,6 +172,7 @@ export default function SurveyPage() {
             data={formData}
             onChange={handleChange}
             shows={shows}
+            showsLoaded={showsLoaded}
           />
         );
       case 6:

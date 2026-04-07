@@ -9,6 +9,7 @@ interface Props {
   data: SurveyFormData;
   onChange: (patch: Partial<SurveyFormData>) => void;
   shows: ShowData[];
+  showsLoaded: boolean;
 }
 
 // 常設ショー名のセット（部分一致判定用）
@@ -25,7 +26,7 @@ function isPermanent(showName: string): boolean {
   return false;
 }
 
-export default function StepEntertainment({ data, onChange, shows }: Props) {
+export default function StepEntertainment({ data, onChange, shows, showsLoaded }: Props) {
   // 常設ショー選択肢にステータスバッジを付与
   const showOptions: MultiSelectOption[] = useMemo(() => {
     if (shows.length === 0) return SHOW_OPTIONS.map((name) => ({ value: name }));
@@ -70,7 +71,7 @@ export default function StepEntertainment({ data, onChange, shows }: Props) {
 
       <QuestionCard
         label="Q18. ショーやパレードは見たい？（季節・期間限定）"
-        note={seasonalOptions.length > 0 ? `来園日に${seasonalOptions.length}件の季節ショーが開催中` : 'ショー情報を読み込み中...'}
+        note={seasonalOptions.length > 0 ? `来園日に${seasonalOptions.length}件の季節ショーが開催中` : showsLoaded ? 'この日のショー情報はまだ公開されていません' : 'ショー情報を読み込み中...'}
       >
         <MultiSelect
           name="seasonal_events"
