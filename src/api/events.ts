@@ -3,6 +3,7 @@ const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-wo
 export interface ParkEvent {
   id: number;
   date: string;
+  end_date: string | null;
   name: string;
   summary: string | null;
   category: 'event' | 'private' | 'other';
@@ -50,18 +51,22 @@ export async function fetchAllEvents(): Promise<ParkEvent[]> {
   return fetchPromise;
 }
 
-export function getEventsForDate(events: ParkEvent[], date: string): ParkEvent[] {
-  return events.filter(e => e.date === date);
+// イベントが指定日に該当するか（期間対応）
+function isEventOnDate(event: ParkEvent, date: string): boolean {
+  if (event.end_date) {
+    return date >= event.date && date <= event.end_date;
+  }
+  return event.date === date;
 }
 
-export function getPrivateEventsForDate(events: ParkEvent[], date: string): ParkEvent[] {
-  return events.filter(e => e.date === date && e.category === 'private');
+export function getEventsForDate(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e => isEventOnDate(e, date));
 }
 
 export function hasEventOnDate(events: ParkEvent[], date: string): boolean {
-  return events.some(e => e.date === date);
+  return events.some(e => isEventOnDate(e, date));
 }
 
 export function hasPrivateEventOnDate(events: ParkEvent[], date: string): boolean {
-  return events.some(e => e.date === date && e.category === 'private');
+  return events.some(e => isEventOnDate(e, date) && e.category === 'private');
 }
