@@ -118,14 +118,14 @@ export default function SurveyPage() {
   const handleNext = () => {
     if (step < STEPS.length - 1) {
       setStep(step + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => window.scrollTo({ top: 0 }), 0);
     }
   };
 
   const handlePrev = () => {
     if (step > 0) {
       setStep(step - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => window.scrollTo({ top: 0 }), 0);
     }
   };
 
