@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './PlanningPortalPage.module.css';
+
+const PW_KEY = 'tamago_survey_pw';
+const SURVEY_PW = 'tamago1216';
 
 const menuItems = [
   {
@@ -20,6 +24,41 @@ const menuItems = [
 
 export default function PlanningPortalPage() {
   const navigate = useNavigate();
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(PW_KEY) === 'ok');
+  const [pwInput, setPwInput] = useState('');
+  const [pwError, setPwError] = useState('');
+
+  const handleUnlock = () => {
+    if (pwInput === SURVEY_PW) {
+      sessionStorage.setItem(PW_KEY, 'ok');
+      setUnlocked(true);
+    } else {
+      setPwError('パスワードが違います');
+    }
+  };
+
+  if (!unlocked) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <h1 className={styles.title}>プランニング依頼者専用</h1>
+          <p className={styles.subtitle}>パスワードを入力してください</p>
+          <input
+            type="password"
+            value={pwInput}
+            onChange={(e) => setPwInput(e.target.value)}
+            placeholder="パスワード"
+            className={styles.pwInput}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock(); }}
+          />
+          {pwError && <div className={styles.error}>{pwError}</div>}
+          <button className={styles.unlockButton} onClick={handleUnlock}>
+            開く
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
