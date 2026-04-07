@@ -16,6 +16,15 @@ import SurveyPage from './pages/survey/SurveyPage';
 import SurveyCompletePage from './pages/survey/SurveyCompletePage';
 import MyPlanPage from './pages/myplan/MyPlanPage';
 import MyPlanHistoryPage from './pages/myplan/MyPlanHistoryPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminSurveysPage from './pages/admin/AdminSurveysPage';
+import AdminShowsPage from './pages/admin/AdminShowsPage';
+import AdminEventsPage from './pages/admin/AdminEventsPage';
+import AdminStatsPage from './pages/admin/AdminStatsPage';
+import AdminLayout from './components/admin/AdminLayout';
+import { hasAdminToken } from './api/admin';
 import { useAuth } from './contexts/AuthContext';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
@@ -36,11 +45,35 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
+  if (!hasAdminToken()) {
+    return <Navigate to="/admin" replace />;
+  }
+  return <>{children}</>;
+}
+
 export default function App() {
   const location = useLocation();
   const { isLoading } = useAuth();
 
   const isFullscreen = FULLSCREEN_PATHS.includes(location.pathname);
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  if (isAdmin) {
+    return (
+      <Routes>
+        <Route path="/admin" element={<AdminLoginPage />} />
+        <Route element={<AdminProtectedRoute><AdminLayout /></AdminProtectedRoute>}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/surveys" element={<AdminSurveysPage />} />
+          <Route path="/admin/shows" element={<AdminShowsPage />} />
+          <Route path="/admin/events" element={<AdminEventsPage />} />
+          <Route path="/admin/stats" element={<AdminStatsPage />} />
+        </Route>
+      </Routes>
+    );
+  }
 
   if (isFullscreen) {
     return (
