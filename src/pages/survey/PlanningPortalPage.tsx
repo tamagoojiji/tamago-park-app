@@ -4,8 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { apiFetch } from '../../api/config';
 import styles from './PlanningPortalPage.module.css';
 
-const PW_KEY = 'tamago_survey_pw';
-const SURVEY_PW = 'tamago1216';
+const FRIEND_KEY = 'tamago_planning_friend';
 
 const menuItems = [
   {
@@ -27,14 +26,11 @@ const menuItems = [
 export default function PlanningPortalPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(PW_KEY) === 'ok');
-  const [checking, setChecking] = useState(!unlocked);
-  const [pwInput, setPwInput] = useState('');
-  const [pwError, setPwError] = useState('');
+  const [isFriend, setIsFriend] = useState(() => sessionStorage.getItem(FRIEND_KEY) === 'ok');
+  const [checking, setChecking] = useState(!isFriend);
 
-  // 友だち判定で自動解除
   useEffect(() => {
-    if (unlocked || !token) {
+    if (isFriend || !token) {
       setChecking(false);
       return;
     }
@@ -43,22 +39,13 @@ export default function PlanningPortalPage() {
     })
       .then((res) => {
         if (res.is_friend) {
-          sessionStorage.setItem(PW_KEY, 'ok');
-          setUnlocked(true);
+          sessionStorage.setItem(FRIEND_KEY, 'ok');
+          setIsFriend(true);
         }
       })
       .catch(() => {})
       .finally(() => setChecking(false));
-  }, [token, unlocked]);
-
-  const handleUnlock = () => {
-    if (pwInput === SURVEY_PW) {
-      sessionStorage.setItem(PW_KEY, 'ok');
-      setUnlocked(true);
-    } else {
-      setPwError('パスワードが違います');
-    }
-  };
+  }, [token, isFriend]);
 
   if (checking) {
     return (
@@ -71,24 +58,13 @@ export default function PlanningPortalPage() {
     );
   }
 
-  if (!unlocked) {
+  if (!isFriend) {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.title}>プランニング依頼者専用</h1>
-          <p className={styles.subtitle}>パスワードを入力してください</p>
-          <input
-            type="password"
-            value={pwInput}
-            onChange={(e) => setPwInput(e.target.value)}
-            placeholder="パスワード"
-            className={styles.pwInput}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock(); }}
-          />
-          {pwError && <div className={styles.error}>{pwError}</div>}
-          <button className={styles.unlockButton} onClick={handleUnlock}>
-            開く
-          </button>
+          <p className={styles.subtitle}>このページはプランニング依頼者専用です</p>
+          <p className={styles.lockedDesc}>プランニングをご依頼いただいた方のみアクセスできます。</p>
         </div>
       </div>
     );
