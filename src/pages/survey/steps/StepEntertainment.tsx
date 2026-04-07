@@ -3,7 +3,7 @@ import type { SurveyFormData } from '../../../types/survey';
 import type { ShowData } from '../../../api/shows';
 import QuestionCard from '../components/QuestionCard';
 import { MultiSelect, type MultiSelectOption } from '../components/FormComponents';
-import { SHOW_OPTIONS, GREETING_OPTIONS } from '../../../data/survey-options';
+import { SHOW_OPTIONS, SEASONAL_SHOW_OPTIONS, GREETING_OPTIONS } from '../../../data/survey-options';
 
 interface Props {
   data: SurveyFormData;
@@ -42,13 +42,25 @@ export default function StepEntertainment({ data, onChange, shows, showsLoaded }
     });
   }, [shows]);
 
-  // 季節系 = shows APIの全ショーから常設を除外
+  // 季節系: 定数リストをベースに、shows APIデータがあれば公演有無バッジ付与
   const seasonalOptions: MultiSelectOption[] = useMemo(() => {
-    if (shows.length === 0) return [];
-    return shows
-      .filter((s) => !isPermanent(s.name))
-      .map((s) => ({ value: s.name }));
-  }, [shows]);
+    // APIにしかない季節ショー（定数リストにないもの）も追加
+    const apiOnlyShows = shows
+      .filter((s) => !isPermanent(s.name) && !SEASONAL_SHOW_OPTIONS.some(opt => s.name.includes(opt) || opt.includes(s.name)))
+      .map((s) => s.name);
+
+    const allNames = [...SEASONAL_SHOW_OPTIONS, ...apiOnlyShows];
+
+    return allNames.map((name) => {
+      if (!showsLoaded || shows.length === 0) return { value: name };
+      const isActive = shows.some(s => s.name.includes(name) || name.includes(s.name));
+      return {
+        value: name,
+        badge: isActive ? undefined : 'この日は公演なし',
+        badgeType: isActive ? undefined : 'closed' as const,
+      };
+    });
+  }, [shows, showsLoaded]);
 
   const permanentActiveCount = useMemo(
     () => shows.filter((s) => isPermanent(s.name)).length,
@@ -71,7 +83,6 @@ export default function StepEntertainment({ data, onChange, shows, showsLoaded }
 
       <QuestionCard
         label="Q18. ショーやパレードは見たい？（季節・期間限定）"
-        note={seasonalOptions.length > 0 ? `来園日に${seasonalOptions.length}件の季節ショーが開催中` : showsLoaded ? 'この日のショー情報はまだ公開されていません' : 'ショー情報を読み込み中...'}
       >
         <MultiSelect
           name="seasonal_events"
