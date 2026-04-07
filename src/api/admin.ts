@@ -130,4 +130,20 @@ export const adminApi = {
   deleteEvent(id: number) {
     return adminFetch<{ success: boolean }>(`/admin/events/${id}`, { method: 'DELETE' });
   },
+
+  analytics(days = 30) {
+    return adminFetch<{
+      period: { from: string; to: string; days: number };
+      access: {
+        total: number;
+        uniqueUsers: number;
+        topEndpoints: { path: string; count: number; unique_users: number }[];
+        daily: { date: string; count: number; unique_users: number }[];
+      };
+      conversions: {
+        summary: { event_type: string; count: number; unique_users: number }[];
+        daily: { date: string; event_type: string; count: number }[];
+      };
+    }>(`/admin/analytics?days=${days}`);
+  },
 };
