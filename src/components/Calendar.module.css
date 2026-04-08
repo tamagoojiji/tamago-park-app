@@ -430,6 +430,65 @@
   font-weight: 600;
 }
 
+/* イベント一覧 */
+.eventListWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eventGroupLabel {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-text);
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.eventCard {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid var(--color-primary);
+}
+
+.eventCardUpcoming {
+  border-left-color: var(--color-text-sub);
+  opacity: 0.85;
+}
+
+.eventCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.eventCardEmoji {
+  font-size: var(--text-base);
+}
+
+.eventCardName {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.eventCardPeriod {
+  font-size: var(--text-xxs);
+  color: var(--color-primary);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.eventCardSummary {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
 /* タブ */
 .tabs {
   display: grid;
