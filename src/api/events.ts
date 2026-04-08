@@ -93,6 +93,21 @@ export function hasPrivateEventOnDate(events: ParkEvent[], date: string): boolea
   return events.some(e => isEventOnDate(e, date) && e.category === 'private');
 }
 
+// 期間限定イベント（初日・最終日以外）: 期間中で開催中のもの
+export function getOngoingLimitedEvents(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e =>
+    e.category !== 'private' &&
+    e.end_date &&
+    date > e.date &&
+    date < e.end_date
+  );
+}
+
+// 単発イベント: end_dateなしでその日に該当
+export function getSingleDayEvents(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e => !e.end_date && e.date === date && e.category !== 'private');
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));
