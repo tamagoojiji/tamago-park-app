@@ -111,7 +111,9 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
                 <span className={styles.checkItemPlaceholder}>✨</span>
               </span>
               <span className={styles.checkItemLabel}>
-                {evt.name}
+                {evt.official_url ? (
+                  <a href={evt.official_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>{evt.name}</a>
+                ) : evt.name}
                 <span className={styles.limitedBadge}>期間限定</span>
               </span>
             </label>

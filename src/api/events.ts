@@ -8,6 +8,7 @@ export interface ParkEvent {
   summary: string | null;
   category: 'event' | 'private' | 'other';
   sub_category: 'event' | 'attraction' | 'show';
+  official_url: string | null;
   status: string;
   created_at: string;
   updated_at: string;

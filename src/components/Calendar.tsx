@@ -477,13 +477,18 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       <span className={styles.eventCardBadge} data-type={isStart(evt) ? 'start' : 'end'}>
                         {isStart(evt) ? '開始' : '終了'}
                       </span>
-                      <span className={styles.eventCardName}>{evt.name}</span>
+                      {evt.official_url ? (
+                        <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
+                      ) : (
+                        <span className={styles.eventCardName}>{evt.name}</span>
+                      )}
                     </div>
                     <div className={styles.eventCardMeta}>
                       <span className={styles.eventCardPeriod}>📅 {formatPeriod(evt)}</span>
                       <span className={styles.eventCardType}>{subCatLabel(evt.sub_category)}</span>
                     </div>
                     {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
+                    {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
                   </div>
                 ))}
               </div>
@@ -544,8 +549,13 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     <div className={styles.eventGroupLabel}>🎭 期間限定ショー</div>
                     {limitedShows.map(evt => (
                       <div key={evt.id} className={styles.showItem}>
-                        <div className={styles.showName}>✨ {evt.name}</div>
+                        <div className={styles.showName}>
+                          ✨ {evt.official_url ? (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
+                          ) : evt.name}
+                        </div>
                         {evt.summary && <div className={styles.showHoldInfo}>{evt.summary}</div>}
+                        {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
                       </div>
                     ))}
                   </>

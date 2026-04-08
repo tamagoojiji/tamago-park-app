@@ -512,6 +512,20 @@
   font-weight: 700;
 }
 
+.eventCardLink {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.eventCardHint {
+  font-size: 10px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
 .eventCardSummary {
   font-size: var(--text-xxs);
   color: var(--color-text-sub);
