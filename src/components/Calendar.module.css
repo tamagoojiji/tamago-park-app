@@ -482,6 +482,36 @@
   margin-bottom: 4px;
 }
 
+.eventCardEnding {
+  border-left-color: #e74c3c;
+}
+
+.eventCardBadge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.eventCardBadge[data-type="end"] {
+  background: #e74c3c;
+}
+
+.eventCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.eventCardType {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  font-weight: 700;
+}
+
 .eventCardSummary {
   font-size: var(--text-xxs);
   color: var(--color-text-sub);

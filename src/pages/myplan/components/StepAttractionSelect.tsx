@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { heightRestrictions } from '../../../data/height-restrictions';
 import type { ClosureEntry } from '../../../data/closures';
 import { fetchClosures, getClosuresForDate } from '../../../data/closures';
+import { fetchAllEvents, getLimitedAttractions, type ParkEvent } from '../../../api/events';
 import styles from './components.module.css';
 
 interface Props {
@@ -12,12 +13,16 @@ interface Props {
 
 export default function StepAttractionSelect({ date, selected, onChange }: Props) {
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
+  const [limitedAttractions, setLimitedAttractions] = useState<ParkEvent[]>([]);
 
   useEffect(() => {
     if (!date) return;
     let cancelled = false;
     fetchClosures().then((data) => {
       if (!cancelled) setClosures(getClosuresForDate(data, date));
+    });
+    fetchAllEvents().then((events) => {
+      if (!cancelled) setLimitedAttractions(getLimitedAttractions(events, date));
     });
     return () => { cancelled = true; };
   }, [date]);
@@ -90,6 +95,29 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
         </div>
         );
       })}
+
+      {/* 期間限定アトラクション */}
+      {limitedAttractions.length > 0 && (
+        <div className={styles.areaGroup}>
+          <h3 className={styles.areaTitle}>✨ 期間限定アトラクション</h3>
+          {limitedAttractions.map((evt) => (
+            <label key={evt.id} className={styles.checkItem}>
+              <input
+                type="checkbox"
+                checked={selected.includes(evt.name)}
+                onChange={() => toggle(evt.name)}
+              />
+              <span className={styles.checkItemImage}>
+                <span className={styles.checkItemPlaceholder}>✨</span>
+              </span>
+              <span className={styles.checkItemLabel}>
+                {evt.name}
+                <span className={styles.limitedBadge}>期間限定</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

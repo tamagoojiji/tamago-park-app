@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { fetchAllEvents, getEventsForDate, hasPrivateEventOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
+import { fetchAllEvents, getEventsForDate, getEventStartEndForDate, hasPrivateEventOnDate, hasEventStartOrEndOnDate, getLimitedShows, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { getHoldMinutes } from '../data/shows';
 import styles from './Calendar.module.css';
@@ -274,7 +274,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     {activeTab === 'private' && hasPrivateEventOnDate(parkEvents, dateStr) && (
                       <span className={styles.privateLabel}>貸切</span>
                     )}
-                    {activeTab === 'events' && hasEventOnDate(parkEvents, dateStr) && (
+                    {activeTab === 'events' && hasEventStartOrEndOnDate(parkEvents, dateStr) && (
                       <span className={styles.showAvailableLabel}>🎪</span>
                     )}
                     {activeTab === 'shows' && availableDates.includes(dateStr) && (
@@ -350,16 +350,16 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             </span>
           </div>
 
-          {/* イベント */}
+          {/* イベント（開始・終了日のみ） */}
           <div className={styles.infoRow}>
             <span className={styles.infoIcon}>🎉</span>
             <span className={styles.infoLabel}>イベント</span>
             {(() => {
-              const dayEvents = getEventsForDate(parkEvents, selectedDate).filter(e => e.category !== 'private');
+              const dayEvents = getEventStartEndForDate(parkEvents, selectedDate);
               return dayEvents.length > 0 ? (
                 <div className={styles.infoValueCol}>
                   {dayEvents.map(e => (
-                    <span key={e.id}>{e.name}</span>
+                    <span key={e.id}>{e.date === selectedDate ? '🆕' : '🔚'} {e.name}</span>
                   ))}
                 </div>
               ) : (
@@ -450,10 +450,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           {parkEvents.length === 0 ? (
             <p className={styles.tabPlaceholder}>イベント情報はまだありません</p>
           ) : (() => {
-            const nowStr = today;
-            const activeEvents = parkEvents.filter(e => e.category !== 'private' && (e.end_date ? e.end_date >= nowStr : e.date >= nowStr) && e.date <= (e.end_date || e.date));
-            const ongoingEvents = activeEvents.filter(e => e.date <= nowStr && (!e.end_date || e.end_date >= nowStr));
-            const upcomingEvents = activeEvents.filter(e => e.date > nowStr);
+            const dateStr = selectedDate || today;
+            const dayEvents = getEventStartEndForDate(parkEvents, dateStr);
 
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
@@ -464,43 +462,30 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               return fmt(e.date);
             };
 
-            const categoryEmoji = (c: string) => c === 'private' ? '🔒' : c === 'other' ? '📋' : '🎪';
+            const subCatLabel = (sc: string) => sc === 'attraction' ? '🎢 アトラクション' : sc === 'show' ? '🎭 ショー' : '🎪 イベント';
+            const isStart = (e: ParkEvent) => e.date === dateStr;
 
-            return (
+            return dayEvents.length === 0 ? (
+              <p className={styles.tabPlaceholder}>
+                {new Date(dateStr + 'T00:00:00').toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })}に開始・終了するイベントはありません
+              </p>
+            ) : (
               <div className={styles.eventListWrap}>
-                {ongoingEvents.length > 0 && (
-                  <>
-                    <div className={styles.eventGroupLabel}>🟢 開催中</div>
-                    {ongoingEvents.map(evt => (
-                      <div key={evt.id} className={styles.eventCard}>
-                        <div className={styles.eventCardHeader}>
-                          <span className={styles.eventCardEmoji}>{categoryEmoji(evt.category)}</span>
-                          <span className={styles.eventCardName}>{evt.name}</span>
-                        </div>
-                        <div className={styles.eventCardPeriod}>📅 {formatPeriod(evt)}</div>
-                        {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
-                      </div>
-                    ))}
-                  </>
-                )}
-                {upcomingEvents.length > 0 && (
-                  <>
-                    <div className={styles.eventGroupLabel}>🔜 今後のイベント</div>
-                    {upcomingEvents.map(evt => (
-                      <div key={evt.id} className={`${styles.eventCard} ${styles.eventCardUpcoming}`}>
-                        <div className={styles.eventCardHeader}>
-                          <span className={styles.eventCardEmoji}>{categoryEmoji(evt.category)}</span>
-                          <span className={styles.eventCardName}>{evt.name}</span>
-                        </div>
-                        <div className={styles.eventCardPeriod}>📅 {formatPeriod(evt)}</div>
-                        {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
-                      </div>
-                    ))}
-                  </>
-                )}
-                {ongoingEvents.length === 0 && upcomingEvents.length === 0 && (
-                  <p className={styles.tabPlaceholder}>現在開催中・今後のイベントはありません</p>
-                )}
+                {dayEvents.map(evt => (
+                  <div key={evt.id} className={`${styles.eventCard} ${isStart(evt) ? '' : styles.eventCardEnding}`}>
+                    <div className={styles.eventCardHeader}>
+                      <span className={styles.eventCardBadge} data-type={isStart(evt) ? 'start' : 'end'}>
+                        {isStart(evt) ? '開始' : '終了'}
+                      </span>
+                      <span className={styles.eventCardName}>{evt.name}</span>
+                    </div>
+                    <div className={styles.eventCardMeta}>
+                      <span className={styles.eventCardPeriod}>📅 {formatPeriod(evt)}</span>
+                      <span className={styles.eventCardType}>{subCatLabel(evt.sub_category)}</span>
+                    </div>
+                    {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
+                  </div>
+                ))}
               </div>
             );
           })()}
@@ -551,6 +536,21 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   )}
                 </div>
               ))}
+              {/* 期間限定ショー */}
+              {(() => {
+                const limitedShows = getLimitedShows(parkEvents, scheduleDate || today);
+                return limitedShows.length > 0 ? (
+                  <>
+                    <div className={styles.eventGroupLabel}>🎭 期間限定ショー</div>
+                    {limitedShows.map(evt => (
+                      <div key={evt.id} className={styles.showItem}>
+                        <div className={styles.showName}>✨ {evt.name}</div>
+                        {evt.summary && <div className={styles.showHoldInfo}>{evt.summary}</div>}
+                      </div>
+                    ))}
+                  </>
+                ) : null;
+              })()}
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ export interface ParkEvent {
   name: string;
   summary: string | null;
   category: 'event' | 'private' | 'other';
+  sub_category: 'event' | 'attraction' | 'show';
   status: string;
   created_at: string;
   updated_at: string;
@@ -59,8 +60,25 @@ function isEventOnDate(event: ParkEvent, date: string): boolean {
   return event.date === date;
 }
 
+// イベントタブ用: 初日または最終日のみ該当
+export function isEventStartOrEnd(event: ParkEvent, date: string): boolean {
+  if (event.date === date) return true;
+  if (event.end_date && event.end_date === date) return true;
+  return false;
+}
+
 export function getEventsForDate(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => isEventOnDate(e, date));
+}
+
+// イベントタブ用: 全種別の初日・最終日のみ
+export function getEventStartEndForDate(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e => e.category !== 'private' && isEventStartOrEnd(e, date));
+}
+
+// カレンダーセル用: イベントタブで表示する日（初日or最終日）
+export function hasEventStartOrEndOnDate(events: ParkEvent[], date: string): boolean {
+  return events.some(e => e.category !== 'private' && isEventStartOrEnd(e, date));
 }
 
 export function hasEventOnDate(events: ParkEvent[], date: string): boolean {
@@ -69,4 +87,14 @@ export function hasEventOnDate(events: ParkEvent[], date: string): boolean {
 
 export function hasPrivateEventOnDate(events: ParkEvent[], date: string): boolean {
   return events.some(e => isEventOnDate(e, date) && e.category === 'private');
+}
+
+// 期間限定アトラクション: 期間中のもの
+export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));
+}
+
+// 期間限定ショー: 期間中のもの
+export function getLimitedShows(events: ParkEvent[], date: string): ParkEvent[] {
+  return events.filter(e => e.sub_category === 'show' && isEventOnDate(e, date));
 }

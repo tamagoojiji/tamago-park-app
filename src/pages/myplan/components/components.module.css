@@ -211,6 +211,17 @@
   border-radius: 4px;
 }
 
+.limitedBadge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--text-tiny);
+  font-weight: 700;
+  border-radius: 4px;
+}
+
 .showTimesHint {
   display: block;
   font-size: var(--text-tiny);
