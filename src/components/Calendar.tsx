@@ -483,12 +483,41 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                         <span className={styles.eventCardName}>{evt.name}</span>
                       )}
                     </div>
-                    <div className={styles.eventCardMeta}>
-                      <span className={styles.eventCardPeriod}>📅 {formatPeriod(evt)}</span>
-                      <span className={styles.eventCardType}>{subCatLabel(evt.sub_category)}</span>
-                    </div>
-                    {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
                     {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
+                    <div className={styles.eventDetailGrid}>
+                      <div className={styles.eventDetailRow}>
+                        <span className={styles.eventDetailLabel}>期間</span>
+                        <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                      </div>
+                      <div className={styles.eventDetailRow}>
+                        <span className={styles.eventDetailLabel}>種別</span>
+                        <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                      </div>
+                      {evt.location && (
+                        <div className={styles.eventDetailRow}>
+                          <span className={styles.eventDetailLabel}>開催場所</span>
+                          <span className={styles.eventDetailValue}>{evt.location}</span>
+                        </div>
+                      )}
+                      {evt.duration && (
+                        <div className={styles.eventDetailRow}>
+                          <span className={styles.eventDetailLabel}>所要時間</span>
+                          <span className={styles.eventDetailValue}>{evt.duration}</span>
+                        </div>
+                      )}
+                      {evt.age_restriction && (
+                        <div className={styles.eventDetailRow}>
+                          <span className={styles.eventDetailLabel}>年齢制限</span>
+                          <span className={styles.eventDetailValue}>{evt.age_restriction}</span>
+                        </div>
+                      )}
+                      {evt.summary && (
+                        <div className={styles.eventDetailRow}>
+                          <span className={styles.eventDetailLabel}>概要</span>
+                          <span className={styles.eventDetailValue}>{evt.summary}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

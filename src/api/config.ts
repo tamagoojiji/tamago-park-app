@@ -1,5 +1,5 @@
 // API設定 - Phase 1: GAS / Phase 2: VPS(Python)に切替時はここだけ変更
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.tamago-ai-world.com';
 
 export const apiConfig = {
   baseUrl: API_BASE_URL,

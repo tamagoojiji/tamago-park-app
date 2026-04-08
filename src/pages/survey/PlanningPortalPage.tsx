@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-
 import styles from './PlanningPortalPage.module.css';
 
+const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-world.com';
 const FRIEND_KEY = 'tamago_planning_friend';
 
 const menuItems = [
@@ -25,48 +25,27 @@ const menuItems = [
 
 export default function PlanningPortalPage() {
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const [isFriend, setIsFriend] = useState(() => sessionStorage.getItem(FRIEND_KEY) === 'ok');
   const [checking, setChecking] = useState(!isFriend);
-  const [debug, setDebug] = useState('init');
 
   useEffect(() => {
-    if (isFriend) {
-      setDebug('skip: already friend');
+    if (isFriend || !token) {
       setChecking(false);
       return;
     }
-    if (!token) {
-      setDebug(`skip: no token (token=${String(token)})`);
-      setChecking(false);
-      return;
-    }
-    const url = `${import.meta.env.VITE_API_BASE_URL || ''}/auth/planning-friend`;
-    setDebug(`calling: ${url} / token: ${token.slice(0, 20)}...`);
-    fetch(url, {
+    fetch(`${AUTH_BASE}/auth/planning-friend`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) {
-          setDebug(`HTTP ${res.status}`);
-          setChecking(false);
-          return;
-        }
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((data) => {
-        if (!data) return;
-        setDebug(`result: is_friend=${data.is_friend}`);
-        if (data.is_friend) {
+        if (data?.is_friend) {
           sessionStorage.setItem(FRIEND_KEY, 'ok');
           setIsFriend(true);
         }
-        setChecking(false);
       })
-      .catch((err) => {
-        setDebug(`error: ${err.name}: ${err.message} / url=${url}`);
-        setChecking(false);
-      });
+      .catch(() => {})
+      .finally(() => setChecking(false));
   }, [token, isFriend]);
 
   if (checking) {
@@ -87,11 +66,6 @@ export default function PlanningPortalPage() {
           <h1 className={styles.title}>プランニング依頼者専用</h1>
           <p className={styles.subtitle}>このページはプランニング依頼者専用です</p>
           <p className={styles.lockedDesc}>プランニングをご依頼いただいた方のみアクセスできます。</p>
-          {user && (
-            <p className={styles.lockedDesc} style={{ marginTop: '16px', fontSize: '13px', opacity: 0.7 }}>
-              ログイン中: {user.display_name}（ID: {user.id}）/ debug: {debug}
-            </p>
-          )}
         </div>
       </div>
     );
