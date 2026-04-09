@@ -39,7 +39,7 @@ export default function StepLogistics({ data, onChange }: Props) {
         <OtherComment fieldName="transportation" data={data} onChange={onChange} show={data.transportation === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q8. チケットはどれを購入されますか？（購入していますか）">
+      <QuestionCard label="Q8. チケットはどれを購入されますか？（購入していますか）" note="悩んでいる場合は複数選択して、その他にコメントください">
         <SingleSelect
           name="ticket_purchased"
           options={TICKET_PURCHASED_OPTIONS}

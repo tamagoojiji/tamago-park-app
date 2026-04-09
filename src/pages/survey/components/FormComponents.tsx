@@ -1,6 +1,12 @@
 import type { SurveyFormData } from '../../../types/survey';
 import styles from './FormComponents.module.css';
 
+// 全角数字・記号を半角に変換
+export function toHalfWidth(str: string): string {
+  return str.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+            .replace(/[：]/g, ':').replace(/[．]/g, '.');
+}
+
 // --- OtherComment: 「その他」選択時のコメント入力欄 ---
 interface OtherCommentProps {
   fieldName: string;
@@ -18,7 +24,7 @@ export function OtherComment({ fieldName, data, onChange, show }: OtherCommentPr
         type="text"
         className={styles.textInput}
         value={value}
-        onChange={(e) => onChange({ other_comments: { ...data.other_comments, [fieldName]: e.target.value } })}
+        onChange={(e) => onChange({ other_comments: { ...data.other_comments, [fieldName]: toHalfWidth(e.target.value) } })}
         placeholder="その他の詳細を入力してください"
       />
     </div>
@@ -39,7 +45,7 @@ export function TextInput({ value, onChange, placeholder, multiline }: TextInput
       <textarea
         className={`${styles.textInput} ${styles.textarea}`}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(toHalfWidth(e.target.value))}
         placeholder={placeholder}
       />
     );
@@ -158,7 +164,9 @@ export function MultiSelect({ name, options, values, onChange }: MultiSelectProp
                         : styles.badgeActive
                   }`}
                 >
-                  {opt.badge}
+                  {opt.badge.split('\n').map((line, i) => (
+                    <span key={i} style={i > 0 ? { display: 'block', textAlign: 'right' } : undefined}>{line}</span>
+                  ))}
                 </span>
               )}
             </label>

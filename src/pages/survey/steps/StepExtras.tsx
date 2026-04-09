@@ -35,6 +35,16 @@ export default function StepExtras({ data, onChange }: Props) {
             color: '#856404', fontWeight: 500,
           }}>
             詳細をその他へ記載してください（種類・人数など）
+            <div style={{ marginTop: 6 }}>
+              <a
+                href="https://tamagoojiji.github.io/usj-ep-guide/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#0066CC', textDecoration: 'underline', fontWeight: 600 }}
+              >
+                エクスプレス・パス診断はこちら →
+              </a>
+            </div>
           </div>
         )}
         <OtherComment fieldName="budget_level" data={data} onChange={onChange} show={data.budget_level === 'その他'} />

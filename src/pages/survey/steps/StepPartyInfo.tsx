@@ -1,6 +1,6 @@
 import type { SurveyFormData, PartyInfo, ChildHeightEntry } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { NumberGrid } from '../components/FormComponents';
+import { NumberGrid, toHalfWidth } from '../components/FormComponents';
 import { PARTY_CATEGORIES, ELEMENTARY_GRADE_OPTIONS, YOUNG_CHILDREN_AGE_OPTIONS } from '../../../data/survey-options';
 import styles from '../components/FormComponents.module.css';
 
@@ -150,7 +150,7 @@ export default function StepPartyInfo({ data, onChange }: Props) {
                 inputMode="numeric"
                 className={styles.textInput}
                 value={entry.height}
-                onChange={(e) => handleHeightChange(i, e.target.value)}
+                onChange={(e) => handleHeightChange(i, toHalfWidth(e.target.value))}
                 placeholder="cm"
                 style={{ width: 80, textAlign: 'center' }}
               />
