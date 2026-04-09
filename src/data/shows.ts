@@ -25,3 +25,8 @@ export const showTemplates: Record<string, { holdMinutes: number }> = {
 export function getHoldMinutes(showName: string): number {
   return showTemplates[showName]?.holdMinutes ?? 0;
 }
+
+// OPEN時間ショー判定: 公演1回のみ、かつパレードを除外
+export function isOpenShow(show: { name: string; times: string[] }): boolean {
+  return show.times.length === 1 && !show.name.includes('パレード');
+}

@@ -5,9 +5,9 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, getLimitedShows, type ParkEvent } from '../api/events';
+import { fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
-import { getHoldMinutes } from '../data/shows';
+import ShowSchedule from './ShowSchedule';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string }[] = [
@@ -23,18 +23,6 @@ const tabs: { id: CalendarTab; label: string; icon: string }[] = [
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
-// 時刻文字列から分数に変換 "14:00" → 840
-function timeToMinutes(time: string): number {
-  const [h, m] = time.split(':').map(Number);
-  return h * 60 + m;
-}
-
-// 分数から時刻文字列に変換 840 → "14:00"
-function minutesToTime(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-}
 
 function getTabEmptyMessage(tab: CalendarTab): string {
   switch (tab) {
@@ -106,26 +94,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       .finally(() => setShowsLoading(false));
   }, [activeTab, selectedDate, today]);
 
-  // プランに追加済みか判定
-  const isPlanAdded = (showName: string, time: string) => {
-    return planItems.some(p => p.showName === showName && p.time === time);
-  };
-
-  // ショーの時間をタップしてプランに追加
-  const handleAddShowToPlan = (showName: string, time: string) => {
-    if (!onAddPlan || isPlanAdded(showName, time)) return;
-    const holdMin = getHoldMinutes(showName);
-    const holdTime = holdMin > 0
-      ? minutesToTime(timeToMinutes(time) - holdMin)
-      : undefined;
-    onAddPlan({
-      id: `${showName}_${time}`,
-      showName,
-      time,
-      holdTime,
-      holdMinutes: holdMin,
-    });
-  };
 
   const weatherMap = useMemo(() => {
     const map = new Map<string, DailyWeather>();
@@ -603,72 +571,15 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
         </div>
       ) : activeTab === 'shows' ? (
         <div className={styles.tabContent}>
-          {showsLoading ? (
-            <p className={styles.tabPlaceholder}>ショースケジュールを読み込み中...</p>
-          ) : shows.length === 0 ? (
-            <p className={styles.tabPlaceholder}>
-              {scheduleDate
-                ? `${new Date(scheduleDate + 'T00:00:00').toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' })}のスケジュールはまだありません`
-                : '日付をタップしてショースケジュールを確認'}
-            </p>
-          ) : (
-            <div className={styles.showList}>
-              {scheduleDate && (
-                <p className={styles.scheduleDateInfo}>
-                  {new Date(scheduleDate + 'T00:00:00').toLocaleDateString('ja-JP', {
-                    month: 'long',
-                    day: 'numeric',
-                  })}分の情報
-                </p>
-              )}
-              {shows.map((show) => (
-                <div key={show.name} className={styles.showItem}>
-                  <div className={styles.showName}>{show.name}</div>
-                  <div className={styles.showTimes}>
-                    {show.times.map((time) => {
-                      const added = isPlanAdded(show.name, time);
-                      return (
-                        <button
-                          key={time}
-                          className={`${styles.showTimeBtn} ${added ? styles.showTimeBtnAdded : ''}`}
-                          onClick={() => handleAddShowToPlan(show.name, time)}
-                          disabled={!onAddPlan}
-                        >
-                          {time}
-                          {added && <span className={styles.showTimeCheck}>✓</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {getHoldMinutes(show.name) > 0 && (
-                    <div className={styles.showHoldInfo}>
-                      場所取り: {getHoldMinutes(show.name)}分前
-                    </div>
-                  )}
-                </div>
-              ))}
-              {/* 期間限定ショー */}
-              {(() => {
-                const limitedShows = getLimitedShows(parkEvents, scheduleDate || today);
-                return limitedShows.length > 0 ? (
-                  <>
-                    <div className={styles.eventGroupLabel}>🎭 期間限定ショー</div>
-                    {limitedShows.map(evt => (
-                      <div key={evt.id} className={styles.showItem}>
-                        <div className={styles.showName}>
-                          ✨ {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
-                          ) : evt.name}
-                        </div>
-                        {evt.summary && <div className={styles.showHoldInfo}>{evt.summary}</div>}
-                        {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
-                      </div>
-                    ))}
-                  </>
-                ) : null;
-              })()}
-            </div>
-          )}
+          <ShowSchedule
+            shows={shows}
+            scheduleDate={scheduleDate}
+            isLoading={showsLoading}
+            today={today}
+            planItems={planItems}
+            onAddPlan={onAddPlan}
+            parkEvents={parkEvents}
+          />
         </div>
       ) : (
         <div className={styles.tabContent}>
