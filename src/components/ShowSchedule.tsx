@@ -201,7 +201,9 @@ export default function ShowSchedule({
         <div className={styles.cardTop}>
           <span className={styles.openName}>
             {show.name}
-            <span className={styles.openTime}>{show.times[0]}〜</span>
+            <span className={styles.openTime}>
+              {show.endTime ? `${show.times[0]} 〜 ${show.endTime}` : `${show.times[0]}〜`}
+            </span>
           </span>
           <button
             className={`${styles.favBtn} ${fav ? styles.favBtnActive : ''}`}

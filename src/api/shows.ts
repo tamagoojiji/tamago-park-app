@@ -3,6 +3,7 @@ const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-wo
 export interface ShowData {
   name: string;
   times: string[]; // ["09:00", "12:30", ...]
+  endTime?: string; // "18:00" — 随時運行ショーの終了時間
 }
 
 export interface ShowsResult {
