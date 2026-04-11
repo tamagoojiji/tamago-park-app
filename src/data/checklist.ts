@@ -39,6 +39,7 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'su4', category: 'summer', name: '塩分タブレット', description: '熱中症予防に。汗をかいたらこまめに補給' },
   { id: 'su5', category: 'summer', name: '日傘', description: '待ち時間の日差し対策に' },
   { id: 'su6', category: 'summer', name: 'ハンディファン', description: '待ち時間の暑さ対策に' },
+  { id: 'su13', category: 'summer', name: 'ボディーシート', description: 'ボディーシートで拭いたあとの、ハンディーファンは無敵です' },
   { id: 'su7', category: 'summer', name: 'タオル', description: '汗拭き用に' },
   { id: 'su8', category: 'summer', name: 'バスタオル', description: '水かけイベント後の体拭きに' },
   { id: 'su9', category: 'summer', name: '着替え', description: 'パレードなどで濡れる場合は下着も持っていくと安心' },

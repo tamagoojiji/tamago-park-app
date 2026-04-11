@@ -12,6 +12,11 @@ const seasonOptions: { value: Season; label: string; icon: string }[] = [
   { value: 'winter', label: '冬（12〜2月）', icon: '❄️' },
 ];
 
+// 季節ごとのCanva画像・PDFパス
+function checklistPath(season: Season, ext: 'png' | 'pdf') {
+  return `${import.meta.env.BASE_URL}images/checklist/${season}.${ext}`;
+}
+
 export default function ChecklistPage() {
   const now = new Date();
   const currentSeason = getSeason(now.getMonth() + 1);
@@ -28,6 +33,7 @@ export default function ChecklistPage() {
 
   const [showRain, setShowRain] = useState(false);
   const [showKids, setShowKids] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
@@ -48,8 +54,40 @@ export default function ChecklistPage() {
     setChecked({});
   }
 
-  function handlePrint() {
-    window.print();
+  const isLineBrowser = /Line/i.test(navigator.userAgent);
+  const seasonLabel = seasonOptions.find(o => o.value === selectedSeason)!.label;
+
+  async function shareFile(path: string, filename: string, mime: string) {
+    try {
+      const res = await fetch(path);
+      const blob = await res.blob();
+      const file = new File([blob], filename, { type: mime });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+    } catch { /* キャンセル */ }
+  }
+
+  function handleExportPdf() {
+    if (isLineBrowser) {
+      alert('LINEアプリ内ではPDF保存できません。\n右上の「⋮」メニューから「他のブラウザで開く」を選んでください。');
+      return;
+    }
+    shareFile(checklistPath(selectedSeason, 'pdf'), `USJチェックリスト_${seasonLabel}.pdf`, 'application/pdf');
+  }
+
+  function handleExportPng() {
+    if (isLineBrowser) {
+      alert('LINEアプリ内では画像保存できません。\n右上の「⋮」メニューから「他のブラウザで開く」を選んでください。');
+      return;
+    }
+    setPreviewImage(checklistPath(selectedSeason, 'png'));
   }
 
   function renderCategory(category: ChecklistCategory) {
@@ -89,6 +127,20 @@ export default function ChecklistPage() {
 
   return (
     <main className={styles.page}>
+      {/* 画像プレビューモーダル */}
+      {previewImage && (
+        <div className={styles.imageModal} onClick={() => setPreviewImage(null)}>
+          <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.imageModalSave} onClick={() => shareFile(checklistPath(selectedSeason, 'png'), `USJチェックリスト_${seasonLabel}.png`, 'image/png')}>
+              画像を保存する
+            </button>
+            <img src={previewImage} alt={seasonLabel} className={styles.imageModalImg} />
+            <button className={styles.imageModalClose} onClick={() => setPreviewImage(null)}>
+              閉じる
+            </button>
+          </div>
+        </div>
+      )}
       <div className={styles.container}>
         <h1 className={styles.title}>✅ 持ち物チェックリスト</h1>
 
@@ -159,10 +211,13 @@ export default function ChecklistPage() {
           <p>公式アプリへのチケット登録は、入場時は必要なく、入場後の「ニンテンドー整理券」「よやくのり」に必要になります！</p>
         </div>
 
-        {/* 印刷・リセットボタン */}
+        {/* 保存・リセットボタン */}
         <div className={styles.actionButtons}>
-          <button className={styles.printButton} onClick={handlePrint}>
-            🖨️ チェックリストを印刷
+          <button className={styles.printButton} onClick={handleExportPdf}>
+            📄 PDFで保存
+          </button>
+          <button className={styles.printButton} onClick={handleExportPng}>
+            🖼️ 画像で保存
           </button>
           <button className={styles.resetButton} onClick={resetAll}>
             チェックをリセット
