@@ -171,7 +171,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     <section className={styles.calendarSection}>
       {/* タブ */}
       <div className={styles.tabs}>
-        {tabs.filter(tab => !tab.disabled).map((tab) => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''} ${tab.disabled ? styles.tabDisabled : ''}`}
@@ -338,6 +338,13 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                 <span className={styles.infoValue}>なし</span>
               );
             })()}
+          </div>
+
+          {/* 混雑予想 */}
+          <div className={styles.infoRow}>
+            <span className={styles.infoIcon}>👥</span>
+            <span className={styles.infoLabel}>混雑予想</span>
+            <span className={`${styles.infoValue} ${styles.textGray}`}>準備中</span>
           </div>
 
           {/* 貸切 */}
