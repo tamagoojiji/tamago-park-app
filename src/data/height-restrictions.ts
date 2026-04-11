@@ -42,15 +42,15 @@ export const heightRestrictions: HeightRestriction[] = [
   // --- ワンダーランド系 ---
   { name: 'エルモのゴーゴー・スケートボード', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: true, image: '/images/attractions/11.jpg' },
   { name: 'エルモのバブル・バブル', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/13.jpg' },
-  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/10.jpg' },
+  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/10.jpg', note: '身長制限なし' },
   { name: 'フライング・スヌーピー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/5.jpg' },
-  { name: 'ハローキティのカップケーキ・ドリーム', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/8.jpg' },
+  { name: 'ハローキティのカップケーキ・ドリーム', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/8.jpg', note: '身長制限なし' },
   { name: 'ミニオン・ハチャメチャ・アイス', aloneMin: 122, withAdultMin: 92, area: 'ミニオン・パーク', childSwap: true, singleRider: false, image: '/images/attractions/30.jpg' },
   { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/12.jpg' },
   { name: 'スヌーピーのフライング・エース・アドベンチャー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/6.jpg' },
 
   // --- 身長制限なし（年齢制限あり・子供専用） ---
-  { name: 'エルモのリトル・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/14.jpg', note: '3歳〜5歳限定（大人不可）' },
+  { name: 'エルモのリトル・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/14.jpg', note: '6歳未就学児限定（大人不可）' },
   { name: 'セサミのビッグ・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/15.jpg', note: '6歳〜12歳限定（大人不可）' },
 
   // --- 一人で座れたらOK ---
