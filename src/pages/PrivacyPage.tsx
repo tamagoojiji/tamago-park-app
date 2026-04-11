@@ -7,7 +7,7 @@ export default function PrivacyPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>プライバシーポリシー</h1>
-      <p className={styles.updated}>最終更新日: 2026年3月22日</p>
+      <p className={styles.updated}>最終更新日: 2026年4月11日</p>
 
       <section className={styles.section}>
         <p className={styles.intro}>
@@ -17,10 +17,10 @@ export default function PrivacyPage() {
 
       <section className={styles.section}>
         <h2 className={styles.heading}>1. 収集する情報</h2>
-        <h3 className={styles.subheading}>必須項目（アカウント登録時）</h3>
+        <h3 className={styles.subheading}>LINE認証時に取得する情報</h3>
         <ul className={styles.list}>
-          <li>メールアドレス</li>
-          <li>4桁のPINコード</li>
+          <li>LINEユーザーID</li>
+          <li>LINE表示名・プロフィール画像</li>
         </ul>
         <h3 className={styles.subheading}>任意項目（プロフィール設定時）</h3>
         <ul className={styles.list}>
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           <li>性別</li>
         </ul>
         <p className={styles.note}>
-          ※ 任意項目を入力しなくても、本アプリの基本機能はすべてご利用いただけます。任意項目は、あなたに合ったパーソナライズコメントの表示に利用します。
+          ※ ログインしなくても、本アプリの基本機能（チェックリスト・身長制限等）はご利用いただけます。任意項目は、あなたに合ったパーソナライズ提案に利用します。
         </p>
       </section>
 
@@ -54,6 +54,9 @@ export default function PrivacyPage() {
         <p className={styles.text}>本アプリでは以下の外部サービスを利用しています。</p>
         <ul className={styles.list}>
           <li>
+            <strong>LINE Login / LIFF</strong> — ユーザー認証（LINEユーザーID・表示名の取得）
+          </li>
+          <li>
             <strong>Open-Meteo API</strong> — 天気予報情報の取得（個人情報の送信はありません）
           </li>
         </ul>
@@ -62,7 +65,7 @@ export default function PrivacyPage() {
       <section className={styles.section}>
         <h2 className={styles.heading}>5. データの保管・セキュリティ</h2>
         <ul className={styles.list}>
-          <li>PINコードは暗号化して保管します</li>
+          <li>認証情報はJWTトークンで安全に管理します</li>
           <li>通信はHTTPSにより暗号化されています</li>
           <li>不正アクセス防止のため、適切なセキュリティ対策を講じます</li>
         </ul>

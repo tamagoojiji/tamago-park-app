@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import type { CalendarTab, PlanItem } from '../types';
 import { fetchWeather, weatherCodeToEmoji, type DailyWeather } from '../api/weather';
 import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
@@ -22,6 +22,37 @@ const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }
 ];
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+// 日本の祝日（2026年）
+const HOLIDAYS: Record<string, string> = {
+  '2026-01-01': '元日',
+  '2026-01-12': '成人の日',
+  '2026-02-11': '建国記念の日',
+  '2026-02-23': '天皇誕生日',
+  '2026-03-20': '春分の日',
+  '2026-04-29': '昭和の日',
+  '2026-05-03': '憲法記念日',
+  '2026-05-04': 'みどりの日',
+  '2026-05-05': 'こどもの日',
+  '2026-05-06': '振替休日',
+  '2026-07-20': '海の日',
+  '2026-08-11': '山の日',
+  '2026-09-21': '敬老の日',
+  '2026-09-22': '秋分の日',
+  '2026-09-23': '国民の休日',
+  '2026-10-12': 'スポーツの日',
+  '2026-11-03': '文化の日',
+  '2026-11-23': '勤労感謝の日',
+  '2027-01-01': '元日',
+  '2027-01-11': '成人の日',
+  '2027-02-11': '建国記念の日',
+  '2027-02-23': '天皇誕生日',
+  '2027-03-21': '春分の日',
+  '2027-04-29': '昭和の日',
+  '2027-05-03': '憲法記念日',
+  '2027-05-04': 'みどりの日',
+  '2027-05-05': 'こどもの日',
+};
 
 
 function getTabEmptyMessage(tab: CalendarTab): string {
@@ -138,7 +169,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     const classes = [styles.day];
     if (dateStr === today) classes.push(styles.today);
     if (dateStr === selectedDate) classes.push(styles.selected);
-    if (dayOfWeek === 0) classes.push(styles.sunday);
+    if (dayOfWeek === 0 || HOLIDAYS[dateStr]) classes.push(styles.sunday);
     if (dayOfWeek === 6) classes.push(styles.saturday);
     return classes.join(' ');
   };
@@ -162,6 +193,20 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       open: `${openH}:${openM}`,
       close: `~${closeH}:${closeM}`,
     };
+  };
+
+  // スワイプで月切り替え
+  const touchStart = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null) return;
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      changeMonth(diff > 0 ? 1 : -1);
+    }
+    touchStart.current = null;
   };
 
   // 選択中の日付の詳細情報
@@ -196,7 +241,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       </div>
 
       {/* カレンダーグリッド */}
-      <div className={styles.calendarCard}>
+      <div className={styles.calendarCard} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className={styles.weekdays}>
           {WEEKDAYS.map((w, i) => (
             <span key={w} className={`${styles.weekday} ${i === 0 ? styles.sunday : ''} ${i === 6 ? styles.saturday : ''}`}>

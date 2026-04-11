@@ -669,6 +669,11 @@
   color: #fff;
 }
 
+.tabDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 /* タブコンテンツ */
 .tabContent {
   background: var(--color-bg-card);
