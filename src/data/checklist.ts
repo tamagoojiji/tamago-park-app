@@ -27,6 +27,7 @@ export const checklistItems: ChecklistItem[] = [
   { id: 'k4', category: 'kids', name: 'おやつ（未就学児向け）', description: '飴・ラムネ・ビスケット等はOK ⚠️じゃがりこ等のスナック菓子はNG' },
   { id: 'k5', category: 'kids', name: '迷子対策グッズ', description: '名前タグやGPSトラッカーなど。人混みではぐれやすいです' },
   { id: 'k6', category: 'kids', name: 'ベビーカー用フック', description: 'ベビーカーに荷物やお土産袋を吊るせて両手が空きます' },
+  { id: 'k7', category: 'kids', name: '離乳食やミルク', description: '缶のミルクもOK（荷物検査で申請してください）' },
 
   // === 春（3〜5月） ===
   { id: 'sp1', category: 'spring', name: '日焼け止め', description: '春後半から紫外線が強くなります' },
