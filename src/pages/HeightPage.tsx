@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { heightRestrictions, type HeightRestriction } from '../data/height-restrictions';
+import { heightRestrictions, pregnancyOkAttractions, type HeightRestriction } from '../data/height-restrictions';
 import styles from './HeightPage.module.css';
 
 const HEIGHT_OPTIONS = [0, 91, 92, 102, 107, 122, 132];
 
 export default function HeightPage() {
   const [childHeight, setChildHeight] = useState<number>(0);
+  const [showPregnancy, setShowPregnancy] = useState(false);
 
   // 身長でフィルタ: 単独 or 付き添いありで乗れるかを判定
   const getRideStatus = (r: HeightRestriction): 'alone' | 'with_adult' | 'ng' => {
@@ -104,6 +105,38 @@ export default function HeightPage() {
       <p className={styles.note}>
         ※ 身長制限のないアトラクションは省略しています
       </p>
+
+      {/* 妊婦さんOKセクション */}
+      <div className={styles.pregnancySection}>
+        <button
+          className={styles.pregnancyToggle}
+          onClick={() => setShowPregnancy(!showPregnancy)}
+        >
+          <span className={styles.pregnancyToggleText}>妊婦さんが利用できるアトラクション・ショー</span>
+          <span className={styles.pregnancyToggleIcon}>{showPregnancy ? '▲' : '▼'}</span>
+        </button>
+        {showPregnancy && (
+          <div className={styles.pregnancyList}>
+            {pregnancyOkAttractions.map((a) => (
+              <div key={a.name} className={styles.pregnancyCard}>
+                <div className={styles.rideTop}>
+                  {a.image && <img src={`${import.meta.env.BASE_URL}${a.image.replace(/^\//, '')}`} alt={a.name} className={styles.rideImage} loading="lazy" />}
+                  <div className={styles.rideHeader}>
+                    <span className={styles.rideName}>{a.name}</span>
+                    <span className={styles.rideArea}>{a.area}</span>
+                  </div>
+                </div>
+                {a.note && (
+                  <p className={styles.pregnancyNote}>※ {a.note}</p>
+                )}
+              </div>
+            ))}
+            <p className={styles.pregnancyDisclaimer}>
+              ※ 上記以外のアトラクションは妊娠中の方はご利用いただけません。体調に不安がある場合はクルーにご相談ください。
+            </p>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

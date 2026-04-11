@@ -199,3 +199,67 @@
   margin-top: 16px;
   padding-bottom: 20px;
 }
+
+/* 妊婦さんOKセクション */
+.pregnancySection {
+  margin-top: 8px;
+  padding-bottom: 24px;
+}
+
+.pregnancyToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFF0F5;
+  border: 2px solid #F48FB1;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pregnancyToggle:active {
+  transform: scale(0.98);
+}
+
+.pregnancyToggleText {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: #C2185B;
+}
+
+.pregnancyToggleIcon {
+  font-size: var(--text-xs);
+  color: #C2185B;
+}
+
+.pregnancyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pregnancyCard {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid #F48FB1;
+}
+
+.pregnancyNote {
+  font-size: var(--text-xxs);
+  font-weight: 600;
+  color: #C2185B;
+  margin-top: 4px;
+}
+
+.pregnancyDisclaimer {
+  font-size: var(--text-xxs);
+  color: var(--color-text-light);
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.5;
+}

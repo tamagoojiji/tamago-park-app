@@ -58,6 +58,25 @@ export const heightRestrictions: HeightRestriction[] = [
   { name: 'シュレック 4-D アドベンチャー™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/35.jpg', note: '一人で座れたらOK' },
 ];
 
+// 妊婦さんが利用できるアトラクション・ショー
+export interface PregnancyOkAttraction {
+  name: string;
+  area: string;
+  image: string;
+  note?: string;
+}
+
+export const pregnancyOkAttractions: PregnancyOkAttraction[] = [
+  { name: 'ミニオン・ハチャメチャ・ミッション ～大悪党への道～', area: 'ミニオン・パーク', image: '/images/attractions/29.jpg' },
+  { name: 'ビッグバードのビッグトップ・サーカス', area: 'ワンダーランド', image: '/images/attractions/10.jpg', note: '利用にあたりクルーにご相談ください' },
+  { name: 'ハローキティのリボン・コレクション', area: 'ワンダーランド', image: '/images/shows/キティのリボンコレクション.jpg' },
+  { name: 'シング・オン・ツアー', area: 'ハリウッド', image: '/images/shows/シング・オン・ツアー.jpg' },
+  { name: 'プレイング・ウィズおさるのジョージ™', area: 'ニューヨーク', image: '/images/shows/おさるのジョージ.jpg' },
+  { name: 'ユニバーサル・モンスター・ライブ・ロックンロール・ショー', area: 'ハリウッド', image: '/images/shows/ユニバーサル・モンスター・ライブ・ロックンロール・ショー.jpg' },
+  { name: 'ウォーターワールド', area: 'ウォーターワールド', image: '/images/shows/ウォーターワールド.jpg' },
+  { name: 'オリバンダーの店™', area: 'ウィザーディング・ワールド', image: '/images/shows/オリバンダーの店.jpg' },
+];
+
 // 過去のアトラクション（クローズ済み）
 export const closedAttractions: HeightRestriction[] = [
   { name: 'アメージング・アドベンチャー・オブ・スパイダーマン・ザ・ライド 4K3D', aloneMin: 122, withAdultMin: 102, area: 'ニューヨーク', childSwap: true, singleRider: true, image: '' },
