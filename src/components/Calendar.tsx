@@ -10,10 +10,10 @@ import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/cl
 import ShowSchedule from './ShowSchedule';
 import styles from './Calendar.module.css';
 
-const tabs: { id: CalendarTab; label: string; icon: string }[] = [
+const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
   { id: 'hours', label: '営業時間', icon: '🕐' },
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
-  { id: 'crowd', label: '混雑予想', icon: '👥' },
+  { id: 'crowd', label: '混雑予想(準備中)', icon: '👥', disabled: true },
   { id: 'annual-pass', label: '年パス除外日', icon: '🎫' },
   { id: 'private', label: '貸切', icon: '🔒' },
   { id: 'events', label: 'イベント', icon: '🎉' },
@@ -171,11 +171,12 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     <section className={styles.calendarSection}>
       {/* タブ */}
       <div className={styles.tabs}>
-        {tabs.map((tab) => (
+        {tabs.filter(tab => !tab.disabled).map((tab) => (
           <button
             key={tab.id}
-            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ''} ${tab.disabled ? styles.tabDisabled : ''}`}
+            onClick={() => !tab.disabled && setActiveTab(tab.id)}
+            disabled={tab.disabled}
           >
             <span className={styles.tabIcon}>{tab.icon}</span>
             <span className={styles.tabLabel}>{tab.label}</span>
@@ -337,13 +338,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                 <span className={styles.infoValue}>なし</span>
               );
             })()}
-          </div>
-
-          {/* 混雑予想 */}
-          <div className={styles.infoRow}>
-            <span className={styles.infoIcon}>👥</span>
-            <span className={styles.infoLabel}>混雑予想</span>
-            <span className={`${styles.infoValue} ${styles.textGray}`}>準備中</span>
           </div>
 
           {/* 貸切 */}
