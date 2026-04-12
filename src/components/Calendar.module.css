@@ -303,7 +303,7 @@
 .privateLabel {
   font-size: 10px;
   font-weight: 800;
-  color: var(--color-red);
+  color: var(--color-accent);
   line-height: 1;
 }
 

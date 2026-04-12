@@ -17,7 +17,7 @@ export interface WeatherInfo {
 }
 
 // タブ情報
-export type CalendarTab = 'hours' | 'annual-pass' | 'events' | 'tickets' | 'crowd' | 'private' | 'shows' | 'closure';
+export type CalendarTab = 'hours' | 'annual-pass' | 'events' | 'tickets' | 'crowd' | 'restaurant' | 'shows' | 'closure';
 
 // プランニング
 export interface PlanItem {

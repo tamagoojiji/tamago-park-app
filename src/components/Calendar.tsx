@@ -14,8 +14,8 @@ const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }
   { id: 'hours', label: '営業時間', icon: '🕐' },
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
   { id: 'crowd', label: '混雑予想(準備中)', icon: '👥', disabled: true },
-  { id: 'annual-pass', label: '年パス除外日', icon: '🎫' },
-  { id: 'private', label: '貸切', icon: '🔒' },
+  { id: 'annual-pass', label: '年パス除外日\n貸切ナイト日', icon: '🎫' },
+  { id: 'restaurant', label: 'レストラン\n一覧(準備中)', icon: '🍽️', disabled: true },
   { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'shows', label: 'ショー', icon: '🎭' },
   { id: 'closure', label: 'アトラクション\n休止情報', icon: '🚧' },
@@ -59,11 +59,11 @@ function getTabEmptyMessage(tab: CalendarTab): string {
   switch (tab) {
     case 'hours': return '日付をタップすると営業時間が見れます';
     case 'shows': return 'ショースケジュールを読み込み中...';
-    case 'annual-pass': return '○ 利用可 / ✕ 除外日';
+    case 'annual-pass': return '貸切の日は、営業時間が短いです';
     case 'events': return 'イベント情報は準備中です';
     case 'tickets': return '1デイ・スタジオ・パス（大人）の価格';
     case 'crowd': return '混雑予想データは準備中です';
-    case 'private': return '貸切マークの日は閉園が早まります';
+    case 'restaurant': return 'レストラン一覧は準備中です';
     case 'closure': return '休止中のアトラクション情報';
   }
 }
@@ -276,17 +276,19 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       </span>
                     )}
                     {activeTab === 'annual-pass' && (
-                      <span className={annualPassExcluded.has(dateStr) ? styles.excludedLabel : styles.availableLabel}>
-                        {annualPassExcluded.has(dateStr) ? '✕' : '○'}
-                      </span>
+                      <>
+                        {annualPassExcluded.has(dateStr) && (
+                          <span className={styles.excludedLabel}>除外日</span>
+                        )}
+                        {hasPrivateEventOnDate(parkEvents, dateStr) && (
+                          <span className={styles.privateLabel}>貸切</span>
+                        )}
+                      </>
                     )}
                     {activeTab === 'tickets' && ticketPrices[dateStr] && (
                       <span className={`${styles.priceLabel} ${styles[`price_${getPriceLevel(ticketPrices[dateStr])}`]}`}>
                         {ticketPrices[dateStr].toLocaleString()}
                       </span>
-                    )}
-                    {activeTab === 'private' && hasPrivateEventOnDate(parkEvents, dateStr) && (
-                      <span className={styles.privateLabel}>貸切</span>
                     )}
                     {activeTab === 'events' && hasEventStartOrEndOnDate(parkEvents, dateStr) && (
                       <span className={styles.showAvailableLabel}>🆕</span>
