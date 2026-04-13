@@ -5,9 +5,11 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { parkHours } from '../data/hours';
 import { annualPassExcluded } from '../data/annual-pass';
 import { ticketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
+import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import ShowSchedule from './ShowSchedule';
+import RestaurantList from './RestaurantList';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
@@ -15,7 +17,7 @@ const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
   { id: 'crowd', label: '混雑予想(準備中)', icon: '👥', disabled: true },
   { id: 'annual-pass', label: '年パス除外日\n貸切ナイト日', icon: '🎫' },
-  { id: 'restaurant', label: 'レストラン\n一覧(準備中)', icon: '🍽️', disabled: true },
+  { id: 'restaurant', label: 'レストラン\n一覧', icon: '🍽️' },
   { id: 'events', label: 'イベント', icon: '🎉' },
   { id: 'shows', label: 'ショー', icon: '🎭' },
   { id: 'closure', label: 'アトラクション\n休止情報', icon: '🚧' },
@@ -83,6 +85,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [parkEvents, setParkEvents] = useState<ParkEvent[]>([]);
   const [closuresData, setClosuresData] = useState<ClosuresData | null>(null);
+  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
+  const [restaurantsLoading, setRestaurantsLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -109,6 +113,17 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   useEffect(() => {
     fetchClosures().then(setClosuresData);
   }, []);
+
+  // レストランデータ取得
+  useEffect(() => {
+    if (activeTab !== 'restaurant') return;
+    const date = selectedDate || today;
+    setRestaurantsLoading(true);
+    fetchRestaurants(date)
+      .then((res) => setRestaurants(res.restaurants))
+      .catch((e) => console.error('レストラン取得エラー:', e))
+      .finally(() => setRestaurantsLoading(false));
+  }, [activeTab, selectedDate, today]);
 
   // ショーデータ取得（ショータブ選択時 + 日付変更時）
   useEffect(() => {
@@ -314,7 +329,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       </div>
 
       {/* 日付選択時の詳細 */}
-      {selectedDate && activeTab !== 'shows' && activeTab !== 'closure' && (
+      {selectedDate && activeTab !== 'shows' && activeTab !== 'closure' && activeTab !== 'restaurant' && (
         <div className={styles.detailCard}>
           <div className={styles.detailHeader}>
             <span className={styles.detailDate}>
@@ -515,6 +530,15 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       )}
                     </div>
                     {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
+                    {evt.source_image_url && (
+                      <div className={styles.eventCardImage}>
+                        <img
+                          src={evt.source_image_url.startsWith('http') ? evt.source_image_url : `${AUTH_BASE}${evt.source_image_url}`}
+                          alt={evt.name}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                     <div className={styles.eventDetailGrid}>
                       <div className={styles.eventDetailRow}>
                         <span className={styles.eventDetailLabel}>期間</span>
@@ -616,6 +640,10 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               </div>
             );
           })()}
+        </div>
+      ) : activeTab === 'restaurant' ? (
+        <div className={styles.tabContent}>
+          <RestaurantList restaurants={restaurants} isLoading={restaurantsLoading} />
         </div>
       ) : activeTab === 'shows' ? (
         <div className={styles.tabContent}>
