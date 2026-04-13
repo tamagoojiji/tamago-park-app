@@ -26,11 +26,15 @@ export const TABEARUKI_GENRES: GenreInfo[] = [
   { id: 'other', label: 'その他', icon: '🍦' },
 ];
 
+// クローズ中のレストラン（API結果からフィルタ）
+export const CLOSED_RESTAURANTS = new Set([
+  'アズーラ・ディ・カプリ',
+]);
+
 // レストラン名 → ジャンルID のマッピング
 export const RESTAURANT_GENRE_MAP: Record<string, string> = {
   'ルイズ N.Y. ピザパーラー': 'pizza',
   'メルズ・ドライブイン': 'burger',
-  'アズーラ・ディ・カプリ': 'pasta',
   'ディスカバリー・レストラン': 'plate',
   'アミティ・ランディング・レストラン': 'plate',
   'ロストワールド・レストラン': 'plate',
@@ -63,6 +67,29 @@ export const TABEARUKI_GENRE_MAP: Record<string, string> = {
   'ジャングル・ビート・シェイク': 'other',
   'ポパ・ナーナ': 'other',
   'マジック・ニープ™・カート': 'other',
+};
+
+// レストラン名 → 画像パス のマッピング
+export const RESTAURANT_IMAGE_MAP: Record<string, string> = {
+  'ルイズ N.Y. ピザパーラー': '/images/restaurants/louis-ny-pizza.jpg',
+  'メルズ・ドライブイン': '/images/restaurants/mels-drive-in.jpg',
+  'ディスカバリー・レストラン': '/images/restaurants/discovery-restaurant.jpg',
+  'アミティ・ランディング・レストラン': '/images/restaurants/amity-landing.jpg',
+  'ロストワールド・レストラン': '/images/restaurants/lost-world-restaurant.jpg',
+  'ロンバーズ・ランディング™': '/images/restaurants/lombards-landing.jpg',
+  'ハピネス・カフェ®': '/images/restaurants/happiness-cafe.jpg',
+  'スタジオ･スターズ･レストラン': '/images/restaurants/studio-stars-restaurant.jpg',
+  'キノピオ・カフェ': '/images/restaurants/kinopio-cafe.jpg',
+  'スヌーピー™・バックロット・カフェ': '/images/restaurants/snoopy-backlot-cafe.jpg',
+  'SAIDO': '/images/restaurants/saido.jpg',
+  '三本の箒™': '/images/restaurants/three-broomsticks.jpg',
+  'ビバリーヒルズ・ブランジェリー': '/images/restaurants/beverly-hills-boulangerie.jpg',
+};
+
+// 食べ歩きジャンル → 画像パス のマッピング
+export const TABEARUKI_IMAGE_MAP: Record<string, string> = {
+  'churros': '/images/restaurants/churros-31.jpg',
+  'character-man': '/images/restaurants/character-man.jpg',
 };
 
 // 食べ歩き判定

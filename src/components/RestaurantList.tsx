@@ -5,6 +5,9 @@ import {
   TABEARUKI_GENRES,
   RESTAURANT_GENRE_MAP,
   TABEARUKI_GENRE_MAP,
+  RESTAURANT_IMAGE_MAP,
+  TABEARUKI_IMAGE_MAP,
+  CLOSED_RESTAURANTS,
   isTabearuki,
 } from '../data/restaurant-genres';
 import styles from './RestaurantList.module.css';
@@ -23,11 +26,16 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [genreId, setGenreId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RestaurantInfo | null>(null);
 
+  // クローズ中を除外
+  const activeRestaurants = restaurants.filter(
+    (r) => !CLOSED_RESTAURANTS.has(r.restaurant_name)
+  );
+
   if (isLoading) {
     return <p className={styles.placeholder}>レストラン情報を読み込み中...</p>;
   }
 
-  if (restaurants.length === 0) {
+  if (activeRestaurants.length === 0) {
     return <p className={styles.placeholder}>レストラン情報がありません</p>;
   }
 
@@ -52,20 +60,16 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     setStep('result');
   };
 
-  // ジャンルでフィルタした結果
   const getFilteredList = (): RestaurantInfo[] => {
     if (!category || !genreId) return [];
     const genreMap = category === 'restaurant' ? RESTAURANT_GENRE_MAP : TABEARUKI_GENRE_MAP;
     const isTabearukiCat = category === 'tabearuki';
 
-    // まずカテゴリでフィルタ
-    const catList = restaurants.filter((r) =>
+    const catList = activeRestaurants.filter((r) =>
       isTabearukiCat ? isTabearuki(r.restaurant_name) : !isTabearuki(r.restaurant_name)
     );
 
-    // 「一覧を見る」なら全件
     if (genreId === 'all') return catList;
-
     return catList.filter((r) => genreMap[r.restaurant_name] === genreId);
   };
 
@@ -75,9 +79,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     return genres.find((g) => g.id === genreId)?.label || '';
   };
 
+  const getImage = (name: string): string | undefined => RESTAURANT_IMAGE_MAP[name];
+
   return (
     <>
-      {/* 戻るボタン */}
       {step !== 'category' && (
         <button className={styles.backBtn} onClick={goBack}>
           ← 戻る
@@ -108,16 +113,23 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             {category === 'restaurant' ? 'ジャンルを選んでください' : 'フードを選んでください'}
           </p>
           <div className={styles.genreGrid}>
-            {(category === 'restaurant' ? RESTAURANT_GENRES : TABEARUKI_GENRES).map((g) => (
-              <button
-                key={g.id}
-                className={styles.genreCard}
-                onClick={() => handleGenre(g.id)}
-              >
-                <span className={styles.genreIcon}>{g.icon}</span>
-                <span className={styles.genreLabel}>{g.label}</span>
-              </button>
-            ))}
+            {(category === 'restaurant' ? RESTAURANT_GENRES : TABEARUKI_GENRES).map((g) => {
+              const genreImage = category === 'tabearuki' ? TABEARUKI_IMAGE_MAP[g.id] : undefined;
+              return (
+                <button
+                  key={g.id}
+                  className={styles.genreCard}
+                  onClick={() => handleGenre(g.id)}
+                >
+                  {genreImage ? (
+                    <img src={genreImage} alt={g.label} className={styles.genreImg} />
+                  ) : (
+                    <span className={styles.genreIcon}>{g.icon}</span>
+                  )}
+                  <span className={styles.genreLabel}>{g.label}</span>
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -135,28 +147,34 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               <>
                 <p className={styles.resultCount}>{list.length}件</p>
                 <div className={styles.resultList}>
-                  {list.map((r) => (
-                    <button
-                      key={r.restaurant_name}
-                      className={styles.resultCard}
-                      onClick={() => setSelected(r)}
-                    >
-                      <span className={styles.resultIcon}>
-                        {category === 'tabearuki' ? '🍢' : '🍽️'}
-                      </span>
-                      <div className={styles.resultInfo}>
-                        <span className={styles.resultName}>{r.restaurant_name}</span>
-                        {r.open_time && r.close_time && (
-                          <span className={styles.resultTime}>
-                            {r.open_time}〜{r.close_time}
+                  {list.map((r) => {
+                    const img = getImage(r.restaurant_name);
+                    return (
+                      <button
+                        key={r.restaurant_name}
+                        className={styles.resultCard}
+                        onClick={() => setSelected(r)}
+                      >
+                        {img ? (
+                          <img src={img} alt={r.restaurant_name} className={styles.resultImg} />
+                        ) : (
+                          <span className={styles.resultIcon}>
+                            {category === 'tabearuki' ? '🍢' : '🍽️'}
                           </span>
                         )}
-                      </div>
-                    </button>
-                  ))}
+                        <div className={styles.resultInfo}>
+                          <span className={styles.resultName}>{r.restaurant_name}</span>
+                          {r.open_time && r.close_time && (
+                            <span className={styles.resultTime}>
+                              {r.open_time}〜{r.close_time}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* MAPプレースホルダー */}
                 <div className={styles.mapPlaceholder}>
                   <span className={styles.mapIcon}>🗺️</span>
                   <span>MAP準備中</span>
@@ -175,9 +193,17 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               ×
             </button>
             <div className={styles.sheetContent}>
-              <span className={styles.sheetIcon}>
-                {isTabearuki(selected.restaurant_name) ? '🍢' : '🍽️'}
-              </span>
+              {getImage(selected.restaurant_name) ? (
+                <img
+                  src={getImage(selected.restaurant_name)}
+                  alt={selected.restaurant_name}
+                  className={styles.sheetImg}
+                />
+              ) : (
+                <span className={styles.sheetIcon}>
+                  {isTabearuki(selected.restaurant_name) ? '🍢' : '🍽️'}
+                </span>
+              )}
               <h3 className={styles.sheetName}>{selected.restaurant_name}</h3>
               <span className={styles.sheetCategory}>
                 {isTabearuki(selected.restaurant_name) ? '食べ歩き' : 'レストラン'}

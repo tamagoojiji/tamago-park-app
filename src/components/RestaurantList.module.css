@@ -88,6 +88,13 @@
   font-size: 28px;
 }
 
+.genreImg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .genreLabel {
   font-size: var(--text-sm);
   font-weight: 600;
@@ -129,6 +136,14 @@
 
 .resultIcon {
   font-size: 24px;
+  flex-shrink: 0;
+}
+
+.resultImg {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
   flex-shrink: 0;
 }
 
@@ -212,6 +227,13 @@
 
 .sheetIcon {
   font-size: 36px;
+}
+
+.sheetImg {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
 }
 
 .sheetName {
