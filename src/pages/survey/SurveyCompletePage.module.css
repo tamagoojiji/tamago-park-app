@@ -44,6 +44,36 @@
   margin-bottom: 28px;
 }
 
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editButton {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #FF8C00;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-md);
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 4px 14px rgba(255, 140, 0, 0.35);
+}
+
+.editButton:hover {
+  background: #E07B00;
+}
+
+.editButton:active {
+  transform: scale(0.98);
+}
+
 .backButton {
   display: block;
   width: 100%;

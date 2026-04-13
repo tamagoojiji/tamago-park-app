@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import type { SurveyFormData } from '../../types/survey';
 import { INITIAL_SURVEY, STEPS } from '../../types/survey';
@@ -10,7 +10,7 @@ import type { ShowData } from '../../api/shows';
 import { fetchShows } from '../../api/shows';
 import type { RestaurantInfo } from '../../api/restaurants';
 import { fetchRestaurants } from '../../api/restaurants';
-import { submitSurvey } from '../../api/survey';
+import { submitSurvey, getSurvey, updateSurvey } from '../../api/survey';
 
 import ProgressBar from './components/ProgressBar';
 import StepBasicInfo from './steps/StepBasicInfo';
@@ -28,8 +28,12 @@ const DRAFT_KEY = 'tamago_survey_draft';
 export default function SurveyPage() {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editSurveyId = searchParams.get('edit');
   const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(!!editSurveyId);
   const [formData, setFormData] = useState<SurveyFormData>(() => {
+    if (editSurveyId) return { ...INITIAL_SURVEY };
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) {
       try {
@@ -62,6 +66,19 @@ export default function SurveyPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // 編集モード: 既存回答を取得
+  useEffect(() => {
+    if (!editSurveyId || !token) return;
+    getSurvey(token, Number(editSurveyId))
+      .then((res) => {
+        setFormData({ ...INITIAL_SURVEY, ...res.answers } as SurveyFormData);
+      })
+      .catch((e) => {
+        setError(e instanceof Error ? e.message : '回答の取得に失敗しました');
+      })
+      .finally(() => setLoading(false));
+  }, [editSurveyId, token]);
 
   // 自動反映データ
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
@@ -139,9 +156,17 @@ export default function SurveyPage() {
         }
       }
       enriched.park_hours = parkHoursMap;
-      await submitSurvey(token, enriched);
+
+      let surveyId: number;
+      if (editSurveyId) {
+        const res = await updateSurvey(token, Number(editSurveyId), enriched);
+        surveyId = res.survey_id;
+      } else {
+        const res = await submitSurvey(token, enriched);
+        surveyId = res.survey_id;
+      }
       localStorage.removeItem(DRAFT_KEY);
-      navigate('/survey/complete');
+      navigate('/survey/complete', { state: { surveyId } });
     } catch (e) {
       setError(e instanceof Error ? e.message : '送信に失敗しました');
     } finally {
@@ -181,10 +206,20 @@ export default function SurveyPage() {
 
   const isLastStep = step === STEPS.length - 1;
 
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <p style={{ textAlign: 'center', padding: '2rem' }}>回答を読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>プランニング依頼者専用</h1>
+        <h1 className={styles.title}>{editSurveyId ? '回答の修正' : 'プランニング依頼者専用'}</h1>
 
         <ProgressBar currentStep={step} />
 
@@ -211,7 +246,7 @@ export default function SurveyPage() {
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting ? '送信中...' : '回答を送信する'}
+              {submitting ? '送信中...' : editSurveyId ? '修正を送信する' : '回答を送信する'}
             </button>
           ) : (
             <button
