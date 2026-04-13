@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS設定変更ガイド - tamago-ai-world.com</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.7;
+      padding: 20px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 32px 28px;
+    }
+    h1 {
+      font-size: 1.4em;
+      color: #2c3e50;
+      border-bottom: 3px solid #4A90D9;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 1.15em;
+      color: #4A90D9;
+      margin-top: 28px;
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 4px solid #4A90D9;
+    }
+    h3 {
+      font-size: 1em;
+      color: #555;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+    p { margin-bottom: 12px; }
+    .date {
+      color: #888;
+      font-size: 0.9em;
+      margin-bottom: 20px;
+    }
+    .summary-box {
+      background: #eef4fb;
+      border: 1px solid #c5d9f0;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .summary-box p { margin-bottom: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 0.92em;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #4A90D9;
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.82em;
+      font-weight: 600;
+    }
+    .badge-keep { background: #d4edda; color: #155724; }
+    .badge-delete { background: #f8d7da; color: #721c24; }
+    .badge-done { background: #d1ecf1; color: #0c5460; }
+    .badge-nochange { background: #e2e3e5; color: #383d41; }
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .warning-box strong { color: #856404; }
+    .safe-box {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .safe-box strong { color: #155724; }
+    .diagram {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+      font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+      font-size: 0.88em;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+    .step-list {
+      list-style: none;
+      counter-reset: step;
+      margin: 12px 0;
+    }
+    .step-list li {
+      counter-increment: step;
+      padding: 10px 0 10px 40px;
+      position: relative;
+      border-bottom: 1px solid #eee;
+    }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 28px;
+      height: 28px;
+      background: #4A90D9;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 600;
+      font-size: 0.85em;
+    }
+    .code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 0.9em;
+    }
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+      color: #999;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>DNS設定変更ガイド<br><small style="font-size:0.65em;color:#888;">tamago-ai-world.com</small></h1>
+    <p class="date">作成日: 2026年3月25日</p>
+
+    <div class="summary-box">
+      <p><strong>目的:</strong> <span class="code">tamago-ai-world.com</span>（ルートドメイン）を GitHub Pages（パーク攻略アプリ）に向ける</p>
+      <p><strong>条件:</strong> <span class="code">chat.tamago-ai-world.com</span>（AIbot / VPS）に影響を与えないこと</p>
+    </div>
+
+    <h2>1. 変更後の構成（ゴール）</h2>
+    <div class="diagram">
+tamago-ai-world.com          → GitHub Pages（パーク攻略アプリ）
+chat.tamago-ai-world.com     → VPS 5.182.33.65（AIbot）※変更なし
+    </div>
+
+    <h2>2. 現在のDNSレコード一覧と対応</h2>
+    <table>
+      <tr>
+        <th>タイプ</th>
+        <th>名称</th>
+        <th>値</th>
+        <th>対応</th>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>@</td>
+        <td>185.199.108.153</td>
+        <td><span class="badge badge-done">追加済み</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>@</td>
+        <td>185.199.109.153</td>
+        <td><span class="badge badge-done">追加済み</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>@</td>
+        <td>185.199.110.153</td>
+        <td><span class="badge badge-done">追加済み</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>@</td>
+        <td>185.199.111.153</td>
+        <td><span class="badge badge-done">追加済み</span></td>
+      </tr>
+      <tr style="background:#fff5f5;">
+        <td>A</td>
+        <td>@</td>
+        <td>5.182.33.65</td>
+        <td><span class="badge badge-delete">削除する</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>chat</td>
+        <td>5.182.33.65</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>www</td>
+        <td>5.182.33.65</td>
+        <td><span class="badge badge-nochange">要確認</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>mail</td>
+        <td>118.27.99.145</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>A</td>
+        <td>ml-cp</td>
+        <td>118.27.99.145</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>MX</td>
+        <td>@</td>
+        <td>mail42.conoha.ne.jp</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>NS</td>
+        <td>@</td>
+        <td>ns-a1/a2/a3.conoha.io</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>TXT</td>
+        <td>@</td>
+        <td>SPFレコード</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>TXT</td>
+        <td>_dmarc</td>
+        <td>DMARCレコード</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>TXT</td>
+        <td>default._domainkey</td>
+        <td>DKIMレコード</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+      <tr>
+        <td>CNAME</td>
+        <td>（DKIM用×3）</td>
+        <td>*.dkim.amazonses.com</td>
+        <td><span class="badge badge-keep">そのまま</span></td>
+      </tr>
+    </table>
+
+    <h2>3. なぜ <span class="code">@</span> の 5.182.33.65 を削除するのか</h2>
+    <p>現在 <span class="code">@</span>（ルートドメイン）に Aレコードが<strong>5つ</strong>登録されています：</p>
+    <ul style="margin: 8px 0 12px 20px;">
+      <li>GitHub Pages用 × 4（185.199.108〜111.153）</li>
+      <li>VPS用 × 1（5.182.33.65）</li>
+    </ul>
+    <p>DNSは複数のAレコードがある場合、<strong>ランダムにどれか1つを返します</strong>。そのため約5回に1回、アクセスがVPSに飛ばされます。VPSにはパーク攻略アプリが置かれていないため、エラーや意図しないページが表示されてしまいます。</p>
+
+    <div class="diagram">
+【削除前（現状）】
+tamago-ai-world.com → GitHub Pages（80%）
+                    → VPS（20%）← アプリがないのでエラーになる
+
+【削除後（正常）】
+tamago-ai-world.com → GitHub Pages（100%）← 常にパーク攻略が表示される
+    </div>
+
+    <h2>4. chat.tamago-ai-world.com への影響</h2>
+
+    <div class="safe-box">
+      <strong>影響なし。AIbotは今まで通り動きます。</strong>
+      <p style="margin-top:8px;"><span class="code">@</span>（ルートドメイン）と <span class="code">chat</span>（サブドメイン）は<strong>完全に独立した別のレコード</strong>です。<span class="code">@</span> のAレコードをいくら変更・削除しても、<span class="code">chat</span> のAレコードには一切影響しません。</p>
+    </div>
+
+    <div class="diagram">
+@ (ルートドメイン)    ──→ GitHub Pages   ← 今回変更する部分
+chat (サブドメイン)   ──→ VPS 5.182.33.65 ← 一切触らない
+mail                 ──→ メールサーバー   ← 一切触らない
+    </div>
+
+    <h2>5. 作業手順</h2>
+    <ol class="step-list">
+      <li>ConoHa DNS管理画面を開く</li>
+      <li><span class="code">@</span> の <span class="code">5.182.33.65</span> のAレコードを<strong>削除</strong>する（他の4つのAレコードは残す）</li>
+      <li>GitHub側でカスタムドメイン設定を行う（こちらで対応）</li>
+      <li>DNS反映を待つ（最大数時間〜24時間）</li>
+      <li><span class="code">tamago-ai-world.com</span> にアクセスしてパーク攻略アプリが表示されることを確認</li>
+      <li><span class="code">chat.tamago-ai-world.com</span> にアクセスしてAIbotが正常に動くことを確認</li>
+    </ol>
+
+    <div class="warning-box">
+      <strong>注意:</strong> <span class="code">chat</span> のAレコード（5.182.33.65）は絶対に削除しないでください。AIbotが動かなくなります。削除するのは <span class="code">@</span> の 5.182.33.65 のみです。
+    </div>
+
+    <h2>6. www について（要確認）</h2>
+    <p><span class="code">www.tamago-ai-world.com</span> も現在 VPS（5.182.33.65）を指しています。</p>
+    <ul style="margin: 8px 0 12px 20px;">
+      <li>VPSで <span class="code">www</span> 経由のサービスを使っていない場合 → 削除してOK</li>
+      <li>将来 <span class="code">www.tamago-ai-world.com</span> でもパーク攻略を表示したい場合 → CNAME <span class="code">www</span> → <span class="code">tamagoojiji.github.io</span> に変更</li>
+    </ul>
+
+    <footer>
+      <p>tamago-ai-world.com DNS設定ガイド | 2026-03-25</p>
+    </footer>
+  </div>
+</body>
+</html>
