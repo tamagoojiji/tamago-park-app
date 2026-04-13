@@ -29,6 +29,7 @@ export const TABEARUKI_GENRES: GenreInfo[] = [
 // クローズ中のレストラン（API結果からフィルタ）
 export const CLOSED_RESTAURANTS = new Set([
   'アズーラ・ディ・カプリ',
+  'フィネガンズ・バー＆グリル',
 ]);
 
 // レストラン名 → ジャンルID のマッピング
