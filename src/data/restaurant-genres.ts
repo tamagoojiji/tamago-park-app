@@ -43,9 +43,7 @@ export const RESTAURANT_GENRE_MAP: Record<string, string> = {
   'ハピネス・カフェ®': 'plate',
   'スタジオ･スターズ･レストラン': 'plate',
   'キノピオ・カフェ': 'collab',
-  'ハローキティのコーナーカフェ': 'collab',
   'スヌーピー™・バックロット・カフェ': 'collab',
-  'ワーフカフェ': 'burrito',
   'SAIDO': 'japanese',
   'ザ・ドラゴンズ・パール': 'japanese',
   '三本の箒™': 'plate',
@@ -60,6 +58,8 @@ export const TABEARUKI_GENRE_MAP: Record<string, string> = {
   'ピットストップ・ポップコーン': 'popcorn',
   'フォッシル・フュエルズ': 'meat',
   'イーブル・イーツ': 'meat',
+  'ハローキティのコーナーカフェ': 'collab',
+  'ワーフカフェ': 'other',
   'マリオ・カフェ&ストア': 'collab',
   'ヨッシー・スナック・アイランド': 'collab',
   'デリシャス・ミー！ ザ・クッキー・キッチン': 'collab',
@@ -77,7 +77,6 @@ export const RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'ディスカバリー・レストラン': '/images/restaurants/discovery-restaurant.jpg',
   'アミティ・ランディング・レストラン': '/images/restaurants/amity-landing.jpg',
   'ロストワールド・レストラン': '/images/restaurants/lost-world-restaurant.jpg',
-  'ロンバーズ・ランディング™': '/images/restaurants/lombards-landing.jpg',
   'ハピネス・カフェ®': '/images/restaurants/happiness-cafe.jpg',
   'スタジオ･スターズ･レストラン': '/images/restaurants/studio-stars-restaurant.jpg',
   'キノピオ・カフェ': '/images/restaurants/kinopio-cafe.jpg',
@@ -85,6 +84,8 @@ export const RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'SAIDO': '/images/restaurants/saido.jpg',
   '三本の箒™': '/images/restaurants/three-broomsticks.jpg',
   'ビバリーヒルズ・ブランジェリー': '/images/restaurants/beverly-hills-boulangerie.jpg',
+  'ザ・ドラゴンズ・パール': '/images/restaurants/dragons-pearl.jpg',
+  'パークサイド・グリル': '/images/restaurants/parkside-grille.jpg',
 };
 
 // 食べ歩きジャンル → 画像パス のマッピング

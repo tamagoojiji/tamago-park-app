@@ -4,12 +4,12 @@ import {
   RESTAURANT_GENRES,
   TABEARUKI_GENRES,
   RESTAURANT_GENRE_MAP,
-  TABEARUKI_GENRE_MAP,
   RESTAURANT_IMAGE_MAP,
   TABEARUKI_IMAGE_MAP,
   CLOSED_RESTAURANTS,
   isTabearuki,
 } from '../data/restaurant-genres';
+import { TABEARUKI_MENU, type TabearukiItem } from '../data/tabearuki-menu';
 import styles from './RestaurantList.module.css';
 
 type Step = 'category' | 'genre' | 'result';
@@ -25,8 +25,8 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [category, setCategory] = useState<Category | null>(null);
   const [genreId, setGenreId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RestaurantInfo | null>(null);
+  const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
 
-  // クローズ中を除外
   const activeRestaurants = restaurants.filter(
     (r) => !CLOSED_RESTAURANTS.has(r.restaurant_name)
   );
@@ -35,7 +35,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     return <p className={styles.placeholder}>レストラン情報を読み込み中...</p>;
   }
 
-  if (activeRestaurants.length === 0) {
+  if (activeRestaurants.length === 0 && TABEARUKI_MENU.length === 0) {
     return <p className={styles.placeholder}>レストラン情報がありません</p>;
   }
 
@@ -44,6 +44,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       setStep('genre');
       setGenreId(null);
       setSelected(null);
+      setSelectedMenu(null);
     } else if (step === 'genre') {
       setStep('category');
       setCategory(null);
@@ -60,17 +61,18 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     setStep('result');
   };
 
-  const getFilteredList = (): RestaurantInfo[] => {
-    if (!category || !genreId) return [];
-    const genreMap = category === 'restaurant' ? RESTAURANT_GENRE_MAP : TABEARUKI_GENRE_MAP;
-    const isTabearukiCat = category === 'tabearuki';
-
-    const catList = activeRestaurants.filter((r) =>
-      isTabearukiCat ? isTabearuki(r.restaurant_name) : !isTabearuki(r.restaurant_name)
-    );
-
+  // レストラン用フィルタ
+  const getFilteredRestaurants = (): RestaurantInfo[] => {
+    if (!genreId) return [];
+    const catList = activeRestaurants.filter((r) => !isTabearuki(r.restaurant_name));
     if (genreId === 'all') return catList;
-    return catList.filter((r) => genreMap[r.restaurant_name] === genreId);
+    return catList.filter((r) => RESTAURANT_GENRE_MAP[r.restaurant_name] === genreId);
+  };
+
+  // 食べ歩きメニュー用フィルタ
+  const getFilteredMenu = (): TabearukiItem[] => {
+    if (!genreId) return [];
+    return TABEARUKI_MENU.filter((m) => m.genre === genreId);
   };
 
   const genreLabel = () => {
@@ -138,8 +140,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       {step === 'result' && (
         <>
           <p className={styles.stepTitle}>{genreLabel()}</p>
-          {(() => {
-            const list = getFilteredList();
+
+          {/* レストラン結果 */}
+          {category === 'restaurant' && (() => {
+            const list = getFilteredRestaurants();
             if (list.length === 0) {
               return <p className={styles.placeholder}>該当するお店がありません</p>;
             }
@@ -158,9 +162,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                         {img ? (
                           <img src={img} alt={r.restaurant_name} className={styles.resultImg} />
                         ) : (
-                          <span className={styles.resultIcon}>
-                            {category === 'tabearuki' ? '🍢' : '🍽️'}
-                          </span>
+                          <span className={styles.resultIcon}>🍽️</span>
                         )}
                         <div className={styles.resultInfo}>
                           <span className={styles.resultName}>{r.restaurant_name}</span>
@@ -174,7 +176,38 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                     );
                   })}
                 </div>
+                <div className={styles.mapPlaceholder}>
+                  <span className={styles.mapIcon}>🗺️</span>
+                  <span>MAP準備中</span>
+                </div>
+              </>
+            );
+          })()}
 
+          {/* 食べ歩きメニュー結果 */}
+          {category === 'tabearuki' && (() => {
+            const menuList = getFilteredMenu();
+            if (menuList.length === 0) {
+              return <p className={styles.placeholder}>メニュー情報は準備中です</p>;
+            }
+            return (
+              <>
+                <p className={styles.resultCount}>{menuList.length}品</p>
+                <div className={styles.resultList}>
+                  {menuList.map((m) => (
+                    <button
+                      key={`${m.shop}-${m.name}`}
+                      className={styles.menuCard}
+                      onClick={() => setSelectedMenu(m)}
+                    >
+                      <div className={styles.menuInfo}>
+                        <span className={styles.menuName}>{m.name}</span>
+                        <span className={styles.menuPrice}>¥{m.price.toLocaleString()}</span>
+                        <span className={styles.menuShop}>📍 {m.shop}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
                 <div className={styles.mapPlaceholder}>
                   <span className={styles.mapIcon}>🗺️</span>
                   <span>MAP準備中</span>
@@ -185,7 +218,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         </>
       )}
 
-      {/* ボトムシート */}
+      {/* ボトムシート（レストラン） */}
       {selected && (
         <div className={styles.overlay} onClick={() => setSelected(null)}>
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
@@ -200,20 +233,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                   className={styles.sheetImg}
                 />
               ) : (
-                <span className={styles.sheetIcon}>
-                  {isTabearuki(selected.restaurant_name) ? '🍢' : '🍽️'}
-                </span>
+                <span className={styles.sheetIcon}>🍽️</span>
               )}
               <h3 className={styles.sheetName}>{selected.restaurant_name}</h3>
-              <span className={styles.sheetCategory}>
-                {isTabearuki(selected.restaurant_name) ? '食べ歩き' : 'レストラン'}
-              </span>
-              {selected.dining_type && (
-                <div className={styles.sheetRow}>
-                  <span className={styles.sheetLabel}>ジャンル</span>
-                  <span className={styles.sheetValue}>{selected.dining_type}</span>
-                </div>
-              )}
+              <span className={styles.sheetCategory}>レストラン</span>
               {selected.open_time && selected.close_time && (
                 <div className={styles.sheetRow}>
                   <span className={styles.sheetLabel}>営業時間</span>
@@ -222,6 +245,26 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                   </span>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ボトムシート（食べ歩きメニュー） */}
+      {selectedMenu && (
+        <div className={styles.overlay} onClick={() => setSelectedMenu(null)}>
+          <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setSelectedMenu(null)}>
+              ×
+            </button>
+            <div className={styles.sheetContent}>
+              <span className={styles.sheetIcon}>🍢</span>
+              <h3 className={styles.sheetName}>{selectedMenu.name}</h3>
+              <span className={styles.sheetPrice}>¥{selectedMenu.price.toLocaleString()}</span>
+              <div className={styles.sheetRow}>
+                <span className={styles.sheetLabel}>販売場所</span>
+                <span className={styles.sheetValue}>{selectedMenu.shop}</span>
+              </div>
             </div>
           </div>
         </div>

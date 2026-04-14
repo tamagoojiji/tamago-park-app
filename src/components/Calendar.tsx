@@ -114,16 +114,15 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     fetchClosures().then(setClosuresData);
   }, []);
 
-  // レストランデータ取得
+  // レストランデータ取得（日付非依存: 常にtodayを使用）
   useEffect(() => {
     if (activeTab !== 'restaurant') return;
-    const date = selectedDate || today;
     setRestaurantsLoading(true);
-    fetchRestaurants(date)
+    fetchRestaurants(today)
       .then((res) => setRestaurants(res.restaurants))
       .catch((e) => console.error('レストラン取得エラー:', e))
       .finally(() => setRestaurantsLoading(false));
-  }, [activeTab, selectedDate, today]);
+  }, [activeTab, today]);
 
   // ショーデータ取得（ショータブ選択時 + 日付変更時）
   useEffect(() => {
@@ -244,7 +243,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
         ))}
       </div>
 
-      {/* 月ナビゲーション */}
+      {/* 月ナビゲーション + カレンダーグリッド（レストランタブ時は非表示） */}
+      {activeTab !== 'restaurant' && (
+      <>
       <div className={styles.monthNav}>
         <button className={styles.navButton} onClick={() => changeMonth(-1)}>
           ‹
@@ -327,6 +328,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           })}
         </div>
       </div>
+      </>
+      )}
 
       {/* 日付選択時の詳細 */}
       {selectedDate && activeTab !== 'shows' && activeTab !== 'closure' && activeTab !== 'restaurant' && (
@@ -530,15 +533,26 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       )}
                     </div>
                     {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
-                    {evt.source_image_url && (
-                      <div className={styles.eventCardImage}>
-                        <img
-                          src={evt.source_image_url.startsWith('http') ? evt.source_image_url : `${AUTH_BASE}${evt.source_image_url}`}
-                          alt={evt.name}
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
+                    {evt.source_image_url && (() => {
+                      const url = evt.source_image_url!;
+                      if (url.startsWith('/')) {
+                        return (
+                          <div className={styles.eventCardImage}>
+                            <img src={`${AUTH_BASE}${url}`} alt={evt.name} loading="lazy" />
+                          </div>
+                        );
+                      }
+                      try {
+                        if (new URL(url).origin === new URL(AUTH_BASE).origin) {
+                          return (
+                            <div className={styles.eventCardImage}>
+                              <img src={url} alt={evt.name} loading="lazy" />
+                            </div>
+                          );
+                        }
+                      } catch { /* invalid URL → non-display */ }
+                      return null;
+                    })()}
                     <div className={styles.eventDetailGrid}>
                       <div className={styles.eventDetailRow}>
                         <span className={styles.eventDetailLabel}>期間</span>

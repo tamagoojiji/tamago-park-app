@@ -1,4 +1,4 @@
-const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-world.com';
+export const AUTH_BASE = import.meta.env.VITE_AUTH_API_URL || 'https://api.tamago-ai-world.com';
 
 export interface ParkEvent {
   id: number;
@@ -12,6 +12,7 @@ export interface ParkEvent {
   location: string | null;
   duration: string | null;
   age_restriction: string | null;
+  source_image_url: string | null;
   status: string;
   created_at: string;
   updated_at: string;

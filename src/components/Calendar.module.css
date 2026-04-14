@@ -526,6 +526,18 @@
   margin-top: 2px;
 }
 
+.eventCardImage {
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.eventCardImage img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .eventDetailGrid {
   display: flex;
   flex-direction: column;
