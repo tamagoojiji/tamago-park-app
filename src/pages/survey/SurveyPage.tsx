@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { SurveyFormData } from '../../types/survey';
 import { INITIAL_SURVEY, STEPS } from '../../types/survey';
 import type { ClosureEntry } from '../../data/closures';
-import { parkHours } from '../../data/hours';
+import { fetchParkHours } from '../../data/hours';
 import { fetchClosures, getClosuresForDate } from '../../data/closures';
 import type { ShowData } from '../../api/shows';
 import { fetchShows } from '../../api/shows';
@@ -149,10 +149,11 @@ export default function SurveyPage() {
     try {
       // 各来園日の営業時間を付与
       const enriched = { ...formData } as Record<string, unknown>;
+      const parkHoursData = await fetchParkHours();
       const parkHoursMap: Record<string, string> = {};
       for (const vd of formData.visit_dates) {
-        if (vd.date && parkHours[vd.date]) {
-          parkHoursMap[vd.date] = parkHours[vd.date];
+        if (vd.date && parkHoursData[vd.date]) {
+          parkHoursMap[vd.date] = parkHoursData[vd.date];
         }
       }
       enriched.park_hours = parkHoursMap;

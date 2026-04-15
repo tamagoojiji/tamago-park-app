@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { parkHours } from '../../../data/hours';
+import { useMemo, useState, useEffect } from 'react';
+import { fetchParkHours } from '../../../data/hours';
 import styles from './components.module.css';
 
 interface Props {
@@ -8,12 +8,18 @@ interface Props {
 }
 
 export default function StepDateSelect({ date, onChange }: Props) {
+  const [parkHours, setParkHours] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchParkHours().then(setParkHours);
+  }, []);
+
   const availableDates = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     return Object.keys(parkHours)
       .filter((d) => d >= today)
       .sort();
-  }, []);
+  }, [parkHours]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.value;
