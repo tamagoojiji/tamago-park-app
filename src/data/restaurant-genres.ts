@@ -71,8 +71,23 @@ export const TABEARUKI_GENRE_MAP: Record<string, string> = {
   'マジック・ニープ™・カート': 'other',
 };
 
-// レストラン名 → 画像パス のマッピング
-export const RESTAURANT_IMAGE_MAP: Record<string, string> = {
+// 期間限定画像の定義
+interface LimitedImage {
+  image: string;
+  start: string; // YYYY-MM-DD
+  end: string;   // YYYY-MM-DD
+}
+
+const LIMITED_RESTAURANT_IMAGES: Record<string, LimitedImage> = {
+  'ロストワールド・レストラン': {
+    image: '/images/restaurants/lost-world-mh-collab.png',
+    start: '2025-11-19',
+    end: '2026-05-17',
+  },
+};
+
+// レストラン名 → 画像パス のマッピング（通常時）
+const BASE_RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'ルイズ N.Y. ピザパーラー': '/images/restaurants/louis-ny-pizza.jpg',
   'メルズ・ドライブイン': '/images/restaurants/mels-drive-in.jpg',
   'ディスカバリー・レストラン': '/images/restaurants/discovery-restaurant.jpg',
@@ -88,6 +103,20 @@ export const RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'ザ・ドラゴンズ・パール': '/images/restaurants/dragons-pearl.jpg',
   'パークサイド・グリル': '/images/restaurants/parkside-grille.jpg',
 };
+
+// 期間限定を考慮した画像マップを生成
+function buildImageMap(): Record<string, string> {
+  const today = new Date().toISOString().slice(0, 10);
+  const map = { ...BASE_RESTAURANT_IMAGE_MAP };
+  for (const [name, limited] of Object.entries(LIMITED_RESTAURANT_IMAGES)) {
+    if (today >= limited.start && today <= limited.end) {
+      map[name] = limited.image;
+    }
+  }
+  return map;
+}
+
+export const RESTAURANT_IMAGE_MAP = buildImageMap();
 
 // 食べ歩きジャンル → 画像パス のマッピング
 export const TABEARUKI_IMAGE_MAP: Record<string, string> = {
