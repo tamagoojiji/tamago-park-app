@@ -21,7 +21,7 @@ export default function StepDining({ data, onChange }: Props) {
 
   return (
     <>
-      <QuestionCard label="Q20. モーニングはどうする？">
+      <QuestionCard label="Q20. モーニングはどうする？（荷物検査場を通過するときには、食べ物の持ち込みは禁止です）">
         <SingleSelect
           name="morning_meal"
           options={MORNING_MEAL_OPTIONS}
