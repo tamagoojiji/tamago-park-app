@@ -97,11 +97,11 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
           <p className={styles.stepTitle}>どちらを探しますか？</p>
           <div className={styles.categoryGrid}>
             <button className={styles.categoryCard} onClick={() => handleCategory('restaurant')}>
-              <span className={styles.categoryIcon}>🍽️</span>
+              <img src="/images/category-restaurant.png" alt="レストラン" className={styles.categoryImg} />
               <span className={styles.categoryLabel}>レストラン</span>
             </button>
             <button className={styles.categoryCard} onClick={() => handleCategory('tabearuki')}>
-              <span className={styles.categoryIcon}>🍢</span>
+              <img src="/images/category-tabearuki.png" alt="食べ歩きフード" className={styles.categoryImg} />
               <span className={styles.categoryLabel}>食べ歩きフード</span>
             </button>
           </div>

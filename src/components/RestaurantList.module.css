@@ -54,6 +54,13 @@
   font-size: 36px;
 }
 
+.categoryImg {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
 .categoryLabel {
   font-size: var(--text-base);
   font-weight: 700;
