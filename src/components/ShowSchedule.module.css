@@ -17,6 +17,25 @@
   font-size: var(--text-xxs);
   color: var(--color-text-sub);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.officialLink {
+  font-size: 10px;
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: 2px 8px;
+  border: 1px solid var(--color-primary);
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.officialLink:active {
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .countBadge {

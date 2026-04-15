@@ -238,7 +238,7 @@ export default function ShowSchedule({
 
   return (
     <div className={styles.wrap}>
-      {/* 日付 + ショー数 */}
+      {/* 日付 + 公式リンク + ショー数 */}
       <div className={styles.dateRow}>
         {scheduleDate && (
           <span className={styles.dateLabel}>
@@ -246,6 +246,14 @@ export default function ShowSchedule({
               month: 'long',
               day: 'numeric',
             })}の情報
+            <a
+              href={`https://www.usj.co.jp/web/ja/jp/attractions/show-and-attraction-schedule?date=${scheduleDate}#timetable`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.officialLink}
+            >
+              公式情報 ↗
+            </a>
           </span>
         )}
         <span className={styles.countBadge}>
