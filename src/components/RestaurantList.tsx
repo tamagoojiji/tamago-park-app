@@ -66,7 +66,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     if (!genreId) return [];
     const catList = activeRestaurants.filter((r) => !isTabearuki(r.restaurant_name));
     if (genreId === 'all') return catList;
-    return catList.filter((r) => RESTAURANT_GENRE_MAP[r.restaurant_name] === genreId);
+    return catList.filter((r) => {
+      const genres = RESTAURANT_GENRE_MAP[r.restaurant_name];
+      return genres && genres.includes(genreId);
+    });
   };
 
   // 食べ歩きメニュー用フィルタ
@@ -114,25 +117,40 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
           <p className={styles.stepTitle}>
             {category === 'restaurant' ? 'ジャンルを選んでください' : 'フードを選んでください'}
           </p>
-          <div className={styles.genreGrid}>
-            {(category === 'restaurant' ? RESTAURANT_GENRES : TABEARUKI_GENRES).map((g) => {
-              const genreImage = category === 'tabearuki' ? TABEARUKI_IMAGE_MAP[g.id] : undefined;
-              return (
+          {category === 'restaurant' ? (
+            <div className={styles.genreTabs}>
+              {RESTAURANT_GENRES.map((g) => (
                 <button
                   key={g.id}
-                  className={styles.genreCard}
+                  className={styles.genreTab}
                   onClick={() => handleGenre(g.id)}
                 >
-                  {genreImage ? (
-                    <img src={genreImage} alt={g.label} className={styles.genreImg} />
-                  ) : (
-                    <span className={styles.genreIcon}>{g.icon}</span>
-                  )}
-                  <span className={styles.genreLabel}>{g.label}</span>
+                  <span className={styles.genreTabIcon}>{g.icon}</span>
+                  <span className={styles.genreTabLabel}>{g.label}</span>
                 </button>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.genreGrid}>
+              {TABEARUKI_GENRES.map((g) => {
+                const genreImage = TABEARUKI_IMAGE_MAP[g.id];
+                return (
+                  <button
+                    key={g.id}
+                    className={styles.genreCard}
+                    onClick={() => handleGenre(g.id)}
+                  >
+                    {genreImage ? (
+                      <img src={genreImage} alt={g.label} className={styles.genreImg} />
+                    ) : (
+                      <span className={styles.genreIcon}>{g.icon}</span>
+                    )}
+                    <span className={styles.genreLabel}>{g.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
 

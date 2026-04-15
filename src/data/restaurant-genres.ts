@@ -6,7 +6,7 @@ export interface GenreInfo {
 }
 
 export const RESTAURANT_GENRES: GenreInfo[] = [
-  { id: 'all', label: '一覧を見る', icon: '📋' },
+  { id: 'all', label: '一覧', icon: '📋' },
   { id: 'pizza', label: 'ピザ', icon: '🍕' },
   { id: 'burger', label: 'ハンバーガー', icon: '🍔' },
   { id: 'pasta', label: 'パスタ系', icon: '🍝' },
@@ -14,6 +14,7 @@ export const RESTAURANT_GENRES: GenreInfo[] = [
   { id: 'collab', label: 'コラボフード', icon: '⭐' },
   { id: 'burrito', label: 'ブリトー', icon: '🌯' },
   { id: 'japanese', label: '和食', icon: '🍣' },
+  { id: 'chinese', label: '中華', icon: '🥟' },
   { id: 'premium-meat', label: '高級肉系', icon: '🥩' },
 ];
 
@@ -32,25 +33,25 @@ export const CLOSED_RESTAURANTS = new Set([
   'フィネガンズ・バー＆グリル',
 ]);
 
-// レストラン名 → ジャンルID のマッピング
-export const RESTAURANT_GENRE_MAP: Record<string, string> = {
-  'ルイズ N.Y. ピザパーラー': 'pizza',
-  'メルズ・ドライブイン': 'burger',
-  'ディスカバリー・レストラン': 'plate',
-  'アミティ・ランディング・レストラン': 'plate',
-  'ロストワールド・レストラン': 'plate',
-  'ロンバーズ・ランディング™': 'plate',
-  'ハピネス・カフェ®': 'plate',
-  'スタジオ･スターズ･レストラン': 'plate',
-  'キノピオ・カフェ': 'collab',
-  'スヌーピー™・バックロット・カフェ': 'collab',
-  'SAIDO': 'japanese',
-  'ザ・ドラゴンズ・パール': 'japanese',
-  '三本の箒™': 'plate',
-  'パークサイド・グリル': 'premium-meat',
-  'フィネガンズ・バー＆グリル': 'premium-meat',
-  'ビバリーヒルズ・ブランジェリー': 'plate',
-  'ホッグズ・ヘッド・パブ': 'plate',
+// レストラン名 → ジャンルID のマッピング（複数ジャンル対応）
+export const RESTAURANT_GENRE_MAP: Record<string, string[]> = {
+  'ルイズ N.Y. ピザパーラー': ['pizza'],
+  'メルズ・ドライブイン': ['burger'],
+  'ディスカバリー・レストラン': ['burger', 'collab'],
+  'アミティ・ランディング・レストラン': ['burrito'],
+  'ロストワールド・レストラン': ['plate', 'collab'],
+  'ロンバーズ・ランディング™': ['plate'],
+  'ハピネス・カフェ®': ['plate', 'collab'],
+  'スタジオ･スターズ･レストラン': ['plate', 'collab'],
+  'キノピオ・カフェ': ['collab'],
+  'スヌーピー™・バックロット・カフェ': ['pasta', 'collab'],
+  'SAIDO': ['japanese'],
+  'ザ・ドラゴンズ・パール': ['chinese'],
+  '三本の箒™': ['plate', 'collab'],
+  'パークサイド・グリル': ['premium-meat'],
+  'フィネガンズ・バー＆グリル': ['premium-meat'],
+  'ビバリーヒルズ・ブランジェリー': ['collab'],
+  'ホッグズ・ヘッド・パブ': ['plate'],
 };
 
 // 食べ歩き名 → ジャンルID のマッピング

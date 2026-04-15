@@ -37,13 +37,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 24px 12px;
+  gap: 0;
+  padding: 0;
   background: var(--color-bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: transform 0.15s;
+  overflow: hidden;
 }
 
 .categoryCard:active {
@@ -55,9 +56,8 @@
 }
 
 .categoryImg {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
 }
 
@@ -65,9 +65,47 @@
   font-size: var(--text-base);
   font-weight: 700;
   color: var(--color-text);
+  padding: 12px 0;
 }
 
-/* Step 2: ジャンル選択 */
+/* Step 2: ジャンル選択（レストラン: 横スクロールタブ） */
+.genreTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.genreTab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-pill, 50px);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.genreTab:active {
+  transform: scale(0.95);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.genreTabIcon {
+  font-size: 16px;
+}
+
+.genreTabLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Step 2: ジャンル選択（食べ歩き: グリッド） */
 .genreGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
