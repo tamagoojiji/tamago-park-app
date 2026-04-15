@@ -3,7 +3,7 @@ import type { CalendarTab, PlanItem } from '../types';
 import { fetchWeather, weatherCodeToEmoji, type DailyWeather } from '../api/weather';
 import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
-import { annualPassExcluded } from '../data/annual-pass';
+import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
 import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
@@ -87,6 +87,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [closuresData, setClosuresData] = useState<ClosuresData | null>(null);
   const [parkHours, setParkHours] = useState<Record<string, string>>({});
   const [ticketPrices, setTicketPrices] = useState<Record<string, number>>({});
+  const [annualPassExcluded, setAnnualPassExcluded] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -99,10 +100,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   }, []);
 
-  // 営業時間・チケット価格データ取得
+  // 営業時間・チケット価格・年パス除外日データ取得
   useEffect(() => {
     fetchParkHours().then(setParkHours);
     fetchTicketPrices().then(setTicketPrices);
+    fetchAnnualPassExcluded().then(setAnnualPassExcluded);
   }, []);
 
   // 天気データ取得
