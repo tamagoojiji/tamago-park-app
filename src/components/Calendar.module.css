@@ -437,6 +437,36 @@
   gap: 8px;
 }
 
+.eventThemeGroup {
+  margin-bottom: 16px;
+}
+
+.eventThemeHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+}
+
+.eventThemeEmoji {
+  font-size: 18px;
+}
+
+.eventThemeLabel {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  flex: 1;
+}
+
+.eventThemeCount {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
 .eventGroupLabel {
   font-size: var(--text-sm);
   font-weight: 800;

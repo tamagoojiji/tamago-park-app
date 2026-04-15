@@ -109,6 +109,63 @@ export function getSingleDayEvents(events: ParkEvent[], date: string): ParkEvent
   return events.filter(e => !e.end_date && e.date === date && e.category !== 'private');
 }
 
+// テーマ定義
+export interface EventTheme {
+  id: string;
+  label: string;
+  emoji: string;
+  keywords: string[];
+}
+
+const EVENT_THEMES: EventTheme[] = [
+  { id: 'cooljapan', label: 'COOL JAPAN', emoji: '🇯🇵', keywords: ['コナン', '呪術廻戦', 'フリーレン', 'マスカレード', '東野圭吾'] },
+  { id: 'jurassic', label: 'ジュラシック・ワールド', emoji: '🦖', keywords: ['ジュラシック'] },
+  { id: '25th', label: '25周年 Discover U!!!', emoji: '🎂', keywords: ['Discover U', '25周年', 'Back to 2001', 'NO LIMIT! パレード', 'ライト・ヒア'] },
+  { id: 'harrypotter', label: 'ハリー・ポッター', emoji: '⚡', keywords: ['バタービール', 'ホグワーツ', 'ハリー・ポッター'] },
+  { id: 'monsterhunter', label: 'モンスターハンター', emoji: '⚔️', keywords: ['モンスターハンター', 'モリバーの宴'] },
+  { id: 'wicked', label: 'ウィキッド', emoji: '🧙‍♀️', keywords: ['ウィキッド'] },
+];
+
+// イベント名からテーマIDを判定
+export function getEventTheme(event: ParkEvent): string {
+  for (const theme of EVENT_THEMES) {
+    if (theme.keywords.some(kw => event.name.includes(kw))) {
+      return theme.id;
+    }
+  }
+  return 'other';
+}
+
+// テーマ情報を取得
+export function getThemeInfo(themeId: string): EventTheme {
+  return EVENT_THEMES.find(t => t.id === themeId) || { id: 'other', label: 'その他', emoji: '📌', keywords: [] };
+}
+
+// イベントをテーマ別にグルーピング
+export function groupEventsByTheme(events: ParkEvent[]): { theme: EventTheme; events: ParkEvent[] }[] {
+  const groups = new Map<string, ParkEvent[]>();
+
+  for (const event of events) {
+    const themeId = getEventTheme(event);
+    if (!groups.has(themeId)) groups.set(themeId, []);
+    groups.get(themeId)!.push(event);
+  }
+
+  // テーマ定義順でソート、otherは最後
+  const result: { theme: EventTheme; events: ParkEvent[] }[] = [];
+  for (const theme of EVENT_THEMES) {
+    const evts = groups.get(theme.id);
+    if (evts && evts.length > 0) {
+      result.push({ theme, events: evts });
+    }
+  }
+  const otherEvts = groups.get('other');
+  if (otherEvts && otherEvts.length > 0) {
+    result.push({ theme: { id: 'other', label: 'その他', emoji: '📌', keywords: [] }, events: otherEvts });
+  }
+  return result;
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));

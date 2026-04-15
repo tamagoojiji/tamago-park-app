@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
 import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import ShowSchedule from './ShowSchedule';
@@ -502,6 +502,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             const ongoingEvents = getOngoingLimitedEvents(parkEvents, dateStr);
             const singleEvents = getSingleDayEvents(parkEvents, dateStr);
 
+            const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents];
+            const hasContent = allDateEvents.length > 0;
+
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
                 const dt = new Date(d + 'T00:00:00');
@@ -519,9 +522,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
 
             const subCatLabel = (sc: string) => sc === 'attraction' ? '🎢 アトラクション' : sc === 'show' ? '🎭 ショー' : '🎪 イベント';
             const subCatEmoji = (sc: string) => sc === 'attraction' ? '🎢' : sc === 'show' ? '🎭' : '🎪';
+            const isStartEnd = (e: ParkEvent) => e.date === dateStr || (e.end_date !== null && e.end_date === dateStr);
             const isStart = (e: ParkEvent) => e.date === dateStr;
+            const isSingle = (e: ParkEvent) => !e.end_date;
 
-            const hasContent = startEndEvents.length > 0 || ongoingEvents.length > 0 || singleEvents.length > 0;
+            const themedGroups = groupEventsByTheme(allDateEvents);
 
             return !hasContent ? (
               <p className={styles.tabPlaceholder}>
@@ -529,138 +534,141 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               </p>
             ) : (
               <div className={styles.eventListWrap}>
-                {/* 初日・最終日の詳細カード */}
-                {startEndEvents.map(evt => (
-                  <div key={evt.id} className={`${styles.eventCard} ${isStart(evt) ? '' : styles.eventCardEnding}`}>
-                    <div className={styles.eventCardHeader}>
-                      <span className={styles.eventCardBadge} data-type={isStart(evt) ? 'start' : 'end'}>
-                        {isStart(evt) ? '開始' : '終了'}
-                      </span>
-                      {evt.official_url ? (
-                        <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
-                      ) : (
-                        <span className={styles.eventCardName}>{evt.name}</span>
-                      )}
+                {themedGroups.map(({ theme, events: themeEvents }) => (
+                  <div key={theme.id} className={styles.eventThemeGroup}>
+                    <div className={styles.eventThemeHeader}>
+                      <span className={styles.eventThemeEmoji}>{theme.emoji}</span>
+                      <span className={styles.eventThemeLabel}>{theme.label}</span>
+                      <span className={styles.eventThemeCount}>{themeEvents.length}件</span>
                     </div>
-                    {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
-                    {evt.source_image_url && (() => {
-                      const url = evt.source_image_url!;
-                      if (url.startsWith('/')) {
+                    {themeEvents.map(evt => {
+                      // 初日・最終日 → 詳細カード
+                      if (isStartEnd(evt)) {
                         return (
-                          <div className={styles.eventCardImage}>
-                            <img src={`${AUTH_BASE}${url}`} alt={evt.name} loading="lazy" />
+                          <div key={evt.id} className={`${styles.eventCard} ${isStart(evt) ? '' : styles.eventCardEnding}`}>
+                            <div className={styles.eventCardHeader}>
+                              <span className={styles.eventCardBadge} data-type={isStart(evt) ? 'start' : 'end'}>
+                                {isStart(evt) ? '開始' : '終了'}
+                              </span>
+                              {evt.official_url ? (
+                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
+                              ) : (
+                                <span className={styles.eventCardName}>{evt.name}</span>
+                              )}
+                            </div>
+                            {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
+                            {evt.source_image_url && (() => {
+                              const url = evt.source_image_url!;
+                              if (url.startsWith('/')) {
+                                return (
+                                  <div className={styles.eventCardImage}>
+                                    <img src={`${AUTH_BASE}${url}`} alt={evt.name} loading="lazy" />
+                                  </div>
+                                );
+                              }
+                              try {
+                                if (new URL(url).origin === new URL(AUTH_BASE).origin) {
+                                  return (
+                                    <div className={styles.eventCardImage}>
+                                      <img src={url} alt={evt.name} loading="lazy" />
+                                    </div>
+                                  );
+                                }
+                              } catch { /* invalid URL → skip */ }
+                              return null;
+                            })()}
+                            <div className={styles.eventDetailGrid}>
+                              <div className={styles.eventDetailRow}>
+                                <span className={styles.eventDetailLabel}>期間</span>
+                                <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                              </div>
+                              <div className={styles.eventDetailRow}>
+                                <span className={styles.eventDetailLabel}>種別</span>
+                                <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                              </div>
+                              {evt.location && (
+                                <div className={styles.eventDetailRow}>
+                                  <span className={styles.eventDetailLabel}>開催場所</span>
+                                  <span className={styles.eventDetailValue}>{evt.location}</span>
+                                </div>
+                              )}
+                              {evt.duration && (
+                                <div className={styles.eventDetailRow}>
+                                  <span className={styles.eventDetailLabel}>所要時間</span>
+                                  <span className={styles.eventDetailValue}>{evt.duration}</span>
+                                </div>
+                              )}
+                              {evt.age_restriction && (
+                                <div className={styles.eventDetailRow}>
+                                  <span className={styles.eventDetailLabel}>年齢制限</span>
+                                  <span className={styles.eventDetailValue}>{evt.age_restriction}</span>
+                                </div>
+                              )}
+                              {evt.summary && (
+                                <div className={styles.eventDetailRow}>
+                                  <span className={styles.eventDetailLabel}>概要</span>
+                                  <span className={styles.eventDetailValue}>{evt.summary}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       }
-                      try {
-                        if (new URL(url).origin === new URL(AUTH_BASE).origin) {
-                          return (
-                            <div className={styles.eventCardImage}>
-                              <img src={url} alt={evt.name} loading="lazy" />
+                      // 単発イベント → シンプルカード
+                      if (isSingle(evt)) {
+                        return (
+                          <div key={evt.id} className={styles.eventCard}>
+                            <div className={styles.eventCardHeader}>
+                              <span className={styles.eventCardEmoji}>{subCatEmoji(evt.sub_category)}</span>
+                              {evt.official_url ? (
+                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
+                              ) : (
+                                <span className={styles.eventCardName}>{evt.name}</span>
+                              )}
                             </div>
-                          );
-                        }
-                      } catch { /* invalid URL → non-display */ }
-                      return null;
-                    })()}
-                    <div className={styles.eventDetailGrid}>
-                      <div className={styles.eventDetailRow}>
-                        <span className={styles.eventDetailLabel}>期間</span>
-                        <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
-                      </div>
-                      <div className={styles.eventDetailRow}>
-                        <span className={styles.eventDetailLabel}>種別</span>
-                        <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
-                      </div>
-                      {evt.location && (
-                        <div className={styles.eventDetailRow}>
-                          <span className={styles.eventDetailLabel}>開催場所</span>
-                          <span className={styles.eventDetailValue}>{evt.location}</span>
-                        </div>
-                      )}
-                      {evt.duration && (
-                        <div className={styles.eventDetailRow}>
-                          <span className={styles.eventDetailLabel}>所要時間</span>
-                          <span className={styles.eventDetailValue}>{evt.duration}</span>
-                        </div>
-                      )}
-                      {evt.age_restriction && (
-                        <div className={styles.eventDetailRow}>
-                          <span className={styles.eventDetailLabel}>年齢制限</span>
-                          <span className={styles.eventDetailValue}>{evt.age_restriction}</span>
-                        </div>
-                      )}
-                      {evt.summary && (
-                        <div className={styles.eventDetailRow}>
-                          <span className={styles.eventDetailLabel}>概要</span>
-                          <span className={styles.eventDetailValue}>{evt.summary}</span>
-                        </div>
-                      )}
-                    </div>
+                            {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
+                          </div>
+                        );
+                      }
+                      // 開催中 → コンパクト（折りたたみ）
+                      return (
+                        <details key={evt.id} className={styles.eventCompact}>
+                          <summary className={styles.eventCompactSummary}>
+                            <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
+                            {evt.official_url ? (
+                              <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
+                            ) : (
+                              <span className={styles.eventCompactName}>{evt.name}</span>
+                            )}
+                            <span className={styles.eventCompactDate}>{formatEndDate(evt)}</span>
+                          </summary>
+                          <div className={styles.eventDetailGrid}>
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>期間</span>
+                              <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                            </div>
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>種別</span>
+                              <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                            </div>
+                            {evt.location && (
+                              <div className={styles.eventDetailRow}>
+                                <span className={styles.eventDetailLabel}>開催場所</span>
+                                <span className={styles.eventDetailValue}>{evt.location}</span>
+                              </div>
+                            )}
+                            {evt.summary && (
+                              <div className={styles.eventDetailRow}>
+                                <span className={styles.eventDetailLabel}>概要</span>
+                                <span className={styles.eventDetailValue}>{evt.summary}</span>
+                              </div>
+                            )}
+                          </div>
+                        </details>
+                      );
+                    })}
                   </div>
                 ))}
-
-                {/* 期間中のコンパクト表示 */}
-                {ongoingEvents.length > 0 && (
-                  <>
-                    <div className={styles.eventGroupLabel}>📋 開催中の期間限定</div>
-                    {ongoingEvents.map(evt => (
-                      <details key={evt.id} className={styles.eventCompact}>
-                        <summary className={styles.eventCompactSummary}>
-                          <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                          {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
-                          ) : (
-                            <span className={styles.eventCompactName}>{evt.name}</span>
-                          )}
-                          <span className={styles.eventCompactDate}>{formatEndDate(evt)}</span>
-                        </summary>
-                        <div className={styles.eventDetailGrid}>
-                          <div className={styles.eventDetailRow}>
-                            <span className={styles.eventDetailLabel}>期間</span>
-                            <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
-                          </div>
-                          <div className={styles.eventDetailRow}>
-                            <span className={styles.eventDetailLabel}>種別</span>
-                            <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
-                          </div>
-                          {evt.location && (
-                            <div className={styles.eventDetailRow}>
-                              <span className={styles.eventDetailLabel}>開催場所</span>
-                              <span className={styles.eventDetailValue}>{evt.location}</span>
-                            </div>
-                          )}
-                          {evt.summary && (
-                            <div className={styles.eventDetailRow}>
-                              <span className={styles.eventDetailLabel}>概要</span>
-                              <span className={styles.eventDetailValue}>{evt.summary}</span>
-                            </div>
-                          )}
-                        </div>
-                      </details>
-                    ))}
-                  </>
-                )}
-
-                {/* 単発イベント */}
-                {singleEvents.length > 0 && (
-                  <>
-                    <div className={styles.eventGroupLabel}>📌 単発イベント</div>
-                    {singleEvents.map(evt => (
-                      <div key={evt.id} className={styles.eventCard}>
-                        <div className={styles.eventCardHeader}>
-                          <span className={styles.eventCardEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                          {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
-                          ) : (
-                            <span className={styles.eventCardName}>{evt.name}</span>
-                          )}
-                        </div>
-                        {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
-                      </div>
-                    ))}
-                  </>
-                )}
               </div>
             );
           })()}
