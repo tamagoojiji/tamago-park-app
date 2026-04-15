@@ -51,7 +51,7 @@ export const RESTAURANT_GENRE_MAP: Record<string, string[]> = {
   'パークサイド・グリル': ['premium-meat'],
   'フィネガンズ・バー＆グリル': ['premium-meat'],
   'ビバリーヒルズ・ブランジェリー': ['collab'],
-  'ホッグズ・ヘッド・パブ': ['plate'],
+  'ホッグズ・ヘッド・パブ': ['plate', 'collab'],
 };
 
 // 食べ歩き名 → ジャンルID のマッピング
