@@ -118,9 +118,9 @@ export interface EventTheme {
 }
 
 const EVENT_THEMES: EventTheme[] = [
+  { id: '25th', label: '25周年 Discover U!!!', emoji: '🎂', keywords: ['Discover U', '25周年', 'Back to 2001', 'NO LIMIT! パレード', 'ライト・ヒア'] },
   { id: 'cooljapan', label: 'COOL JAPAN', emoji: '🇯🇵', keywords: ['コナン', '呪術廻戦', 'フリーレン', 'マスカレード', '東野圭吾'] },
   { id: 'jurassic', label: 'ジュラシック・ワールド', emoji: '🦖', keywords: ['ジュラシック'] },
-  { id: '25th', label: '25周年 Discover U!!!', emoji: '🎂', keywords: ['Discover U', '25周年', 'Back to 2001', 'NO LIMIT! パレード', 'ライト・ヒア'] },
   { id: 'harrypotter', label: 'ハリー・ポッター', emoji: '⚡', keywords: ['バタービール', 'ホグワーツ', 'ハリー・ポッター'] },
   { id: 'monsterhunter', label: 'モンスターハンター', emoji: '⚔️', keywords: ['モンスターハンター', 'モリバーの宴'] },
   { id: 'wicked', label: 'ウィキッド', emoji: '🧙‍♀️', keywords: ['ウィキッド'] },
