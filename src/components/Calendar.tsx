@@ -540,50 +540,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               </p>
             ) : (
               <div className={styles.eventListWrap}>
-                {upcomingEvents.length > 0 && (
-                  <div className={styles.eventThemeGroup}>
-                    <div className={styles.eventThemeHeader}>
-                      <span className={styles.eventThemeEmoji}>🗓</span>
-                      <span className={styles.eventThemeLabel}>今後のイベント</span>
-                      <span className={styles.eventThemeCount}>{upcomingEvents.length}件</span>
-                    </div>
-                    {upcomingEvents.map(evt => (
-                      <details key={evt.id} className={styles.eventCompact}>
-                        <summary className={styles.eventCompactSummary}>
-                          <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                          {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
-                          ) : (
-                            <span className={styles.eventCompactName}>{evt.name}</span>
-                          )}
-                          <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
-                        </summary>
-                        <div className={styles.eventDetailGrid}>
-                          <div className={styles.eventDetailRow}>
-                            <span className={styles.eventDetailLabel}>期間</span>
-                            <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
-                          </div>
-                          <div className={styles.eventDetailRow}>
-                            <span className={styles.eventDetailLabel}>種別</span>
-                            <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
-                          </div>
-                          {evt.location && (
-                            <div className={styles.eventDetailRow}>
-                              <span className={styles.eventDetailLabel}>開催場所</span>
-                              <span className={styles.eventDetailValue}>{evt.location}</span>
-                            </div>
-                          )}
-                          {evt.summary && (
-                            <div className={styles.eventDetailRow}>
-                              <span className={styles.eventDetailLabel}>概要</span>
-                              <span className={styles.eventDetailValue}>{evt.summary}</span>
-                            </div>
-                          )}
-                        </div>
-                      </details>
-                    ))}
-                  </div>
-                )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (
                   <div key={theme.id} className={styles.eventThemeGroup}>
                     <div className={styles.eventThemeHeader}>
@@ -719,6 +675,50 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     })}
                   </div>
                 ))}
+                {upcomingEvents.length > 0 && (
+                  <div className={styles.eventThemeGroup}>
+                    <div className={styles.eventThemeHeader}>
+                      <span className={styles.eventThemeEmoji}>🗓</span>
+                      <span className={styles.eventThemeLabel}>今後のイベント</span>
+                      <span className={styles.eventThemeCount}>{upcomingEvents.length}件</span>
+                    </div>
+                    {upcomingEvents.map(evt => (
+                      <details key={evt.id} className={styles.eventCompact}>
+                        <summary className={styles.eventCompactSummary}>
+                          <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
+                          {evt.official_url ? (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
+                          ) : (
+                            <span className={styles.eventCompactName}>{evt.name}</span>
+                          )}
+                          <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
+                        </summary>
+                        <div className={styles.eventDetailGrid}>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>期間</span>
+                            <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                          </div>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>種別</span>
+                            <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                          </div>
+                          {evt.location && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>開催場所</span>
+                              <span className={styles.eventDetailValue}>{evt.location}</span>
+                            </div>
+                          )}
+                          {evt.summary && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>概要</span>
+                              <span className={styles.eventDetailValue}>{evt.summary}</span>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })()}
