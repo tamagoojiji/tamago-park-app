@@ -19,7 +19,7 @@ const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }
   { id: 'annual-pass', label: '年パス除外日\n貸切ナイト日', icon: '🎫' },
   { id: 'restaurant', label: 'レストラン\n一覧', icon: '🍽️' },
   { id: 'events', label: 'イベント', icon: '🎉' },
-  { id: 'shows', label: 'ショー', icon: '🎭' },
+  { id: 'shows', label: 'ショー\nスケジュール', icon: '🎭' },
   { id: 'closure', label: 'アトラクション\n休止情報', icon: '🚧' },
 ];
 
@@ -338,6 +338,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           })}
         </div>
       </div>
+      {activeTab === 'shows' && (
+        <p className={styles.showScheduleNote}>
+          🎭がついているところだけショースケジュールが発表されています
+        </p>
+      )}
       </>
       )}
 

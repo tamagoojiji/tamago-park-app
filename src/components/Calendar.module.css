@@ -353,6 +353,13 @@
   line-height: 1;
 }
 
+.showScheduleNote {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  text-align: center;
+  margin: 8px 0 0;
+}
+
 .scheduleDateInfo {
   font-size: var(--text-xxs);
   color: var(--color-text-sub);

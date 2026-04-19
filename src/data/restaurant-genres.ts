@@ -102,6 +102,8 @@ const BASE_RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'ビバリーヒルズ・ブランジェリー': '/images/restaurants/beverly-hills-boulangerie.jpg',
   'ザ・ドラゴンズ・パール': '/images/restaurants/dragons-pearl.jpg',
   'パークサイド・グリル': '/images/restaurants/parkside-grille.jpg',
+  'ロンバーズ・ランディング™': '/images/restaurants/ロンバーズ・ランディング.png',
+  'ホッグズ・ヘッド・パブ': '/images/restaurants/ホッグズ・ヘッド・パブ.png',
 };
 
 // 期間限定を考慮した画像マップを生成

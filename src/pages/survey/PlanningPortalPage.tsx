@@ -10,7 +10,7 @@ const menuItems = [
   {
     id: 'survey',
     label: 'プランニングアンケート',
-    desc: 'プランニングに必要な情報を入力',
+    desc: 'プランニングに必要な情報を入力\n変更などについてはLINEに送ってください',
     icon: '📝',
     path: '/survey/form',
   },

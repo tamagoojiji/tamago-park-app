@@ -116,6 +116,7 @@ export interface MultiSelectOption {
   disabled?: boolean;
   badge?: string;
   badgeType?: 'closed' | 'height' | 'active';
+  image?: string;
 }
 
 interface MultiSelectProps {
@@ -150,24 +151,50 @@ export function MultiSelect({ name, options, values, onChange }: MultiSelectProp
             />
             <label
               htmlFor={`${name}-${opt.value}`}
-              className={`${styles.checkLabel} ${opt.disabled ? styles.checkLabelDisabled : ''}`}
+              className={`${styles.checkLabel} ${opt.disabled ? styles.checkLabelDisabled : ''} ${opt.image ? styles.checkLabelWithImage : ''}`}
             >
               <span className={styles.checkBox}>✓</span>
-              {label}
-              {opt.badge && (
-                <span
-                  className={`${styles.badge} ${
-                    opt.badgeType === 'closed'
-                      ? styles.badgeClosed
-                      : opt.badgeType === 'height'
-                        ? styles.badgeHeight
-                        : styles.badgeActive
-                  }`}
-                >
-                  {opt.badge.split('\n').map((line, i) => (
-                    <span key={i} style={i > 0 ? { display: 'block', textAlign: 'right' } : undefined}>{line}</span>
-                  ))}
-                </span>
+              {opt.image && (
+                <img src={opt.image} className={styles.optionThumb} alt="" loading="lazy" />
+              )}
+              {opt.image ? (
+                <div className={styles.optionText}>
+                  <div className={styles.optionName}>{label}</div>
+                  {opt.badge && (
+                    <div
+                      className={`${styles.optionBadgeStacked} ${
+                        opt.badgeType === 'closed'
+                          ? styles.badgeClosed
+                          : opt.badgeType === 'height'
+                            ? styles.badgeHeight
+                            : styles.badgeActive
+                      }`}
+                    >
+                      {opt.badge.split('\n').map((line, i) => (
+                        <span key={i} style={{ display: 'block' }}>{line}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {label}
+                  {opt.badge && (
+                    <span
+                      className={`${styles.badge} ${
+                        opt.badgeType === 'closed'
+                          ? styles.badgeClosed
+                          : opt.badgeType === 'height'
+                            ? styles.badgeHeight
+                            : styles.badgeActive
+                      }`}
+                    >
+                      {opt.badge.split('\n').map((line, i) => (
+                        <span key={i} style={i > 0 ? { display: 'block', textAlign: 'right' } : undefined}>{line}</span>
+                      ))}
+                    </span>
+                  )}
+                </>
               )}
             </label>
           </div>

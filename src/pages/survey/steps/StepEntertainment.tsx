@@ -16,7 +16,7 @@ interface Props {
 const PERMANENT_NAMES = new Set<string>(SHOW_OPTIONS);
 
 // API未掲載の常設ショー（バッジ判定を免除）
-const API_EXEMPT_SHOWS = new Set(['名探偵コナン４Dライブショー']);
+const API_EXEMPT_SHOWS = new Set<string>();
 
 function isPermanent(showName: string): boolean {
   if (PERMANENT_NAMES.has(showName)) return true;

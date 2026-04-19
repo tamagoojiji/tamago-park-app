@@ -158,6 +158,55 @@ export default function SurveyPage() {
       }
       enriched.park_hours = parkHoursMap;
 
+      // 選択したショー・季節イベントに、shows APIから取得した時間を紐づけ
+      // 個別ショー単位で当日データを探し、見つからない場合のみ同曜日の直近公開日をフォールバック参照し「(未定)」フラグを付与
+      const showTimes: Record<string, string> = {};
+      const showTimesFallback: Record<string, boolean> = {};
+      const selectedShows = [...formData.shows, ...formData.seasonal_events];
+      if (selectedShows.length > 0 && primaryDate) {
+        const primary = await fetchShows(primaryDate);
+        const targetDay = new Date(primaryDate).getDay();
+        const fallbackDate = primary.availableDates
+          .filter((d) => new Date(d).getDay() === targetDay && d < primaryDate)
+          .sort()
+          .pop();
+
+        let fallbackShows: ShowData[] | null = null;
+        const loadFallback = async (): Promise<ShowData[]> => {
+          if (fallbackShows !== null) return fallbackShows;
+          if (!fallbackDate) { fallbackShows = []; return fallbackShows; }
+          try {
+            const fb = await fetchShows(fallbackDate);
+            fallbackShows = fb.shows;
+          } catch {
+            fallbackShows = [];
+          }
+          return fallbackShows;
+        };
+
+        const findMatch = (list: ShowData[], name: string): ShowData | undefined =>
+          list.find((s) => s.name.includes(name) || name.includes(s.name));
+
+        for (const name of selectedShows) {
+          let match = findMatch(primary.shows, name);
+          let isFallback = false;
+          if (!match) {
+            const fb = await loadFallback();
+            match = findMatch(fb, name);
+            if (match) isFallback = true;
+          }
+          if (!match) continue;
+          const parts: string[] = match.times ? [...match.times] : [];
+          if (match.endTime) parts.push(`〜${match.endTime}`);
+          if (parts.length > 0) {
+            showTimes[name] = parts.join('・');
+            if (isFallback) showTimesFallback[name] = true;
+          }
+        }
+      }
+      enriched.show_times = showTimes;
+      enriched.show_times_fallback = showTimesFallback;
+
       let surveyId: number;
       if (editSurveyId) {
         const res = await updateSurvey(token, Number(editSurveyId), enriched);

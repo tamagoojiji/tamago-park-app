@@ -50,7 +50,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
           : restriction.withAdultMin === 0 && restriction.aloneMin > 0
             ? '付き添いあれば制限なし'
             : restriction.aloneMin > 0 && restriction.withAdultMin > 0 && restriction.withAdultMin < restriction.aloneMin
-              ? `身長${restriction.aloneMin}cm〜\n付き添いありの場合${restriction.withAdultMin}cm〜`
+              ? `身長${restriction.aloneMin}cm〜\n付き添いありの場合\n${restriction.withAdultMin}cm〜`
               : restriction.aloneMin > 0
                 ? `身長${restriction.aloneMin}cm〜`
                 : undefined
@@ -62,6 +62,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
         disabled: isClosed,
         badge: isClosed ? '休止中' : heightBadge,
         badgeType: isClosed ? 'closed' as const : heightBadge ? 'active' as const : undefined,
+        image: restriction?.image,
       };
     });
     return mapped.sort((a, b) => (a.disabled ? 1 : 0) - (b.disabled ? 1 : 0));
