@@ -193,6 +193,13 @@ export function groupEventsByTheme(events: ParkEvent[]): { theme: EventTheme; ev
   return result;
 }
 
+// 今後のイベント: 開始日がtodayより未来のもの（開始日昇順）
+export function getUpcomingEvents(events: ParkEvent[], today: string): ParkEvent[] {
+  return events
+    .filter(e => e.category !== 'private' && e.date > today)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));

@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
 import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import ShowSchedule from './ShowSchedule';
@@ -508,7 +508,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             const singleEvents = getSingleDayEvents(parkEvents, dateStr);
 
             const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents];
-            const hasContent = allDateEvents.length > 0;
+            const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id));
+            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0;
 
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
@@ -539,6 +540,50 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               </p>
             ) : (
               <div className={styles.eventListWrap}>
+                {upcomingEvents.length > 0 && (
+                  <div className={styles.eventThemeGroup}>
+                    <div className={styles.eventThemeHeader}>
+                      <span className={styles.eventThemeEmoji}>🗓</span>
+                      <span className={styles.eventThemeLabel}>今後のイベント</span>
+                      <span className={styles.eventThemeCount}>{upcomingEvents.length}件</span>
+                    </div>
+                    {upcomingEvents.map(evt => (
+                      <details key={evt.id} className={styles.eventCompact}>
+                        <summary className={styles.eventCompactSummary}>
+                          <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
+                          {evt.official_url ? (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
+                          ) : (
+                            <span className={styles.eventCompactName}>{evt.name}</span>
+                          )}
+                          <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
+                        </summary>
+                        <div className={styles.eventDetailGrid}>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>期間</span>
+                            <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                          </div>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>種別</span>
+                            <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                          </div>
+                          {evt.location && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>開催場所</span>
+                              <span className={styles.eventDetailValue}>{evt.location}</span>
+                            </div>
+                          )}
+                          {evt.summary && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>概要</span>
+                              <span className={styles.eventDetailValue}>{evt.summary}</span>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (
                   <div key={theme.id} className={styles.eventThemeGroup}>
                     <div className={styles.eventThemeHeader}>
