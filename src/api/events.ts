@@ -141,6 +141,33 @@ export function getThemeInfo(themeId: string): EventTheme {
   return EVENT_THEMES.find(t => t.id === themeId) || { id: 'other', label: 'その他', emoji: '📌', keywords: [] };
 }
 
+// テーマ内の表示順（name部分一致、順番通り。該当なしは末尾）
+const THEME_EVENT_ORDER: Record<string, string[]> = {
+  cooljapan: [
+    'コナン・ザ・エスケープ',
+    'コナン・ミステリー・レストラン',
+    'コナン×ストーリー・ライド',
+    'コナン・クイズラリー',
+    '呪術廻戦・ザ・リアル',
+    '呪術廻戦×ストーリー・ライド',
+    'モリバーの宴',
+    'マスカレード',
+    'フリーレン ストーリー・ウォーク',
+    'フリーレン×ストーリー・ライド',
+    'フリーレン ～追憶のレストラン～',
+  ],
+};
+
+function sortEventsInTheme(themeId: string, events: ParkEvent[]): ParkEvent[] {
+  const order = THEME_EVENT_ORDER[themeId];
+  if (!order) return events;
+  return [...events].sort((a, b) => {
+    const aIdx = order.findIndex(kw => a.name.includes(kw));
+    const bIdx = order.findIndex(kw => b.name.includes(kw));
+    return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+  });
+}
+
 // イベントをテーマ別にグルーピング
 export function groupEventsByTheme(events: ParkEvent[]): { theme: EventTheme; events: ParkEvent[] }[] {
   const groups = new Map<string, ParkEvent[]>();
@@ -156,7 +183,7 @@ export function groupEventsByTheme(events: ParkEvent[]): { theme: EventTheme; ev
   for (const theme of EVENT_THEMES) {
     const evts = groups.get(theme.id);
     if (evts && evts.length > 0) {
-      result.push({ theme, events: evts });
+      result.push({ theme, events: sortEventsInTheme(theme.id, evts) });
     }
   }
   const otherEvts = groups.get('other');
