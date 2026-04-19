@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { heightRestrictions } from '../../../data/height-restrictions';
+import { getActiveHeightRestrictions } from '../../../data/height-restrictions';
 import type { ClosureEntry } from '../../../data/closures';
 import { fetchClosures, getClosuresForDate } from '../../../data/closures';
 import { fetchAllEvents, getLimitedAttractions, type ParkEvent } from '../../../api/events';
@@ -35,13 +35,14 @@ export default function StepAttractionSelect({ date, selected, onChange }: Props
   );
 
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof heightRestrictions>();
-    for (const a of heightRestrictions) {
+    const active = getActiveHeightRestrictions(date);
+    const map = new Map<string, typeof active>();
+    for (const a of active) {
       if (!map.has(a.area)) map.set(a.area, []);
       map.get(a.area)!.push(a);
     }
     return map;
-  }, []);
+  }, [date]);
 
   const toggle = (name: string) => {
     if (selected.includes(name)) {

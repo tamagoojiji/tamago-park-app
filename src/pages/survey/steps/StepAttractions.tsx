@@ -11,6 +11,7 @@ import {
   THRILL_ATTRACTION_OPTIONS,
   KIDS_ATTRACTION_OPTIONS,
   YOYAKUNORI_ATTRACTIONS,
+  applySeasonalVariants,
 } from '../../../data/survey-options';
 
 interface Props {
@@ -27,6 +28,9 @@ function getRestriction(name: string): HeightRestriction | undefined {
 }
 
 export default function StepAttractions({ data, onChange, closures }: Props) {
+  const today = new Date().toISOString().slice(0, 10);
+  const thrillOptions = useMemo(() => applySeasonalVariants(THRILL_ATTRACTION_OPTIONS, today), [today]);
+  const kidsOptions = useMemo(() => applySeasonalVariants(KIDS_ATTRACTION_OPTIONS, today), [today]);
 
   const closedNames = useMemo(
     () => new Set(closures.map((c) => c.name)),
@@ -91,7 +95,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
       <QuestionCard label="Q15. このアトラクションは外せない！（絶叫系）" note={closures.length > 0 ? `来園日に${closures.length}件のアトラクションが休止中です` : undefined}>
         <MultiSelect
           name="thrill_attractions"
-          options={buildOptions(THRILL_ATTRACTION_OPTIONS)}
+          options={buildOptions(thrillOptions)}
           values={data.thrill_attractions}
           onChange={(v) => onChange({ thrill_attractions: v })}
         />
@@ -106,7 +110,7 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
         </div>
         <MultiSelect
           name="kids_attractions"
-          options={buildOptions(KIDS_ATTRACTION_OPTIONS, true, true)}
+          options={buildOptions(kidsOptions, true, true)}
           values={data.kids_attractions}
           onChange={(v) => onChange({ kids_attractions: v })}
         />

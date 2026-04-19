@@ -12,6 +12,7 @@ export interface HeightRestriction {
   image: string;
   note?: string; // 身長cm以外の制限（例: 一人で座れたら）
   strollerOk?: boolean; // ベビーカーそのままでOK
+  seasonal?: { replaces: string; start: string; end: string }; // 期間限定コラボ版（期間中のみ表示、期間外はreplacesに戻す）
 }
 
 export const heightRestrictions: HeightRestriction[] = [
@@ -21,8 +22,8 @@ export const heightRestrictions: HeightRestriction[] = [
   { name: 'ザ・フライング・ダイナソー', aloneMin: 132, withAdultMin: 132, area: 'ジュラシック・パーク', childSwap: true, singleRider: true, image: '/images/attractions/ザ・フライング・ダイナソー.jpg' },
 
   // --- 122cm以上（単独） / 付き添いあり条件 ---
-  // 期間限定コラボ: 2026/1/30〜8/17 → 終了後「スペース・ファンタジー・ザ・ライド」に戻す
-  { name: 'スペース・ファンタジー・ザ・ライド ～CLUB ZEDD REMIX～', aloneMin: 122, withAdultMin: 102, area: 'ハリウッド', childSwap: true, singleRider: true, image: '/images/attractions/スペース・ファンタジー・ザ・ライド.jpg' },
+  { name: 'スペース・ファンタジー・ザ・ライド', aloneMin: 122, withAdultMin: 102, area: 'ハリウッド', childSwap: true, singleRider: true, image: '/images/attractions/スペース・ファンタジー・ザ・ライド.jpg' },
+  { name: 'スペース・ファンタジー・ザ・ライド ～CLUB ZEDD REMIX～', aloneMin: 122, withAdultMin: 102, area: 'ハリウッド', childSwap: true, singleRider: true, image: '/images/attractions/スペース・ファンタジー・ザ・ライド.jpg', seasonal: { replaces: 'スペース・ファンタジー・ザ・ライド', start: '2026-01-30', end: '2026-08-17' } },
 
   // --- 122cm以上 ---
   { name: 'ハリー・ポッター・アンド・ザ・フォービドゥン・ジャーニー™', aloneMin: 122, withAdultMin: 122, area: 'ウィザーディング・ワールド', childSwap: true, singleRider: true, image: '/images/attractions/フォービドゥン・ジャーニー.jpg' },
@@ -57,6 +58,24 @@ export const heightRestrictions: HeightRestriction[] = [
   { name: 'セサミストリート 4-D ムービーマジック™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/セサミストリート4-D.jpg', note: '一人で座れたらOK' },
   { name: 'シュレック 4-D アドベンチャー™', aloneMin: 0, withAdultMin: 0, area: 'ハリウッド', childSwap: false, singleRider: false, image: '/images/attractions/シュレック4-D.jpg', note: '一人で座れたらOK' },
 ];
+
+// 指定日に応じて期間限定コラボ版／通常版を切替えたアトラクション一覧を返す
+// 期間中（start〜end）: コラボ版のみ表示、通常版は非表示
+// 期間外: コラボ版は非表示、通常版のみ表示
+export function getActiveHeightRestrictions(today: string): HeightRestriction[] {
+  const activeVariants = new Set<string>();
+  const suppressedBases = new Set<string>();
+  for (const r of heightRestrictions) {
+    if (r.seasonal && today >= r.seasonal.start && today <= r.seasonal.end) {
+      activeVariants.add(r.name);
+      suppressedBases.add(r.seasonal.replaces);
+    }
+  }
+  return heightRestrictions.filter(r => {
+    if (r.seasonal) return activeVariants.has(r.name);
+    return !suppressedBases.has(r.name);
+  });
+}
 
 // 妊婦さんが利用できるアトラクション・ショー
 export interface PregnancyOkAttraction {

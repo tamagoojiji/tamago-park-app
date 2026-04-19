@@ -142,6 +142,33 @@ export const KIDS_ATTRACTION_OPTIONS = [
   'ヨッシー・アドベンチャー',
 ] as const;
 
+// 期間限定コラボ: 期間中はvariantのみ表示、期間外はbaseのみ表示
+export const SEASONAL_ATTRACTION_VARIANTS: { base: string; variant: string; start: string; end: string }[] = [
+  {
+    base: 'スペース・ファンタジー・ザ・ライド',
+    variant: 'スペース・ファンタジー・ザ・ライド ～CLUB ZEDD REMIX～',
+    start: '2026-01-30',
+    end: '2026-08-17',
+  },
+];
+
+export function applySeasonalVariants(options: readonly string[], today: string): string[] {
+  const activeVariants = new Set<string>();
+  const suppressedBases = new Set<string>();
+  for (const v of SEASONAL_ATTRACTION_VARIANTS) {
+    if (today >= v.start && today <= v.end) {
+      activeVariants.add(v.variant);
+      suppressedBases.add(v.base);
+    }
+  }
+  return options.filter(name => {
+    if (suppressedBases.has(name)) return false;
+    const v = SEASONAL_ATTRACTION_VARIANTS.find(x => x.variant === name);
+    if (v && !activeVariants.has(name)) return false;
+    return true;
+  });
+}
+
 // Q16: よやくのり対象アトラクション
 export const YOYAKUNORI_ATTRACTIONS = new Set([
   'フライング・スヌーピー',
