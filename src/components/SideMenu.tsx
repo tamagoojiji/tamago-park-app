@@ -7,7 +7,6 @@ const menuItems: MenuItem[] = [
   { id: 'survey', label: 'プランニング依頼者専用', path: '/survey', icon: '📝' },
   { id: 'myplan', label: 'マイプラン作成', path: '/myplan', icon: '📋' },
   { id: 'myplan-history', label: 'マイプラン履歴', path: '/myplan/history', icon: '📂' },
-  { id: 'planning', label: 'ショースケジュール', path: '/planning', icon: '🎭' },
   { id: 'ep', label: 'エクスプレス・パス診断', path: '/ep', icon: '🎢' },
   { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
   { id: 'ai', label: 'たまごの相談部屋', path: '/ai', icon: '💬', comingSoon: true },

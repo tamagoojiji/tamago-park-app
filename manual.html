@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>たまごのパーク攻略 つかいかたガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Kosugi+Maru&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #FFB6C1;        /* やさしいピンク */
+    --primary-deep: #FF8FAB;
+    --sky: #B5E4FF;            /* ふんわりブルー */
+    --sky-deep: #7FCDFF;
+    --yellow: #FFE88C;         /* たまごイエロー */
+    --yellow-deep: #FFD447;
+    --mint: #C1F0D6;           /* ミント */
+    --lavender: #E0D4FF;       /* ラベンダー */
+    --cream: #FFF9EC;          /* クリーム背景 */
+    --text: #5A4A5F;
+    --text-sub: #8B7D91;
+    --bg: #FFF5F7;
+    --bg-card: #FFFFFF;
+    --shadow: 0 4px 16px rgba(255, 143, 171, .12);
+    --shadow-hover: 0 6px 20px rgba(255, 143, 171, .18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255, 182, 193, .08) 0, transparent 40%),
+      radial-gradient(circle at 90% 60%, rgba(181, 228, 255, .1) 0, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(255, 232, 140, .08) 0, transparent 40%);
+    color: var(--text);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 500;
+  }
+
+  /* ふわふわ浮かぶ装飾 */
+  body::before {
+    content: "🌸  ☁️  ⭐  🎀  🌷  💫";
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* ヘッダー */
+  .hero {
+    background: linear-gradient(180deg, #000 0%, #1a1a2e 100%);
+    text-align: center;
+    position: relative;
+    padding: 0 0 50px;
+    overflow: hidden;
+  }
+  .hero-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+  .hero-caption {
+    padding: 24px 20px 0;
+    position: relative;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    border-radius: 40px 40px 0 0;
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    margin-bottom: 8px;
+    color: var(--yellow-deep);
+    text-shadow: 0 2px 8px rgba(255, 212, 71, .3);
+  }
+  .hero p {
+    font-size: 13px;
+    opacity: .95;
+    color: #fff;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFB6C1, #FFE88C);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 143, 171, .4);
+  }
+
+  /* コンテナ */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 12px 16px 80px;
+    position: relative;
+  }
+
+  /* イントロカード */
+  .intro {
+    background: linear-gradient(135deg, #FFF9EC 0%, #FFF5F7 100%);
+    border-radius: 24px;
+    padding: 22px 20px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    border: 2px dashed var(--primary);
+    position: relative;
+  }
+  .intro::before {
+    content: "🥚";
+    position: absolute;
+    top: -18px; left: 20px;
+    background: #fff;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: var(--shadow);
+  }
+  .intro h2 {
+    font-size: 17px;
+    color: var(--primary-deep);
+    margin: 6px 0 10px;
+    font-weight: 800;
+  }
+  .intro p {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.9;
+  }
+
+  /* セクション見出し */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary-deep);
+    margin: 44px 0 18px;
+    padding: 0;
+    position: relative;
+  }
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 3px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--primary) 0 8px,
+      transparent 8px 14px
+    );
+    border-radius: 2px;
+    margin-left: 8px;
+  }
+  .section-title .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--yellow-deep));
+    color: #fff;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: 0 3px 10px rgba(255, 143, 171, .4);
+    border: 3px solid #fff;
+  }
+  .section-title .icon {
+    font-size: 22px;
+  }
+
+  /* カード */
+  .card {
+    background: var(--bg-card);
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 182, 193, .2);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+  .card h3 {
+    font-size: 16px;
+    color: var(--primary-deep);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+  }
+  .card h3 .tag {
+    font-size: 11px;
+    background: linear-gradient(135deg, var(--sky-deep), var(--primary));
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .card ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  .card ul li {
+    font-size: 14px;
+    padding: 8px 0 8px 28px;
+    position: relative;
+    color: var(--text);
+  }
+  .card ul li::before {
+    content: "🌸";
+    position: absolute;
+    left: 4px; top: 8px;
+    font-size: 12px;
+  }
+
+  /* 画像プレースホルダー */
+  .img-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      linear-gradient(135deg, #FFF0F5 0%, #E6F5FF 50%, #FFF9EC 100%);
+    border: 2.5px dashed var(--primary);
+    border-radius: 18px;
+    min-height: 180px;
+    color: var(--primary-deep);
+    font-size: 13px;
+    font-weight: 700;
+    margin: 14px 0;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+  }
+  .img-slot::before {
+    content: "📷";
+    display: block;
+    font-size: 28px;
+    margin-bottom: 6px;
+    opacity: .6;
+  }
+
+  /* ステップ */
+  .steps { counter-reset: step; }
+  .step {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 16px 18px 16px 64px;
+    margin-bottom: 12px;
+    position: relative;
+    border: 1px solid rgba(255, 182, 193, .2);
+    box-shadow: var(--shadow);
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 14px; top: 14px;
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--yellow-deep), var(--primary));
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(255, 212, 71, .4);
+    border: 3px solid #fff;
+  }
+  .step strong {
+    color: var(--primary-deep);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .step p {
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+
+  /* 注意ボックス */
+  .note {
+    background: linear-gradient(135deg, #FFF9EC, #FFFBF0);
+    padding: 14px 16px 14px 44px;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #8B6F1C;
+    margin: 12px 0;
+    position: relative;
+    border: 1.5px solid var(--yellow);
+  }
+  .note::before {
+    content: "💡";
+    position: absolute;
+    left: 14px; top: 13px;
+    font-size: 16px;
+  }
+
+  .warn {
+    background: linear-gradient(135deg, #FFF0F5, #FFF5F7);
+    padding: 14px 16px 14px 44px;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #A05568;
+    margin: 12px 0;
+    position: relative;
+    border: 1.5px solid var(--primary);
+  }
+  .warn::before {
+    content: "🌷";
+    position: absolute;
+    left: 14px; top: 13px;
+    font-size: 16px;
+  }
+
+  /* タブ（画面説明） */
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 14px;
+  }
+  .chip {
+    background: linear-gradient(135deg, #FFF0F5, #FFF9EC);
+    border: 1.5px solid var(--primary);
+    color: var(--primary-deep);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .chip-sky { border-color: var(--sky-deep); color: #3B7FA3; background: linear-gradient(135deg, #E6F5FF, #F0FAFF); }
+  .chip-yellow { border-color: var(--yellow-deep); color: #8B6F1C; background: linear-gradient(135deg, #FFFBF0, #FFF9EC); }
+  .chip-mint { border-color: #7FD6A1; color: #3B8558; background: linear-gradient(135deg, #E8F8EE, #F0FCF5); }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-sub);
+    font-size: 12px;
+    background: var(--bg-card);
+    margin-top: 40px;
+    border-radius: 32px 32px 0 0;
+    border-top: 3px dashed var(--primary);
+  }
+  .footer strong {
+    color: var(--primary-deep);
+    font-size: 15px;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .footer .hearts {
+    font-size: 18px;
+    margin: 8px 0;
+  }
+
+  /* 目次 */
+  .toc {
+    background: linear-gradient(135deg, #FFF9EC 0%, #FFF0F5 100%);
+    border-radius: 24px;
+    padding: 22px 24px;
+    margin-bottom: 32px;
+    border: 2px solid rgba(255, 182, 193, .3);
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  .toc::before {
+    content: "🎀";
+    position: absolute;
+    top: -14px; right: 20px;
+    background: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: var(--shadow);
+  }
+  .toc h2 {
+    font-size: 15px;
+    color: var(--primary-deep);
+    margin-bottom: 12px;
+    letter-spacing: .05em;
+    font-weight: 800;
+  }
+  .toc ol {
+    padding-left: 0;
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc li {
+    font-size: 14px;
+    padding: 6px 0 6px 30px;
+    color: var(--text);
+    position: relative;
+    counter-increment: toc;
+  }
+  .toc li::before {
+    content: counter(toc);
+    position: absolute;
+    left: 0; top: 7px;
+    width: 22px; height: 22px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toc a {
+    color: var(--primary-deep);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .toc a:hover { text-decoration: underline; }
+
+  /* 保存カード（特別装飾） */
+  .save-card {
+    background: linear-gradient(135deg, #FFF9EC, #E6F5FF, #FFF0F5);
+    background-size: 300% 300%;
+    border: 2px dashed var(--primary);
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 20px; }
+    .section-title { font-size: 18px; }
+    .section-title .num { width: 34px; height: 34px; font-size: 14px; }
+    .card h3 { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="hero">
+  <img class="hero-image" src="manual-images/header.png" alt="たまごのパーク攻略">
+  <div class="hero-caption">
+    <span class="badge">🌸 はじめての方へ 🌸</span>
+    <h1>つかいかたガイド</h1>
+    <p>はじめての方もあんしん・かんたん操作マニュアル</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- イントロ -->
+  <div class="intro">
+    <h2>このアプリをつくった理由</h2>
+    <p>公式アプリや公式サイトだけだと情報がバラバラでわかりにくい……。<br>
+    「知りたい情報をぜんぶひとつにまとめた、見やすい攻略アプリ」をめざしてつくりました ✨</p>
+  </div>
+
+  <!-- 目次 -->
+  <nav class="toc">
+    <h2>📖 もくじ</h2>
+    <ol>
+      <li><a href="#home">ホーム画面の使い方</a></li>
+      <li><a href="#calendar">カレンダー & 日付詳細</a></li>
+      <li><a href="#restaurant">レストラン・食べ歩きフード</a></li>
+      <li><a href="#event">イベント・ショースケジュール</a></li>
+      <li><a href="#closure">アトラクション休止情報</a></li>
+      <li><a href="#menu">メニュー（右上の三本線）</a></li>
+      <li><a href="#myplan">マイプラン作成</a></li>
+      <li><a href="#checklist">チェックリスト・身長制限</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. ホーム画面 -->
+  <h2 class="section-title"><span class="num">1</span><span class="icon">🏠</span>ホーム画面</h2>
+
+  <div class="card" id="home">
+    <h3>上のボタンをタップしてみよう</h3>
+    <div class="chip-row">
+      <span class="chip">営業時間</span>
+      <span class="chip chip-sky">チケット価格</span>
+      <span class="chip chip-yellow">年パス除外日</span>
+      <span class="chip chip-mint">貸切ナイト</span>
+    </div>
+    <p>タップすると、下のカレンダーにその日がふわっとハイライト表示されます🌸</p>
+    <div class="img-slot">画像：ホーム画面上部のボタン</div>
+  </div>
+
+  <!-- 2. カレンダー -->
+  <h2 class="section-title" id="calendar"><span class="num">2</span><span class="icon">📅</span>カレンダー</h2>
+
+  <div class="card">
+    <h3>天気予報つき ☀️</h3>
+    <p>カレンダー上に毎日の天気予報が表示されます。おでかけ前のチェックにぴったり！</p>
+    <div class="img-slot">画像：カレンダー（天気予報つき）</div>
+  </div>
+
+  <div class="card">
+    <h3>日付をタップで詳細表示</h3>
+    <ul>
+      <li>お天気マーク</li>
+      <li>営業時間</li>
+      <li>チケット価格 / 年パス利用可否</li>
+      <li>イベントの有無</li>
+      <li>混雑予想</li>
+      <li>貸切ナイトの有無</li>
+      <li>休止アトラクション一覧</li>
+    </ul>
+    <div class="img-slot">画像：日付タップ後の詳細画面</div>
+    <div class="note">混雑予想は試行錯誤中です。これからもっと精度アップしていきます🌱</div>
+  </div>
+
+  <!-- 3. レストラン -->
+  <h2 class="section-title" id="restaurant"><span class="num">3</span><span class="icon">🍽️</span>レストラン一覧</h2>
+
+  <div class="card">
+    <h3>レストラン <span class="tag">店舗から選ぶ</span></h3>
+    <p>ジャンルから探す、または全店舗を一覧で見られます🍝</p>
+    <div class="img-slot">画像：レストラン一覧</div>
+  </div>
+
+  <div class="card">
+    <h3>食べ歩きフード <span class="tag">食べたいものから選ぶ</span></h3>
+    <p>「ポップコーン」「キャラクターマン」など、<strong>食べたい種類</strong>でかんたんに探せます🍿</p>
+    <div class="img-slot">画像：食べ歩きフード一覧</div>
+  </div>
+
+  <div class="note">マップ機能はいま作成中です。お楽しみに 🗺️</div>
+
+  <!-- 4. イベント・ショー -->
+  <h2 class="section-title" id="event"><span class="num">4</span><span class="icon">🎪</span>イベント & ショー</h2>
+
+  <div class="card">
+    <h3>イベント一覧</h3>
+    <p>タップで一覧表示。各項目をタップすると公式サイトで詳細が見られます✨</p>
+    <div class="img-slot">画像：イベント一覧</div>
+  </div>
+
+  <div class="card">
+    <h3>ショースケジュール 🎭</h3>
+    <p>カレンダーの<strong>仮面マーク</strong>の日をタップ → その日のショー一覧が表示されます。</p>
+    <ul>
+      <li><strong>当日</strong>：開始時間が近い順に並びます</li>
+      <li><strong>翌日以降</strong>：あいうえお順で並びます</li>
+      <li>⭐ <strong>星マーク</strong>でお気に入り → 一番上に固定されます</li>
+    </ul>
+    <div class="img-slot">画像：ショースケジュール（お気に入り機能）</div>
+    <div class="warn">アプリをリセットするとお気に入りが消えちゃいます。<br>ホーム画面に追加した状態で使えば、ちゃんと残りますよ🎀</div>
+  </div>
+
+  <!-- 5. 休止情報 -->
+  <h2 class="section-title" id="closure"><span class="num">5</span><span class="icon">🔧</span>アトラクション休止情報</h2>
+
+  <div class="card">
+    <h3>右下のボタンから</h3>
+    <p>タップすると、いま休止中のアトラクションがぜんぶ一覧で表示されます。</p>
+    <div class="img-slot">画像：休止情報一覧</div>
+  </div>
+
+  <!-- 6. メニュー -->
+  <h2 class="section-title" id="menu"><span class="num">6</span><span class="icon">☰</span>メニュー（右上）</h2>
+
+  <div class="card">
+    <h3>メニュー項目</h3>
+    <ul>
+      <li>プランニング依頼書（依頼者専用）</li>
+      <li>マイプラン作成</li>
+      <li>エクスプレスパス診断</li>
+      <li>レストラン診断</li>
+      <li>たまごの相談部屋（AI準備中）</li>
+      <li>チェックリスト</li>
+      <li>身長制限リスト</li>
+      <li>チケット値段一覧（準備中）</li>
+      <li>プランニングの案内</li>
+    </ul>
+    <div class="img-slot">画像：メニュー画面</div>
+  </div>
+
+  <div class="note">
+    <strong>プランニング依頼書</strong>は、依頼された方だけに表示されます。<br>
+    LINEを登録した方のみ自動で閲覧できるしくみです🔒
+  </div>
+
+  <!-- 7. マイプラン作成 -->
+  <h2 class="section-title" id="myplan"><span class="num">7</span><span class="icon">📝</span>マイプラン作成</h2>
+
+  <div class="card">
+    <h3>LINE連携について 💬</h3>
+    <p>プランを保存するためにLINE連携が必要です。</p>
+    <div class="warn">
+      LINEの情報は<strong>ぜんぶ暗号化</strong>されて保存されます🔐<br>
+      こちら側から個人情報を見ることはできません。あんしんして使ってね。
+    </div>
+  </div>
+
+  <div class="img-slot">画像：マイプラン作成トップ</div>
+
+  <div class="steps">
+    <div class="step">
+      <strong>来園日を選ぶ</strong>
+      <p>日付をタップすると、その日の営業時間が自動で表示されます🌈</p>
+    </div>
+    <div class="step">
+      <strong>アトラクションを選ぶ</strong>
+      <p>画像付きで見やすい一覧から選択。休止中は「休止中」と表示され、期間限定も記載あり🎢</p>
+    </div>
+    <div class="step">
+      <strong>ショーを選ぶ</strong>
+      <p>選んだ日付のショー回数が表示されます。好きなショーをタップ🎭</p>
+    </div>
+    <div class="step">
+      <strong>ショーの時間帯を選ぶ</strong>
+      <p>時間帯が重複してもエラーになりません。時間調整はご自身で🕐</p>
+    </div>
+    <div class="step">
+      <strong>タイムスケジュール作成</strong>
+      <p>希望アトラクション名をタップ → 待ち時間（30分・60分など）を入れるだけで自動反映✨</p>
+    </div>
+    <div class="step">
+      <strong>メモ・プラン名を入力</strong>
+      <p>デフォルトで「来園日」と「パークプラン」が入力済み。自由にアレンジOK！</p>
+    </div>
+    <div class="step">
+      <strong>内容確認 → 保存</strong>
+      <p>プラン全体を確認して保存。あとからアプリ内でいつでも見返せます💕</p>
+    </div>
+  </div>
+
+  <div class="card save-card">
+    <h3>保存方法は3種類 🎁</h3>
+    <ul>
+      <li>アプリ内に保存（いつでも確認OK）</li>
+      <li>📷 画像として保存（iPhone/スマホに保存）</li>
+      <li>📄 PDFで保存（印刷しやすい）</li>
+    </ul>
+    <div class="img-slot">画像：完成したマイプラン / 保存画面</div>
+    <div class="note">マイプラン履歴からあとで編集もできますよ💫</div>
+  </div>
+
+  <!-- 8. チェックリスト・身長制限 -->
+  <h2 class="section-title" id="checklist"><span class="num">8</span><span class="icon">🎒</span>便利ツール</h2>
+
+  <div class="card">
+    <h3>持ち物チェックリスト ✅</h3>
+    <ul>
+      <li>春夏秋冬の季節ごとに分類</li>
+      <li>雨の日対策アイテムも含む</li>
+      <li>チェックしていくと上部に%が表示</li>
+      <li>100%で「準備満タン」🎉</li>
+      <li>画像として保存も可</li>
+    </ul>
+    <div class="img-slot">画像：チェックリスト画面</div>
+  </div>
+
+  <div class="card">
+    <h3>身長制限リスト 👶</h3>
+    <p>お子様の身長に合わせて、乗れるアトラクションをまとめて確認できます。</p>
+    <ul>
+      <li>身長の分類ごとにまとめて表示</li>
+      <li><strong>妊婦さんが利用できるアトラクション</strong>も掲載🤰</li>
+    </ul>
+    <div class="img-slot">画像：身長制限リスト</div>
+  </div>
+
+  <div class="card">
+    <h3>エクスプレスパス診断 / レストラン診断 🎯</h3>
+    <p>以前から提供している診断機能。履歴を残すためLINE登録が必要です。</p>
+  </div>
+
+  <div class="card">
+    <h3>たまごの相談部屋 🥚</h3>
+    <p>現在AIを作成中です。完成したら自動返信で対応予定。もうちょっとだけ待っててね💕</p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <strong>🥚 たまごのパーク攻略</strong>
+  <div class="hearts">🌸 ☁️ 🎀 ⭐ 💫</div>
+  <p>もっと見やすく、もっと便利に。<br>みんなのパーク時間が楽しくなりますように💕</p>
+</footer>
+
+</body>
+</html>
