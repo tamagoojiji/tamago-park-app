@@ -402,24 +402,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             </span>
           </div>
 
-          {/* イベント（開始・終了日のみ） */}
-          <div className={styles.infoRow}>
-            <span className={styles.infoIcon}>🎉</span>
-            <span className={styles.infoLabel}>イベント</span>
-            {(() => {
-              const dayEvents = getEventStartEndForDate(parkEvents, selectedDate);
-              return dayEvents.length > 0 ? (
-                <div className={styles.infoValueCol}>
-                  {dayEvents.map(e => (
-                    <span key={e.id}>{e.date === selectedDate ? '🆕' : '🔚'} {e.name}</span>
-                  ))}
-                </div>
-              ) : (
-                <span className={styles.infoValue}>なし</span>
-              );
-            })()}
-          </div>
-
           {/* 混雑予想 */}
           <div className={styles.infoRow}>
             <span className={styles.infoIcon}>👥</span>
