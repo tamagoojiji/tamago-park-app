@@ -24,7 +24,11 @@ export const TABEARUKI_GENRES: GenreInfo[] = [
   { id: 'meat', label: '肉系', icon: '🍗' },
   { id: 'churros', label: 'チュリトス', icon: '🥖' },
   { id: 'collab', label: 'コラボ系', icon: '⭐' },
-  { id: 'other', label: 'その他', icon: '🍦' },
+  { id: 'ice', label: 'アイス', icon: '🍦' },
+  { id: 'dessert', label: 'デザート', icon: '🍰' },
+  { id: 'drink', label: 'ドリンク', icon: '🥤' },
+  { id: 'soup', label: 'スープ', icon: '🍲' },
+  { id: 'other', label: 'その他', icon: '🍽️' },
 ];
 
 // クローズ中のレストラン（API結果からフィルタ）

@@ -72,10 +72,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     });
   };
 
-  // 食べ歩きメニュー用フィルタ
+  // 食べ歩きメニュー用フィルタ（販売停止中は除外）
   const getFilteredMenu = (): TabearukiItem[] => {
     if (!genreId) return [];
-    return TABEARUKI_MENU.filter((m) => m.genre === genreId);
+    return TABEARUKI_MENU.filter((m) => m.genre === genreId && !m.suspended);
   };
 
   const genreLabel = () => {
