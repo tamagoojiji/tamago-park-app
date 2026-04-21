@@ -364,6 +364,50 @@
   font-weight: 600;
 }
 
+.sheetMenuSection {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border, #eee);
+}
+
+.sheetMenuPlaceholder {
+  font-size: var(--text-sm);
+  color: var(--color-text-sub);
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.sheetMenuList {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sheetMenuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: var(--text-sm);
+}
+
+.sheetMenuName {
+  color: var(--color-text);
+  flex: 1;
+}
+
+.sheetMenuPrice {
+  color: var(--color-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

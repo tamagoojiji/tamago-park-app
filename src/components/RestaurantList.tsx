@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import type { RestaurantInfo } from '../api/restaurants';
+import { useEffect, useState } from 'react';
+import type { RestaurantInfo, MenuItem } from '../api/restaurants';
+import { fetchStoreMenus } from '../api/restaurants';
 import {
   RESTAURANT_GENRES,
   TABEARUKI_GENRES,
@@ -26,6 +27,30 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [genreId, setGenreId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RestaurantInfo | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
+  const [storeMenus, setStoreMenus] = useState<MenuItem[] | null>(null);
+  const [isMenusLoading, setIsMenusLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selected) {
+      setStoreMenus(null);
+      return;
+    }
+    let cancelled = false;
+    setIsMenusLoading(true);
+    fetchStoreMenus(selected.restaurant_name)
+      .then((data) => {
+        if (!cancelled) setStoreMenus(data.menus);
+      })
+      .catch(() => {
+        if (!cancelled) setStoreMenus([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsMenusLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selected]);
 
   const activeRestaurants = restaurants.filter(
     (r) => !CLOSED_RESTAURANTS.has(r.restaurant_name)
@@ -263,6 +288,26 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                   </span>
                 </div>
               )}
+
+              <div className={styles.sheetMenuSection}>
+                <div className={styles.sheetLabel}>メニュー</div>
+                {isMenusLoading && <p className={styles.sheetMenuPlaceholder}>読み込み中...</p>}
+                {!isMenusLoading && storeMenus && storeMenus.length === 0 && (
+                  <p className={styles.sheetMenuPlaceholder}>メニュー情報は準備中です</p>
+                )}
+                {!isMenusLoading && storeMenus && storeMenus.length > 0 && (
+                  <ul className={styles.sheetMenuList}>
+                    {storeMenus.map((m) => (
+                      <li key={m.id} className={styles.sheetMenuItem}>
+                        <span className={styles.sheetMenuName}>{m.menu_name}</span>
+                        {m.price != null && (
+                          <span className={styles.sheetMenuPrice}>¥{m.price.toLocaleString()}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           </div>
         </div>
