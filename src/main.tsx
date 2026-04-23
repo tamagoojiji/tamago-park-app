@@ -21,6 +21,7 @@ function reportError(message: string, source?: string, lineno?: number, colno?: 
 }
 
 window.onerror = (message, source, lineno, colno, error) => {
+  if (String(message) === 'Script error.' && !error) return;
   reportError(String(message), source as string, lineno, colno, error?.stack);
 };
 
