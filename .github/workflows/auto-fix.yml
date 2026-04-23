@@ -1,0 +1,159 @@
+name: Auto-fix frontend errors
+
+on:
+  repository_dispatch:
+    types: [fix-error]
+
+concurrency:
+  group: auto-fix-${{ github.event.client_payload.discord_message_id }}
+  cancel-in-progress: false
+
+jobs:
+  auto-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure git
+        run: |
+          git config user.name "tamago-auto-fix[bot]"
+          git config user.email "auto-fix@tamago-ai-world.com"
+
+      - name: Create fix branch
+        id: branch
+        run: |
+          BRANCH="auto-fix/${{ github.event.client_payload.discord_message_id }}-$(date +%s)"
+          git checkout -b "$BRANCH"
+          echo "name=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            本番フロントエンド（tamago-park-app）でJavaScriptエラーが発生しました。
+            原因を調査して修正してください。
+
+            ## エラー情報
+            - メッセージ: ${{ github.event.client_payload.message }}
+            - URL: ${{ github.event.client_payload.url }}
+            - 場所: ${{ github.event.client_payload.source }}:${{ github.event.client_payload.lineno }}:${{ github.event.client_payload.colno }}
+            - UserAgent: ${{ github.event.client_payload.userAgent }}
+
+            ## スタックトレース
+            ```
+            ${{ github.event.client_payload.stack }}
+            ```
+
+            ## 作業方針
+            1. エラーメッセージとスタックから原因を特定する（src/配下を探索）
+            2. YAGNI原則で**最小限**の修正に留める（バグ修正箇所だけを変更、リファクタ禁止）
+            3. 修正後 `npm run build` が通ることを確認
+            4. 修正内容を `git add` して `git commit` する（1コミットで簡潔に）
+            5. 原因が特定できない／コード由来でない（拡張機能等）場合は、COMMITせずに理由をMarkdownで `AUTO_FIX_REPORT.md` に書き出して終了
+
+            ## 制約
+            - 新規依存関係の追加禁止
+            - テストやドキュメントの新規作成禁止
+            - `.env` や `secrets` は触らない
+          allowed_tools: "Bash,Edit,Write,Read,Glob,Grep"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet HEAD && [ -z "$(git log origin/master..HEAD --oneline 2>/dev/null)" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push branch and create PR
+        id: pr
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push -u origin "${{ steps.branch.outputs.name }}"
+          PR_URL=$(gh pr create \
+            --title "auto-fix: ${{ github.event.client_payload.message }}" \
+            --body "$(cat <<'EOF'
+          ## 🤖 Claude自動修正PR
+
+          **エラー**: ${{ github.event.client_payload.message }}
+          **URL**: ${{ github.event.client_payload.url }}
+          **場所**: ${{ github.event.client_payload.source }}:${{ github.event.client_payload.lineno }}:${{ github.event.client_payload.colno }}
+
+          Discord通知: <https://discord.com/channels/@me/${{ github.event.client_payload.discord_channel_id }}/${{ github.event.client_payload.discord_message_id }}>
+
+          レビューしてマージすると `deploy.yml` が自動実行されて本番反映されます。
+          EOF
+            )" \
+            --base master)
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "url=$PR_URL" >> $GITHUB_OUTPUT
+          echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Notify Discord (success)
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          CALLBACK_URL: ${{ secrets.FIX_CALLBACK_URL }}
+          CALLBACK_SECRET: ${{ secrets.FIX_CALLBACK_SECRET }}
+        run: |
+          if [ -z "$CALLBACK_URL" ]; then exit 0; fi
+          curl -s -X POST "$CALLBACK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Fix-Secret: $CALLBACK_SECRET" \
+            -d "$(jq -n \
+              --arg mid "${{ github.event.client_payload.discord_message_id }}" \
+              --arg url "${{ steps.pr.outputs.url }}" \
+              --arg num "${{ steps.pr.outputs.number }}" \
+              '{discord_message_id:$mid, status:"success", pr_url:$url, pr_number:($num|tonumber), summary:"修正PRを作成しました"}')" \
+            || true
+
+      - name: Notify Discord (no changes)
+        if: steps.changes.outputs.has_changes == 'false'
+        env:
+          CALLBACK_URL: ${{ secrets.FIX_CALLBACK_URL }}
+          CALLBACK_SECRET: ${{ secrets.FIX_CALLBACK_SECRET }}
+        run: |
+          if [ -z "$CALLBACK_URL" ]; then exit 0; fi
+          REPORT="(報告書なし)"
+          if [ -f AUTO_FIX_REPORT.md ]; then
+            REPORT=$(head -c 800 AUTO_FIX_REPORT.md)
+          fi
+          curl -s -X POST "$CALLBACK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Fix-Secret: $CALLBACK_SECRET" \
+            -d "$(jq -n \
+              --arg mid "${{ github.event.client_payload.discord_message_id }}" \
+              --arg rep "$REPORT" \
+              '{discord_message_id:$mid, status:"no_changes", summary:$rep}')" \
+            || true
+
+      - name: Notify Discord (failure)
+        if: failure()
+        env:
+          CALLBACK_URL: ${{ secrets.FIX_CALLBACK_URL }}
+          CALLBACK_SECRET: ${{ secrets.FIX_CALLBACK_SECRET }}
+        run: |
+          if [ -z "$CALLBACK_URL" ]; then exit 0; fi
+          curl -s -X POST "$CALLBACK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Fix-Secret: $CALLBACK_SECRET" \
+            -d "$(jq -n \
+              --arg mid "${{ github.event.client_payload.discord_message_id }}" \
+              --arg run "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{discord_message_id:$mid, status:"failure", summary:("GitHub Actions実行失敗: " + $run)}')" \
+            || true
