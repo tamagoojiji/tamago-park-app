@@ -42,6 +42,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--allowed-tools Bash,Edit,Write,Read,Glob,Grep"
           prompt: |
             本番フロントエンド（tamago-park-app）でJavaScriptエラーが発生しました。
             原因を調査して修正してください。
@@ -68,7 +69,6 @@ jobs:
             - 新規依存関係の追加禁止
             - テストやドキュメントの新規作成禁止
             - `.env` や `secrets` は触らない
-          allowed_tools: "Bash,Edit,Write,Read,Glob,Grep"
 
       - name: Check for changes
         id: changes
