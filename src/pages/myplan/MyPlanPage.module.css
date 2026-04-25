@@ -34,6 +34,59 @@
   text-align: center;
 }
 
+.draftPrompt {
+  background: #FFF9E6;
+  border: 1px solid #FFE082;
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.draftPromptText {
+  margin: 0 0 14px;
+  font-size: var(--text-sm);
+  color: #856404;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.draftPromptButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.draftPromptDiscard,
+.draftPromptResume {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.draftPromptDiscard {
+  background: #fff;
+  border: 2px solid var(--color-border-dark);
+  color: var(--color-text-sub);
+}
+
+.draftPromptDiscard:active {
+  background: var(--color-bg-section);
+}
+
+.draftPromptResume {
+  background: var(--color-primary);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(74, 144, 217, 0.35);
+}
+
+.draftPromptResume:active {
+  transform: scale(0.98);
+}
+
 .stepContent {
   animation: fadeIn 0.3s ease-out;
 }

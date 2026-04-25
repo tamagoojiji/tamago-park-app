@@ -14,7 +14,19 @@ import StepScheduleEditor from './components/StepScheduleEditor';
 import StepConfirm from './components/StepConfirm';
 import styles from './MyPlanPage.module.css';
 
-function loadDraft(editId?: number) {
+interface DraftData {
+  date: string;
+  openTime: string;
+  closeTime: string;
+  selectedAttractions: string[];
+  attractions: MyPlanAttraction[];
+  selectedShows: string[];
+  showSchedule: MyPlanShow[];
+  planName: string;
+  memo: string;
+}
+
+function loadDraft(editId?: number): DraftData | null {
   if (editId) return null;
   const saved = localStorage.getItem(DRAFT_KEY);
   if (!saved) return null;
@@ -30,18 +42,37 @@ export default function MyPlanPage() {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit') ? Number(searchParams.get('edit')) : undefined;
 
-  const draft = loadDraft(editId);
+  const [pendingDraft, setPendingDraft] = useState<DraftData | null>(() => loadDraft(editId));
   const [step, setStep] = useState(0);
-  const [date, setDate] = useState(draft?.date || '');
-  const [openTime, setOpenTime] = useState(draft?.openTime || '09:00');
-  const [closeTime, setCloseTime] = useState(draft?.closeTime || '21:00');
-  const [selectedAttractions, setSelectedAttractions] = useState<string[]>(draft?.selectedAttractions || []);
-  const [attractions, setAttractions] = useState<MyPlanAttraction[]>(draft?.attractions || []);
-  const [selectedShows, setSelectedShows] = useState<string[]>(draft?.selectedShows || []);
-  const [showSchedule, setShowSchedule] = useState<MyPlanShow[]>(draft?.showSchedule || []);
-  const [planName, setPlanName] = useState(draft?.planName || '');
-  const [memo, setMemo] = useState(draft?.memo || '');
+  const [date, setDate] = useState('');
+  const [openTime, setOpenTime] = useState('09:00');
+  const [closeTime, setCloseTime] = useState('21:00');
+  const [selectedAttractions, setSelectedAttractions] = useState<string[]>([]);
+  const [attractions, setAttractions] = useState<MyPlanAttraction[]>([]);
+  const [selectedShows, setSelectedShows] = useState<string[]>([]);
+  const [showSchedule, setShowSchedule] = useState<MyPlanShow[]>([]);
+  const [planName, setPlanName] = useState('');
+  const [memo, setMemo] = useState('');
   const [savedId, setSavedId] = useState<number | undefined>(editId);
+
+  const handleResumeDraft = () => {
+    if (!pendingDraft) return;
+    setDate(pendingDraft.date || '');
+    setOpenTime(pendingDraft.openTime || '09:00');
+    setCloseTime(pendingDraft.closeTime || '21:00');
+    setSelectedAttractions(pendingDraft.selectedAttractions || []);
+    setAttractions(pendingDraft.attractions || []);
+    setSelectedShows(pendingDraft.selectedShows || []);
+    setShowSchedule(pendingDraft.showSchedule || []);
+    setPlanName(pendingDraft.planName || '');
+    setMemo(pendingDraft.memo || '');
+    setPendingDraft(null);
+  };
+
+  const handleDiscardDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    setPendingDraft(null);
+  };
 
   // 編集モード: 既存プランを読み込み
   useEffect(() => {
@@ -61,10 +92,10 @@ export default function MyPlanPage() {
 
   // 下書き保存（localStorage）
   useEffect(() => {
-    if (!date) return;
+    if (!date || pendingDraft) return;
     const draftData = { date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, planName, memo };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  }, [date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, planName, memo]);
+  }, [date, openTime, closeTime, selectedAttractions, attractions, selectedShows, showSchedule, planName, memo, pendingDraft]);
 
   const handleDateChange = useCallback((d: string, open: string, close: string) => {
     setDate(d);
@@ -110,6 +141,7 @@ export default function MyPlanPage() {
   });
 
   const canProceed = (): boolean => {
+    if (pendingDraft) return false;
     if (step === 0) return !!date;
     return true;
   };
@@ -135,14 +167,38 @@ export default function MyPlanPage() {
 
         <PlanProgressBar currentStep={step} />
 
-        {step === 0 && date && (
+        {pendingDraft && step === 0 && (
+          <div className={styles.draftPrompt}>
+            <p className={styles.draftPromptText}>
+              前回作成途中のプラン（{pendingDraft.date}）が残っています。続きから再開しますか？
+            </p>
+            <div className={styles.draftPromptButtons}>
+              <button
+                type="button"
+                className={styles.draftPromptDiscard}
+                onClick={handleDiscardDraft}
+              >
+                新しく作る
+              </button>
+              <button
+                type="button"
+                className={styles.draftPromptResume}
+                onClick={handleResumeDraft}
+              >
+                続きから再開
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!pendingDraft && step === 0 && date && (
           <div className={styles.draftNotice}>
             下書きは自動保存されます。ブラウザのデータ消去や長期間未アクセスで下書きが消える場合があります。
           </div>
         )}
 
         <div className={styles.stepContent} key={step}>
-          {step === 0 && (
+          {step === 0 && !pendingDraft && (
             <StepDateSelect date={date} onChange={handleDateChange} />
           )}
           {step === 1 && (
