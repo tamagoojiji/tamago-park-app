@@ -1,3 +1,5 @@
+import { ATTRACTION_CLOSED_FROM } from './height-restrictions';
+
 // アンケート全選択肢の定数定義
 
 // Q2: サービス種別
@@ -124,6 +126,8 @@ export const THRILL_ATTRACTION_OPTIONS = [
   'ジョーズ',
   'ミニオン・ハチャメチャ・ライド',
   'マリオカート ～クッパの挑戦状～',
+  'ドンキーコングのクレイジー・トロッコ™',
+  'フライト・オブ・ザ・ヒッポグリフ™',
 ] as const;
 
 // Q16: キッズ系アトラクション
@@ -138,8 +142,10 @@ export const KIDS_ATTRACTION_OPTIONS = [
   'セサミのビッグ・ドライブ',
   'ハローキティのカップケーキ・ドリーム',
   'ミニオン・ハチャメチャ・アイス',
-  'ミニオン・ハチャメチャ・ミッション',
+  'ミニオン・ハチャメチャ・ミッション ～大悪党への道～',
   'ヨッシー・アドベンチャー',
+  'セサミストリート 4-D ムービーマジック™',
+  'シュレック 4-D アドベンチャー™',
 ] as const;
 
 // 期間限定コラボ: 期間中はvariantのみ表示、期間外はbaseのみ表示
@@ -165,6 +171,8 @@ export function applySeasonalVariants(options: readonly string[], today: string)
     if (suppressedBases.has(name)) return false;
     const v = SEASONAL_ATTRACTION_VARIANTS.find(x => x.variant === name);
     if (v && !activeVariants.has(name)) return false;
+    const closedFrom = ATTRACTION_CLOSED_FROM[name];
+    if (closedFrom && today >= closedFrom) return false;
     return true;
   });
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { heightRestrictions, pregnancyOkAttractions, type HeightRestriction } from '../data/height-restrictions';
+import { useState, useMemo } from 'react';
+import { getActiveHeightRestrictions, pregnancyOkAttractions, type HeightRestriction } from '../data/height-restrictions';
 import styles from './HeightPage.module.css';
 
 const HEIGHT_OPTIONS = [0, 91, 92, 102, 107, 122, 132];
@@ -17,11 +17,14 @@ export default function HeightPage() {
     return 'ng';
   };
 
-  // 身長制限が高い順にソート
-  const sorted = [...heightRestrictions].sort((a, b) => {
-    if (b.aloneMin !== a.aloneMin) return b.aloneMin - a.aloneMin;
-    return a.name.localeCompare(b.name);
-  });
+  // 身長制限が高い順にソート（営業終了アトラクションは除外）
+  const sorted = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return [...getActiveHeightRestrictions(today)].sort((a, b) => {
+      if (b.aloneMin !== a.aloneMin) return b.aloneMin - a.aloneMin;
+      return a.name.localeCompare(b.name);
+    });
+  }, []);
 
   const rideableCount = childHeight > 0
     ? sorted.filter(r => getRideStatus(r) !== 'ng').length

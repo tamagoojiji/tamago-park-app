@@ -13,6 +13,7 @@ export interface HeightRestriction {
   note?: string; // 身長cm以外の制限（例: 一人で座れたら）
   strollerOk?: boolean; // ベビーカーそのままでOK
   seasonal?: { replaces: string; start: string; end: string }; // 期間限定コラボ版（期間中のみ表示、期間外はreplacesに戻す）
+  closedFrom?: string; // 営業終了日（この日以降は非表示）YYYY-MM-DD
 }
 
 export const heightRestrictions: HeightRestriction[] = [
@@ -41,17 +42,17 @@ export const heightRestrictions: HeightRestriction[] = [
   { name: 'ドンキーコングのクレイジー・トロッコ™', aloneMin: 122, withAdultMin: 107, area: 'ドンキーコング・カントリー', childSwap: true, singleRider: true, image: '/images/attractions/ドンキーコングのクレイジー・トロッコ.jpg' },
 
   // --- ワンダーランド系 ---
-  { name: 'エルモのゴーゴー・スケートボード', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: true, image: '/images/attractions/エルモのゴーゴー・スケートボード.jpg' },
-  { name: 'エルモのバブル・バブル', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/エルモのバブル・バブル.jpg' },
-  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/ビッグバードのビッグトップ・サーカス.jpg', note: '身長制限なし' },
+  { name: 'エルモのゴーゴー・スケートボード', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: true, image: '/images/attractions/エルモのゴーゴー・スケートボード.jpg', closedFrom: '2026-05-11' },
+  { name: 'エルモのバブル・バブル', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/エルモのバブル・バブル.jpg', closedFrom: '2026-05-11' },
+  { name: 'ビッグバードのビッグトップ・サーカス', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/ビッグバードのビッグトップ・サーカス.jpg', note: '身長制限なし', closedFrom: '2026-05-11' },
   { name: 'フライング・スヌーピー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/フライング・スヌーピー.jpg' },
   { name: 'ハローキティのカップケーキ・ドリーム', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/ハローキティのカップケーキ・ドリーム.jpg', note: '身長制限なし' },
   { name: 'ミニオン・ハチャメチャ・アイス', aloneMin: 122, withAdultMin: 92, area: 'ミニオン・パーク', childSwap: true, singleRider: false, image: '/images/attractions/ミニオン・ハチャメチャ・アイス.jpg' },
-  { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/モッピーのバルーン・トリップ.jpg' },
+  { name: 'モッピーのバルーン・トリップ', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/モッピーのバルーン・トリップ.jpg', closedFrom: '2026-05-11' },
   { name: 'スヌーピーのフライング・エース・アドベンチャー', aloneMin: 122, withAdultMin: 92, area: 'ワンダーランド', childSwap: true, singleRider: false, image: '/images/attractions/スヌーピーのフライング・エース・アドベンチャー.jpg' },
 
   // --- 身長制限なし（年齢制限あり・子供専用） ---
-  { name: 'エルモのリトル・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/エルモのリトル・ドライブ.jpg', note: '6歳未就学児限定（大人不可）' },
+  { name: 'エルモのリトル・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/エルモのリトル・ドライブ.jpg', note: '6歳未就学児限定（大人不可）', closedFrom: '2026-05-11' },
   { name: 'セサミのビッグ・ドライブ', aloneMin: 0, withAdultMin: 0, area: 'ワンダーランド', childSwap: false, singleRider: false, image: '/images/attractions/セサミのビッグ・ドライブ.jpg', note: '6歳〜12歳限定（大人不可）' },
 
   // --- 一人で座れたらOK ---
@@ -72,10 +73,16 @@ export function getActiveHeightRestrictions(today: string): HeightRestriction[] 
     }
   }
   return heightRestrictions.filter(r => {
+    if (r.closedFrom && today >= r.closedFrom) return false;
     if (r.seasonal) return activeVariants.has(r.name);
     return !suppressedBases.has(r.name);
   });
 }
+
+// 終了日マップ（survey-options.ts等から参照）
+export const ATTRACTION_CLOSED_FROM: Record<string, string> = Object.fromEntries(
+  heightRestrictions.filter(r => r.closedFrom).map(r => [r.name, r.closedFrom!])
+);
 
 // 妊婦さんが利用できるアトラクション・ショー
 export interface PregnancyOkAttraction {
