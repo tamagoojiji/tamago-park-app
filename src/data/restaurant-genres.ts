@@ -18,17 +18,30 @@ export const RESTAURANT_GENRES: GenreInfo[] = [
   { id: 'premium-meat', label: '高級肉系', icon: '🥩' },
 ];
 
-export const TABEARUKI_GENRES: GenreInfo[] = [
-  { id: 'popcorn', label: 'ポップコーン', icon: '🍿' },
-  { id: 'character-man', label: 'キャラクターまん', icon: '🐻' },
-  { id: 'meat', label: '肉系', icon: '🍗' },
-  { id: 'churros', label: 'チュリトス', icon: '🥖' },
-  { id: 'collab', label: 'コラボ系', icon: '⭐' },
+// 食べ歩きフード大カテゴリ
+export const TABEARUKI_CATEGORIES: GenreInfo[] = [
+  { id: 'tabearuki', label: '食べ歩き', icon: '🍦' },
+  { id: 'food', label: 'フード', icon: '🍗' },
+];
+
+// 食べ歩き(軽食)サブジャンル
+export const TABEARUKI_SUB_GENRES: GenreInfo[] = [
   { id: 'ice', label: 'アイス', icon: '🍦' },
-  { id: 'dessert', label: 'デザート', icon: '🍰' },
+  { id: 'churros', label: 'チュリトス', icon: '🥖' },
+  { id: 'popcorn', label: 'ポップコーン', icon: '🍿' },
+  { id: 'character-man', label: 'キャラまん', icon: '🐻' },
   { id: 'drink', label: 'ドリンク', icon: '🥤' },
-  { id: 'soup', label: 'スープ', icon: '🍲' },
+  { id: 'alcohol', label: 'アルコール', icon: '🍺' },
+  { id: 'dessert', label: 'デザート', icon: '🍰' },
   { id: 'other', label: 'その他', icon: '🍽️' },
+];
+
+// フード(食事系)サブジャンル
+export const FOOD_SUB_GENRES: GenreInfo[] = [
+  { id: 'meat', label: '肉系', icon: '🍗' },
+  { id: 'pizza', label: 'ピザ', icon: '🍕' },
+  { id: 'hotdog', label: 'ホットドッグ', icon: '🌭' },
+  { id: 'soup', label: 'スープ', icon: '🍲' },
 ];
 
 // クローズ中のレストラン（API結果からフィルタ）
