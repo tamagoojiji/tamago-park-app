@@ -278,6 +278,10 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
+.badgeCollab {
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
 .badgeLimited {
   background: #ff6b6b;
 }

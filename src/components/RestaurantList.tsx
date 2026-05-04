@@ -121,9 +121,17 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
   const renderBadges = (m: TabearukiItem) => {
     const badges: { key: string; label: string; className: string }[] = [];
-    if (m.tags?.includes('25周年')) {
-      badges.push({ key: 'anniv', label: '🎉 25周年', className: styles.badgeAnniv });
-    }
+    const seen = new Set<string>();
+    (m.tags ?? []).forEach((raw, i) => {
+      const tag = raw.trim();
+      if (!tag || seen.has(tag)) return;
+      seen.add(tag);
+      if (tag === '25周年') {
+        badges.push({ key: `anniv-${i}`, label: '🎉 25周年', className: styles.badgeAnniv });
+      } else {
+        badges.push({ key: `collab-${i}-${tag}`, label: `⭐ ${tag}`, className: styles.badgeCollab });
+      }
+    });
     if (isLimited(m)) {
       badges.push({ key: 'limited', label: '⏳ 期間限定', className: styles.badgeLimited });
     }
