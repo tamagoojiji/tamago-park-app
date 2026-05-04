@@ -125,6 +125,8 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     return `${y}/${parseInt(mo, 10)}/${parseInt(d, 10)}`;
   };
 
+  const formatMultiline = (s: string): string => s.split(' / ').join('\n');
+
   const formatPrice = (p: number | null): string => {
     if (p == null) return '価格未定';
     return `¥${p.toLocaleString()}`;
@@ -270,8 +272,8 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                           {isLimited(m) && <span className={styles.limitedBadge}>期間限定</span>}
                         </span>
                         <span className={styles.menuPrice}>{formatPrice(m.price)}</span>
-                        <span className={styles.menuShop}>📍 {m.shop}</span>
-                        <span className={styles.menuArea}>🗺️ {m.area}</span>
+                        <span className={styles.menuShop}>📍 {formatMultiline(m.shop)}</span>
+                        <span className={styles.menuArea}>🗺️ {formatMultiline(m.area)}</span>
                       </div>
                     </button>
                   ))}
@@ -354,11 +356,11 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               <span className={styles.sheetPrice}>{formatPrice(selectedMenu.price)}</span>
               <div className={styles.sheetRow}>
                 <span className={styles.sheetLabel}>販売場所</span>
-                <span className={styles.sheetValue}>{selectedMenu.shop}</span>
+                <span className={styles.sheetValue}>{formatMultiline(selectedMenu.shop)}</span>
               </div>
               <div className={styles.sheetRow}>
                 <span className={styles.sheetLabel}>エリア</span>
-                <span className={styles.sheetValue}>{selectedMenu.area}</span>
+                <span className={styles.sheetValue}>{formatMultiline(selectedMenu.area)}</span>
               </div>
               {(selectedMenu.saleStart || selectedMenu.saleEnd) && (
                 <div className={styles.sheetRow}>
