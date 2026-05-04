@@ -248,12 +248,16 @@
 .menuShop {
   font-size: 12px;
   color: var(--color-text-sub);
+  white-space: pre-line;
+  line-height: 1.5;
 }
 
 .menuArea {
   font-size: 11px;
   color: var(--color-text-sub);
   opacity: 0.85;
+  white-space: pre-line;
+  line-height: 1.5;
 }
 
 /* 期間限定バッジ */
@@ -381,6 +385,9 @@
   font-size: var(--text-sm);
   color: var(--color-text);
   font-weight: 600;
+  white-space: pre-line;
+  line-height: 1.5;
+  text-align: right;
 }
 
 .sheetMenuSection {
