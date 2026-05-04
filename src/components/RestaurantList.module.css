@@ -250,6 +250,37 @@
   color: var(--color-text-sub);
 }
 
+.menuArea {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  opacity: 0.85;
+}
+
+/* 期間限定バッジ */
+.limitedBadge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  background: #ff6b6b;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+/* 食べ歩き/フード サブカテゴリ */
+.subCategoryIcon {
+  font-size: 56px;
+  padding: 18px 0 6px;
+}
+
+.subCategoryHint {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  padding: 0 0 12px;
+}
+
 /* MAPプレースホルダー */
 .mapPlaceholder {
   display: flex;

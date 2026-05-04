@@ -3,17 +3,18 @@ import type { RestaurantInfo, MenuItem } from '../api/restaurants';
 import { fetchStoreMenus } from '../api/restaurants';
 import {
   RESTAURANT_GENRES,
-  TABEARUKI_GENRES,
+  TABEARUKI_SUB_GENRES,
+  FOOD_SUB_GENRES,
   RESTAURANT_GENRE_MAP,
   RESTAURANT_IMAGE_MAP,
   TABEARUKI_IMAGE_MAP,
   CLOSED_RESTAURANTS,
   isTabearuki,
 } from '../data/restaurant-genres';
-import { TABEARUKI_MENU, type TabearukiItem } from '../data/tabearuki-menu';
+import { TABEARUKI_MENU, type TabearukiItem, type TabearukiCategory } from '../data/tabearuki-menu';
 import styles from './RestaurantList.module.css';
 
-type Step = 'category' | 'genre' | 'result';
+type Step = 'category' | 'sub-category' | 'genre' | 'result';
 type Category = 'restaurant' | 'tabearuki';
 
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
 export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [step, setStep] = useState<Step>('category');
   const [category, setCategory] = useState<Category | null>(null);
+  const [subCategory, setSubCategory] = useState<TabearukiCategory | null>(null);
   const [genreId, setGenreId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RestaurantInfo | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
@@ -71,6 +73,14 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       setSelected(null);
       setSelectedMenu(null);
     } else if (step === 'genre') {
+      if (category === 'tabearuki') {
+        setStep('sub-category');
+        setSubCategory(null);
+      } else {
+        setStep('category');
+        setCategory(null);
+      }
+    } else if (step === 'sub-category') {
       setStep('category');
       setCategory(null);
     }
@@ -78,6 +88,11 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
   const handleCategory = (cat: Category) => {
     setCategory(cat);
+    setStep(cat === 'tabearuki' ? 'sub-category' : 'genre');
+  };
+
+  const handleSubCategory = (sub: TabearukiCategory) => {
+    setSubCategory(sub);
     setStep('genre');
   };
 
@@ -97,16 +112,38 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     });
   };
 
-  // 食べ歩きメニュー用フィルタ（販売停止中は除外）
+  // 食べ歩き/フード メニュー用フィルタ（販売停止中は除外）
   const getFilteredMenu = (): TabearukiItem[] => {
-    if (!genreId) return [];
-    return TABEARUKI_MENU.filter((m) => m.genre === genreId && !m.suspended);
+    if (!genreId || !subCategory) return [];
+    return TABEARUKI_MENU.filter(
+      (m) => m.category === subCategory && m.genre === genreId && !m.suspended
+    );
   };
+
+  const currentSubGenres = subCategory === 'food' ? FOOD_SUB_GENRES : TABEARUKI_SUB_GENRES;
 
   const genreLabel = () => {
     if (!category || !genreId) return '';
-    const genres = category === 'restaurant' ? RESTAURANT_GENRES : TABEARUKI_GENRES;
-    return genres.find((g) => g.id === genreId)?.label || '';
+    if (category === 'restaurant') {
+      return RESTAURANT_GENRES.find((g) => g.id === genreId)?.label || '';
+    }
+    return currentSubGenres.find((g) => g.id === genreId)?.label || '';
+  };
+
+  const isLimited = (m: TabearukiItem): boolean => {
+    if (!m.saleStart && !m.saleEnd) return false;
+    return true;
+  };
+
+  const formatDate = (s?: string): string => {
+    if (!s) return '';
+    const [y, mo, d] = s.split('-');
+    return `${y}/${parseInt(mo, 10)}/${parseInt(d, 10)}`;
+  };
+
+  const formatPrice = (p: number | null): string => {
+    if (p == null) return '価格未定';
+    return `¥${p.toLocaleString()}`;
   };
 
   const getImage = (name: string): string | undefined => RESTAURANT_IMAGE_MAP[name];
@@ -136,7 +173,32 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         </>
       )}
 
-      {/* Step 2: ジャンル選択 */}
+      {/* Step 2: 食べ歩きフード → 食べ歩き/フード サブカテゴリ */}
+      {step === 'sub-category' && category === 'tabearuki' && (
+        <>
+          <p className={styles.stepTitle}>どちらを探しますか？</p>
+          <div className={styles.categoryGrid}>
+            <button
+              className={styles.categoryCard}
+              onClick={() => handleSubCategory('tabearuki')}
+            >
+              <span className={styles.subCategoryIcon}>🍦</span>
+              <span className={styles.categoryLabel}>食べ歩き</span>
+              <span className={styles.subCategoryHint}>軽食・スイーツ・ドリンク</span>
+            </button>
+            <button
+              className={styles.categoryCard}
+              onClick={() => handleSubCategory('food')}
+            >
+              <span className={styles.subCategoryIcon}>🍗</span>
+              <span className={styles.categoryLabel}>フード</span>
+              <span className={styles.subCategoryHint}>肉系・ピザ・スープ</span>
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Step 3: ジャンル選択 */}
       {step === 'genre' && category && (
         <>
           <p className={styles.stepTitle}>
@@ -157,7 +219,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             </div>
           ) : (
             <div className={styles.genreGrid}>
-              {TABEARUKI_GENRES.map((g) => {
+              {currentSubGenres.map((g) => {
                 const genreImage = TABEARUKI_IMAGE_MAP[g.id];
                 return (
                   <button
@@ -227,7 +289,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             );
           })()}
 
-          {/* 食べ歩きメニュー結果 */}
+          {/* 食べ歩き/フードメニュー結果 */}
           {category === 'tabearuki' && (() => {
             const menuList = getFilteredMenu();
             if (menuList.length === 0) {
@@ -237,16 +299,20 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               <>
                 <p className={styles.resultCount}>{menuList.length}品</p>
                 <div className={styles.resultList}>
-                  {menuList.map((m) => (
+                  {menuList.map((m, i) => (
                     <button
-                      key={`${m.shop}-${m.name}`}
+                      key={`${m.shop}-${m.name}-${i}`}
                       className={styles.menuCard}
                       onClick={() => setSelectedMenu(m)}
                     >
                       <div className={styles.menuInfo}>
-                        <span className={styles.menuName}>{m.name}</span>
-                        <span className={styles.menuPrice}>¥{m.price.toLocaleString()}</span>
+                        <span className={styles.menuName}>
+                          {m.name}
+                          {isLimited(m) && <span className={styles.limitedBadge}>期間限定</span>}
+                        </span>
+                        <span className={styles.menuPrice}>{formatPrice(m.price)}</span>
                         <span className={styles.menuShop}>📍 {m.shop}</span>
+                        <span className={styles.menuArea}>🗺️ {m.area}</span>
                       </div>
                     </button>
                   ))}
@@ -313,7 +379,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         </div>
       )}
 
-      {/* ボトムシート（食べ歩きメニュー） */}
+      {/* ボトムシート（食べ歩き/フードメニュー） */}
       {selectedMenu && (
         <div className={styles.overlay} onClick={() => setSelectedMenu(null)}>
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
@@ -323,11 +389,32 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             <div className={styles.sheetContent}>
               <span className={styles.sheetIcon}>🍢</span>
               <h3 className={styles.sheetName}>{selectedMenu.name}</h3>
-              <span className={styles.sheetPrice}>¥{selectedMenu.price.toLocaleString()}</span>
+              {isLimited(selectedMenu) && (
+                <span className={styles.limitedBadge}>期間限定</span>
+              )}
+              <span className={styles.sheetPrice}>{formatPrice(selectedMenu.price)}</span>
               <div className={styles.sheetRow}>
                 <span className={styles.sheetLabel}>販売場所</span>
                 <span className={styles.sheetValue}>{selectedMenu.shop}</span>
               </div>
+              <div className={styles.sheetRow}>
+                <span className={styles.sheetLabel}>エリア</span>
+                <span className={styles.sheetValue}>{selectedMenu.area}</span>
+              </div>
+              {(selectedMenu.saleStart || selectedMenu.saleEnd) && (
+                <div className={styles.sheetRow}>
+                  <span className={styles.sheetLabel}>販売期間</span>
+                  <span className={styles.sheetValue}>
+                    {formatDate(selectedMenu.saleStart)}〜{formatDate(selectedMenu.saleEnd)}
+                  </span>
+                </div>
+              )}
+              {selectedMenu.comment && (
+                <div className={styles.sheetRow}>
+                  <span className={styles.sheetLabel}>備考</span>
+                  <span className={styles.sheetValue}>{selectedMenu.comment}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
