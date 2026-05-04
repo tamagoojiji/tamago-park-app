@@ -269,18 +269,6 @@
   vertical-align: middle;
 }
 
-/* 食べ歩き/フード サブカテゴリ */
-.subCategoryIcon {
-  font-size: 56px;
-  padding: 18px 0 6px;
-}
-
-.subCategoryHint {
-  font-size: 11px;
-  color: var(--color-text-sub);
-  padding: 0 0 12px;
-}
-
 /* MAPプレースホルダー */
 .mapPlaceholder {
   display: flex;
