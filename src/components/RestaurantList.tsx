@@ -11,10 +11,12 @@ import {
   CLOSED_RESTAURANTS,
   isTabearuki,
 } from '../data/restaurant-genres';
-import { TABEARUKI_MENU, type TabearukiItem, type TabearukiCategory } from '../data/tabearuki-menu';
+import { TABEARUKI_MENU, type TabearukiItem } from '../data/tabearuki-menu';
 import styles from './RestaurantList.module.css';
 
-type Step = 'category' | 'sub-category' | 'genre' | 'result';
+const ALL_TABEARUKI_GENRES = [...TABEARUKI_SUB_GENRES, ...FOOD_SUB_GENRES];
+
+type Step = 'category' | 'genre' | 'result';
 type Category = 'restaurant' | 'tabearuki';
 
 interface Props {
@@ -25,7 +27,6 @@ interface Props {
 export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [step, setStep] = useState<Step>('category');
   const [category, setCategory] = useState<Category | null>(null);
-  const [subCategory, setSubCategory] = useState<TabearukiCategory | null>(null);
   const [genreId, setGenreId] = useState<string | null>(null);
   const [selected, setSelected] = useState<RestaurantInfo | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
@@ -73,14 +74,6 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       setSelected(null);
       setSelectedMenu(null);
     } else if (step === 'genre') {
-      if (category === 'tabearuki') {
-        setStep('sub-category');
-        setSubCategory(null);
-      } else {
-        setStep('category');
-        setCategory(null);
-      }
-    } else if (step === 'sub-category') {
       setStep('category');
       setCategory(null);
     }
@@ -88,11 +81,6 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
   const handleCategory = (cat: Category) => {
     setCategory(cat);
-    setStep(cat === 'tabearuki' ? 'sub-category' : 'genre');
-  };
-
-  const handleSubCategory = (sub: TabearukiCategory) => {
-    setSubCategory(sub);
     setStep('genre');
   };
 
@@ -112,22 +100,18 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     });
   };
 
-  // 食べ歩き/フード メニュー用フィルタ（販売停止中は除外）
+  // 食べ歩きフード メニュー用フィルタ（販売停止中は除外）
   const getFilteredMenu = (): TabearukiItem[] => {
-    if (!genreId || !subCategory) return [];
-    return TABEARUKI_MENU.filter(
-      (m) => m.category === subCategory && m.genre === genreId && !m.suspended
-    );
+    if (!genreId) return [];
+    return TABEARUKI_MENU.filter((m) => m.genre === genreId && !m.suspended);
   };
-
-  const currentSubGenres = subCategory === 'food' ? FOOD_SUB_GENRES : TABEARUKI_SUB_GENRES;
 
   const genreLabel = () => {
     if (!category || !genreId) return '';
     if (category === 'restaurant') {
       return RESTAURANT_GENRES.find((g) => g.id === genreId)?.label || '';
     }
-    return currentSubGenres.find((g) => g.id === genreId)?.label || '';
+    return ALL_TABEARUKI_GENRES.find((g) => g.id === genreId)?.label || '';
   };
 
   const isLimited = (m: TabearukiItem): boolean => {
@@ -173,36 +157,11 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         </>
       )}
 
-      {/* Step 2: 食べ歩きフード → 食べ歩き/フード サブカテゴリ */}
-      {step === 'sub-category' && category === 'tabearuki' && (
-        <>
-          <p className={styles.stepTitle}>どちらを探しますか？</p>
-          <div className={styles.categoryGrid}>
-            <button
-              className={styles.categoryCard}
-              onClick={() => handleSubCategory('tabearuki')}
-            >
-              <span className={styles.subCategoryIcon}>🍦</span>
-              <span className={styles.categoryLabel}>食べ歩き</span>
-              <span className={styles.subCategoryHint}>軽食・スイーツ・ドリンク</span>
-            </button>
-            <button
-              className={styles.categoryCard}
-              onClick={() => handleSubCategory('food')}
-            >
-              <span className={styles.subCategoryIcon}>🍗</span>
-              <span className={styles.categoryLabel}>フード</span>
-              <span className={styles.subCategoryHint}>肉系・ピザ・スープ</span>
-            </button>
-          </div>
-        </>
-      )}
-
-      {/* Step 3: ジャンル選択 */}
+      {/* Step 2: ジャンル選択 */}
       {step === 'genre' && category && (
         <>
           <p className={styles.stepTitle}>
-            {category === 'restaurant' ? 'ジャンルを選んでください' : 'フードを選んでください'}
+            ジャンルを選んでください
           </p>
           {category === 'restaurant' ? (
             <div className={styles.genreTabs}>
@@ -219,7 +178,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             </div>
           ) : (
             <div className={styles.genreGrid}>
-              {currentSubGenres.map((g) => {
+              {ALL_TABEARUKI_GENRES.map((g) => {
                 const genreImage = TABEARUKI_IMAGE_MAP[g.id];
                 return (
                   <button
