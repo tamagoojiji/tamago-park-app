@@ -119,6 +119,19 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     return true;
   };
 
+  const renderBadges = (m: TabearukiItem) => {
+    const badges: { key: string; label: string; className: string }[] = [];
+    if (m.tags?.includes('25周年')) {
+      badges.push({ key: 'anniv', label: '🎉 25周年', className: styles.badgeAnniv });
+    }
+    if (isLimited(m)) {
+      badges.push({ key: 'limited', label: '⏳ 期間限定', className: styles.badgeLimited });
+    }
+    return badges.map((b) => (
+      <span key={b.key} className={`${styles.badge} ${b.className}`}>{b.label}</span>
+    ));
+  };
+
   const formatDate = (s?: string): string => {
     if (!s) return '';
     const [y, mo, d] = s.split('-');
@@ -269,7 +282,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                       <div className={styles.menuInfo}>
                         <span className={styles.menuName}>
                           {m.name}
-                          {isLimited(m) && <span className={styles.limitedBadge}>期間限定</span>}
+                          {renderBadges(m)}
                         </span>
                         <span className={styles.menuPrice}>{formatPrice(m.price)}</span>
                         <span className={styles.menuShop}>📍 {formatMultiline(m.shop)}</span>
@@ -350,9 +363,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
             <div className={styles.sheetContent}>
               <span className={styles.sheetIcon}>🍢</span>
               <h3 className={styles.sheetName}>{selectedMenu.name}</h3>
-              {isLimited(selectedMenu) && (
-                <span className={styles.limitedBadge}>期間限定</span>
-              )}
+              {(() => {
+                const badges = renderBadges(selectedMenu);
+                return badges.length > 0 ? <div className={styles.sheetBadges}>{badges}</div> : null;
+              })()}
               <span className={styles.sheetPrice}>{formatPrice(selectedMenu.price)}</span>
               <div className={styles.sheetRow}>
                 <span className={styles.sheetLabel}>販売場所</span>

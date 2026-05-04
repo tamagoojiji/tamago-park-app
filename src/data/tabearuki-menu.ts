@@ -1,5 +1,7 @@
 export type TabearukiCategory = 'tabearuki' | 'food';
 
+export type TabearukiTag = '25周年';
+
 export interface TabearukiItem {
   name: string;
   price: number | null;
@@ -11,6 +13,7 @@ export interface TabearukiItem {
   comment?: string;
   saleStart?: string;
   saleEnd?: string;
+  tags?: TabearukiTag[];
 }
 
 // スプレッドシート分類 → ジャンルID + 大カテゴリ
@@ -47,8 +50,11 @@ function parseSaleRange(range: string): { saleStart?: string; saleEnd?: string }
 
 type SheetCategory = keyof typeof GENRE_OF;
 
-// 生データ: [分類, エリア, 商品名, 価格(null=未定), 販売店, 0=販売中/1=販売停止中, コメント, 販売期間]
-type Raw = readonly [SheetCategory, string, string, number | null, string, 0 | 1, string, string];
+// 生データ: [分類, エリア, 商品名, 価格(null=未定), 販売店, 0=販売中/1=販売停止中, コメント, 販売期間, タグ(任意)]
+type Raw = readonly [
+  SheetCategory, string, string, number | null, string, 0 | 1, string, string,
+  TabearukiTag[]?,
+];
 
 const RAW: readonly Raw[] = [
   // アイス
@@ -128,12 +134,12 @@ const RAW: readonly Raw[] = [
   ['その他', 'ミニオン・パーク', 'イーブルミニオン・ドーナツ 〜ブルーベリー〜', 850, 'イーブル・イーツ', 0, '', ''],
 
   // チュリトス（ユーザー指定の並び順 + 同名統合）
-  ['チュリトス', 'アミティ・ビレッジ / ニューヨーク・エリア / ハリウッド・エリア', 'キャラメルポップコーン！？チュリトス', 800, 'ウォーターワールド前フードカート / スペース・ファンタジー・ザ・ライド前フードカート / パークサイド・グリル横カート', 0, '25周年のフード', ''],
+  ['チュリトス', 'アミティ・ビレッジ / ニューヨーク・エリア / ハリウッド・エリア', 'キャラメルポップコーン！？チュリトス', 800, 'ウォーターワールド前フードカート / スペース・ファンタジー・ザ・ライド前フードカート / パークサイド・グリル横カート', 0, '', '', ['25周年']],
   ['チュリトス', 'ニューヨーク・エリア', 'クロミ・チュリトス 〜カシスショコラ味〜', 850, 'イルミネーション・シアター入口横カート', 0, '', ''],
   ['チュリトス', 'ニューヨーク・エリア', 'マイメロディ・チュリトス 〜いちごヨーグルト味〜', 850, 'イルミネーション・シアター入口横カート', 0, '', ''],
   ['チュリトス', 'ハリー・ポッターエリア', '4寮チュリトス', 850, 'マジック・ニープ・カート', 0, 'グリフィンドール™／ハッフルパフ™／レイブンクロー™／スリザリン™の4種', ''],
-  ['チュリトス', 'ニューヨーク・エリア', 'サーティワン・チュリトス 〜ポッピングシャワー〜', 850, 'ユニバーサル・マーケット内ハピネス・ワゴン', 0, '25周年のフード', ''],
-  ['チュリトス', 'ニューヨーク・エリア', 'サーティワン・チュリトス 〜ラブポーションサーティワン〜', 850, 'ユニバーサル・マーケット内ハピネス・ワゴン', 0, '25周年のフード', ''],
+  ['チュリトス', 'ニューヨーク・エリア', 'サーティワン・チュリトス 〜ポッピングシャワー〜', 850, 'ユニバーサル・マーケット内ハピネス・ワゴン', 0, '', '', ['25周年']],
+  ['チュリトス', 'ニューヨーク・エリア', 'サーティワン・チュリトス 〜ラブポーションサーティワン〜', 850, 'ユニバーサル・マーケット内ハピネス・ワゴン', 0, '', '', ['25周年']],
   ['チュリトス', 'ハリウッド・エリア', 'ウィキッド・チュリトス 〜ピーナッツバター・フレーバー〜', 850, 'ユニバーサル・モンスター前カート', 0, '', ''],
   ['チュリトス', 'ハリウッド・エリア', '虚式「茈」チュリトス 〜ミックスベリー味〜', 850, 'シネマ4-D前フードカート', 0, '期間限定', '2026年1月30日（金）～8月18日（火）'],
   ['チュリトス', 'ハリウッド・エリア', '怪盗キッド・チュリトス 〜ホワイトグレープ味〜', 850, 'カルフォルニア・コンフェクショナリー前カート', 0, '', ''],
@@ -272,7 +278,7 @@ const RAW: readonly Raw[] = [
   ['肉系', 'ユニバーサル・ワンダーランド', 'アンガス・ミートパイ', 850, 'ワンダーランド入口前カート', 1, '', ''],
 ];
 
-export const TABEARUKI_MENU: TabearukiItem[] = RAW.map(([sheetCat, area, name, price, shop, status, comment, range]) => {
+export const TABEARUKI_MENU: TabearukiItem[] = RAW.map(([sheetCat, area, name, price, shop, status, comment, range, tags]) => {
   const meta = GENRE_OF[sheetCat];
   const sale = parseSaleRange(range);
   const item: TabearukiItem = {
@@ -287,5 +293,6 @@ export const TABEARUKI_MENU: TabearukiItem[] = RAW.map(([sheetCat, area, name, p
   if (comment) item.comment = comment;
   if (sale.saleStart) item.saleStart = sale.saleStart;
   if (sale.saleEnd) item.saleEnd = sale.saleEnd;
+  if (tags && tags.length > 0) item.tags = tags;
   return item;
 });
