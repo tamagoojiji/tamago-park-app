@@ -44,6 +44,9 @@ export const FOOD_SUB_GENRES: GenreInfo[] = [
   { id: 'soup', label: 'スープ', icon: '🍲' },
 ];
 
+// 特別タブ: 販売開始日が未来のメニューを集約（saleStartの日付で自動判定）
+export const UPCOMING_GENRE: GenreInfo = { id: 'upcoming', label: '今後販売予定', icon: '📅' };
+
 // クローズ中のレストラン（API結果からフィルタ）
 export const CLOSED_RESTAURANTS = new Set([
   'アズーラ・ディ・カプリ',

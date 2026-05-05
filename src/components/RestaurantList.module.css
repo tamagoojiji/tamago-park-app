@@ -286,6 +286,10 @@
   background: #ff6b6b;
 }
 
+.badgeUpcoming {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
 .sheetBadges {
   display: flex;
   flex-wrap: wrap;

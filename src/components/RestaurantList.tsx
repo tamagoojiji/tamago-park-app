@@ -5,6 +5,7 @@ import {
   RESTAURANT_GENRES,
   TABEARUKI_SUB_GENRES,
   FOOD_SUB_GENRES,
+  UPCOMING_GENRE,
   RESTAURANT_GENRE_MAP,
   RESTAURANT_IMAGE_MAP,
   TABEARUKI_IMAGE_MAP,
@@ -14,7 +15,16 @@ import {
 import { TABEARUKI_MENU, type TabearukiItem } from '../data/tabearuki-menu';
 import styles from './RestaurantList.module.css';
 
-const ALL_TABEARUKI_GENRES = [...TABEARUKI_SUB_GENRES, ...FOOD_SUB_GENRES];
+// ローカルタイムゾーン基準のYYYY-MM-DD（JSTズレ・日跨ぎ対応のため呼び出し時に都度算出）
+const todayLocalIso = (): string => {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${m}-${day}`;
+};
+const isUpcoming = (m: TabearukiItem): boolean => !!m.saleStart && m.saleStart > todayLocalIso();
+
+const ALL_TABEARUKI_GENRES = [...TABEARUKI_SUB_GENRES, ...FOOD_SUB_GENRES, UPCOMING_GENRE];
 
 type Step = 'category' | 'genre' | 'result';
 type Category = 'restaurant' | 'tabearuki';
@@ -100,10 +110,15 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     });
   };
 
-  // 食べ歩きフード メニュー用フィルタ（販売停止中は除外）
+  // 食べ歩きフード メニュー用フィルタ（販売停止中は除外、saleStart未来のものは別タブへ）
   const getFilteredMenu = (): TabearukiItem[] => {
     if (!genreId) return [];
-    return TABEARUKI_MENU.filter((m) => m.genre === genreId && !m.suspended);
+    if (genreId === UPCOMING_GENRE.id) {
+      return TABEARUKI_MENU.filter((m) => !m.suspended && isUpcoming(m));
+    }
+    return TABEARUKI_MENU.filter(
+      (m) => m.genre === genreId && !m.suspended && !isUpcoming(m)
+    );
   };
 
   const genreLabel = () => {
@@ -121,6 +136,13 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
   const renderBadges = (m: TabearukiItem) => {
     const badges: { key: string; label: string; className: string }[] = [];
+    if (isUpcoming(m) && m.saleStart) {
+      badges.push({
+        key: 'upcoming',
+        label: `📅 ${formatDate(m.saleStart)}販売開始`,
+        className: styles.badgeUpcoming,
+      });
+    }
     const seen = new Set<string>();
     (m.tags ?? []).forEach((raw, i) => {
       const tag = raw.trim();
@@ -132,7 +154,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         badges.push({ key: `collab-${i}-${tag}`, label: `⭐ ${tag}`, className: styles.badgeCollab });
       }
     });
-    if (isLimited(m)) {
+    if (isLimited(m) && !isUpcoming(m)) {
       badges.push({ key: 'limited', label: '⏳ 期間限定', className: styles.badgeLimited });
     }
     return badges.map((b) => (
@@ -275,7 +297,10 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
           {category === 'tabearuki' && (() => {
             const menuList = getFilteredMenu();
             if (menuList.length === 0) {
-              return <p className={styles.placeholder}>メニュー情報は準備中です</p>;
+              const emptyText = genreId === UPCOMING_GENRE.id
+                ? '今後販売予定のメニューはありません'
+                : 'メニュー情報は準備中です';
+              return <p className={styles.placeholder}>{emptyText}</p>;
             }
             return (
               <>
