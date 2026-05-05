@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { RestaurantInfo, MenuItem } from '../api/restaurants';
-import { fetchStoreMenus } from '../api/restaurants';
+import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu } from '../api/restaurants';
+import { fetchStoreMenus, fetchShops, fetchTabearukiMenus } from '../api/restaurants';
 import {
   RESTAURANT_GENRES,
   TABEARUKI_SUB_GENRES,
@@ -12,8 +12,22 @@ import {
   CLOSED_RESTAURANTS,
   isTabearuki,
 } from '../data/restaurant-genres';
-import { TABEARUKI_MENU, type TabearukiItem } from '../data/tabearuki-menu';
 import styles from './RestaurantList.module.css';
+
+// 既存テンプレート互換のビュー型（DB由来 + shopマップで店舗名/エリア解決）
+interface TabearukiItem {
+  id: number;
+  name: string;
+  price: number | null;
+  shop: string;
+  area: string;
+  genre: string;
+  suspended?: boolean;
+  comment?: string;
+  saleStart?: string;
+  saleEnd?: string;
+  tags?: string[];
+}
 
 // ローカルタイムゾーン基準のYYYY-MM-DD（JSTズレ・日跨ぎ対応のため呼び出し時に都度算出）
 const todayLocalIso = (): string => {
@@ -23,6 +37,28 @@ const todayLocalIso = (): string => {
   return `${d.getFullYear()}-${m}-${day}`;
 };
 const isUpcoming = (m: TabearukiItem): boolean => !!m.saleStart && m.saleStart > todayLocalIso();
+
+const buildTabearukiView = (menus: TabearukiMenu[], shops: Shop[]): TabearukiItem[] => {
+  const shopMap = new Map(shops.map((s) => [s.id, s]));
+  return menus.map((m) => {
+    const resolved = m.shop_ids.map((id) => shopMap.get(id)).filter((s): s is Shop => !!s);
+    const shopNames = resolved.map((s) => s.canonical_name).join(' / ');
+    const areas = [...new Set(resolved.map((s) => s.area))].join(' / ');
+    return {
+      id: m.id,
+      name: m.menu_name,
+      price: m.price,
+      shop: shopNames,
+      area: areas,
+      genre: m.genre,
+      suspended: m.suspended,
+      comment: m.description ?? undefined,
+      saleStart: m.sale_start ?? undefined,
+      saleEnd: m.sale_end ?? undefined,
+      tags: m.tags,
+    };
+  });
+};
 
 const ALL_TABEARUKI_GENRES = [...TABEARUKI_SUB_GENRES, ...FOOD_SUB_GENRES, UPCOMING_GENRE];
 
@@ -42,6 +78,26 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
   const [storeMenus, setStoreMenus] = useState<MenuItem[] | null>(null);
   const [isMenusLoading, setIsMenusLoading] = useState(false);
+  const [tabearukiMenus, setTabearukiMenus] = useState<TabearukiItem[]>([]);
+  const [isTabearukiLoading, setIsTabearukiLoading] = useState(true);
+
+  // 食べ歩きメニュー + shopsをAPIから取得
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([fetchShops(), fetchTabearukiMenus()])
+      .then(([shops, menus]) => {
+        if (!cancelled) setTabearukiMenus(buildTabearukiView(menus, shops));
+      })
+      .catch(() => {
+        if (!cancelled) setTabearukiMenus([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsTabearukiLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!selected) {
@@ -73,7 +129,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
     return <p className={styles.placeholder}>レストラン情報を読み込み中...</p>;
   }
 
-  if (activeRestaurants.length === 0 && TABEARUKI_MENU.length === 0) {
+  if (activeRestaurants.length === 0 && tabearukiMenus.length === 0 && !isTabearukiLoading) {
     return <p className={styles.placeholder}>レストラン情報がありません</p>;
   }
 
@@ -114,9 +170,9 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const getFilteredMenu = (): TabearukiItem[] => {
     if (!genreId) return [];
     if (genreId === UPCOMING_GENRE.id) {
-      return TABEARUKI_MENU.filter((m) => !m.suspended && isUpcoming(m));
+      return tabearukiMenus.filter((m) => !m.suspended && isUpcoming(m));
     }
-    return TABEARUKI_MENU.filter(
+    return tabearukiMenus.filter(
       (m) => m.genre === genreId && !m.suspended && !isUpcoming(m)
     );
   };
@@ -295,6 +351,9 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
           {/* 食べ歩き/フードメニュー結果 */}
           {category === 'tabearuki' && (() => {
+            if (isTabearukiLoading) {
+              return <p className={styles.placeholder}>メニューを読み込み中...</p>;
+            }
             const menuList = getFilteredMenu();
             if (menuList.length === 0) {
               const emptyText = genreId === UPCOMING_GENRE.id
@@ -306,9 +365,9 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               <>
                 <p className={styles.resultCount}>{menuList.length}品</p>
                 <div className={styles.resultList}>
-                  {menuList.map((m, i) => (
+                  {menuList.map((m) => (
                     <button
-                      key={`${m.shop}-${m.name}-${i}`}
+                      key={m.id}
                       className={styles.menuCard}
                       onClick={() => setSelectedMenu(m)}
                     >

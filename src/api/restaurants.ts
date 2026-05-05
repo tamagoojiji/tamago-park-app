@@ -45,3 +45,42 @@ export async function fetchStoreMenus(storeName: string): Promise<StoreMenusResp
   }
   return res.json();
 }
+
+// === 食べ歩きフード（tabearuki_menus） ===
+
+export interface Shop {
+  id: number;
+  canonical_name: string;
+  short_name: string | null;
+  aliases: string[];
+  area: string;
+  category: string;
+}
+
+export interface TabearukiMenu {
+  id: number;
+  shop_ids: number[];
+  menu_name: string;
+  price: number | null;
+  genre: string;
+  description: string | null;
+  sale_start: string | null;
+  sale_end: string | null;
+  tags: string[];
+  suspended: boolean;
+  sort_order: number;
+}
+
+export async function fetchShops(): Promise<Shop[]> {
+  const res = await fetch(`${AUTH_BASE}/shops`);
+  if (!res.ok) throw new Error(`Shops API Error: ${res.status}`);
+  const data = await res.json();
+  return data.shops;
+}
+
+export async function fetchTabearukiMenus(): Promise<TabearukiMenu[]> {
+  const res = await fetch(`${AUTH_BASE}/tabearuki/menus`);
+  if (!res.ok) throw new Error(`Tabearuki Menus API Error: ${res.status}`);
+  const data = await res.json();
+  return data.menus;
+}
