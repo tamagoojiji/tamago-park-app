@@ -69,6 +69,7 @@ export interface TabearukiMenu {
   tags: string[];
   suspended: boolean;
   sort_order: number;
+  app_visible: boolean;
 }
 
 export async function fetchShops(): Promise<Shop[]> {
