@@ -1,0 +1,327 @@
+.container {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.apiKeyBar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+.apiKeyInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.progress {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.filterBar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterBar select, .filterBar button {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.activeFilter {
+  background: #2563eb !important;
+  color: white;
+  border-color: #2563eb !important;
+}
+
+.shopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem;
+}
+
+.shopItem {
+  display: block;
+  text-align: left;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  min-height: 56px;
+}
+
+.shopItem:active {
+  transform: scale(0.97);
+  background: #eff6ff;
+}
+
+.hasCoords {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.shopName {
+  font-weight: bold;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.shopArea {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+.clearBtn {
+  position: absolute;
+  right: 0.4rem;
+  top: 0.4rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fee;
+  color: #c00;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.clearBtn:active {
+  background: #fcc;
+}
+
+/* === フルスクリーンモーダル === */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #1f2937;
+  color: white;
+  flex-shrink: 0;
+}
+
+.modalCloseBtn {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modalShopInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.modalShopName {
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modalShopArea {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.modalProgress {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.modalMapWrap {
+  flex: 1;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.modalMapInner {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: crosshair;
+  touch-action: manipulation;
+  line-height: 0;
+}
+
+.modalMapImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.modalPinSmall {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(37, 99, 235, 0.5);
+  border: 1px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.modalPinExisting {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: #fbbf24;
+  border: 3px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+
+.modalPinCandidate {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #dc2626;
+  border: 4px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 10px rgba(220,38,38,0.5);
+  animation: candidatePulse 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes candidatePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+.modalFooter {
+  flex-shrink: 0;
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.hint {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.confirmText {
+  margin: 0 0 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.coordsText {
+  font-size: 0.8rem;
+  color: #666;
+  font-family: monospace;
+  font-weight: normal;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.cancelBtn, .confirmBtn {
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.cancelBtn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.cancelBtn:active {
+  background: #d1d5db;
+}
+
+.confirmBtn {
+  background: #2563eb;
+  color: white;
+}
+
+.confirmBtn:active {
+  background: #1d4ed8;
+}
+
+.confirmBtn:disabled, .cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .shopGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: '/admin/shows', label: 'ショー' },
   { to: '/admin/events', label: 'イベント' },
   { to: '/admin/stats', label: '統計' },
+  { to: '/admin/shop-coordinates', label: '店舗座標' },
 ];
 
 export default function AdminLayout() {

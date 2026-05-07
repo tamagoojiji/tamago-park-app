@@ -55,6 +55,17 @@ export interface Shop {
   aliases: string[];
   area: string;
   category: string;
+  map_x: number | null;
+  map_y: number | null;
+}
+
+export async function setShopCoordinates(shopId: number, mapX: number | null, mapY: number | null, apiKey: string): Promise<void> {
+  const res = await fetch(`${AUTH_BASE}/shops/${shopId}/coordinates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ map_x: mapX, map_y: mapY, api_key: apiKey }),
+  });
+  if (!res.ok) throw new Error(`Set coordinates failed: ${res.status}`);
 }
 
 export interface TabearukiMenu {

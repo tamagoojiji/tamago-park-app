@@ -467,3 +467,59 @@
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+/* メニュー詳細マップ */
+.sheetMapSection {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.menuMapContainer {
+  position: relative;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f9fafb;
+  margin-top: 0.5rem;
+}
+
+.menuMapImg {
+  width: 100%;
+  display: block;
+}
+
+.menuMapMarker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.markerDot {
+  width: 18px;
+  height: 18px;
+  background: #dc2626;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  animation: markerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
+.markerLabel {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-weight: bold;
+}

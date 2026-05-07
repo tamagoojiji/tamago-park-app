@@ -27,6 +27,7 @@ interface TabearukiItem {
   saleStart?: string;
   saleEnd?: string;
   tags?: string[];
+  shopIds: number[];
 }
 
 // ローカルタイムゾーン基準のYYYY-MM-DD（JSTズレ・日跨ぎ対応のため呼び出し時に都度算出）
@@ -56,6 +57,7 @@ const buildTabearukiView = (menus: TabearukiMenu[], shops: Shop[]): TabearukiIte
       saleStart: m.sale_start ?? undefined,
       saleEnd: m.sale_end ?? undefined,
       tags: m.tags,
+      shopIds: m.shop_ids,
     };
   });
 };
@@ -79,17 +81,19 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [storeMenus, setStoreMenus] = useState<MenuItem[] | null>(null);
   const [isMenusLoading, setIsMenusLoading] = useState(false);
   const [tabearukiMenus, setTabearukiMenus] = useState<TabearukiItem[]>([]);
+  const [shopsMap, setShopsMap] = useState<Map<number, Shop>>(new Map());
   const [isTabearukiLoading, setIsTabearukiLoading] = useState(true);
 
-  // 食べ歩きメニュー + shopsをAPIから取得
+  // 食べ歩きメニュー + shopsをAPIから独立して取得（片方失敗してもメニュー一覧は維持）
   useEffect(() => {
     let cancelled = false;
-    Promise.all([fetchShops(), fetchTabearukiMenus()])
-      .then(([shops, menus]) => {
-        if (!cancelled) setTabearukiMenus(buildTabearukiView(menus, shops));
-      })
-      .catch(() => {
-        if (!cancelled) setTabearukiMenus([]);
+    Promise.allSettled([fetchShops(), fetchTabearukiMenus()])
+      .then(([shopsRes, menusRes]) => {
+        if (cancelled) return;
+        const shops = shopsRes.status === 'fulfilled' ? shopsRes.value : [];
+        const menus = menusRes.status === 'fulfilled' ? menusRes.value : [];
+        setShopsMap(new Map(shops.map(s => [s.id, s])));
+        setTabearukiMenus(buildTabearukiView(menus, shops));
       })
       .finally(() => {
         if (!cancelled) setIsTabearukiLoading(false);
@@ -482,6 +486,35 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                   <span className={styles.sheetValue}>{selectedMenu.comment}</span>
                 </div>
               )}
+
+              {/* マップ＋マーカー（食べ物画像 or 汎用アイコン） */}
+              {(() => {
+                const shopsForMenu = selectedMenu.shopIds
+                  .map(id => shopsMap.get(id))
+                  .filter((s): s is Shop => !!s && s.map_x != null && s.map_y != null);
+                return (
+                  <div className={styles.sheetMapSection}>
+                    <div className={styles.sheetLabel}>📍 販売場所マップ</div>
+                    {shopsForMenu.length === 0 ? (
+                      <p className={styles.sheetMenuPlaceholder}>店舗座標が未設定です</p>
+                    ) : (
+                      <div className={styles.menuMapContainer}>
+                        <img src="/images/park-map.jpg" alt="マップ" className={styles.menuMapImg} />
+                        {shopsForMenu.map(s => (
+                          <div
+                            key={s.id}
+                            className={styles.menuMapMarker}
+                            style={{ left: `${s.map_x}%`, top: `${s.map_y}%` }}
+                          >
+                            <div className={styles.markerDot} />
+                            <div className={styles.markerLabel}>{s.canonical_name}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
