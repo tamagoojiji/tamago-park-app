@@ -25,6 +25,7 @@ import AdminShowsPage from './pages/admin/AdminShowsPage';
 import AdminEventsPage from './pages/admin/AdminEventsPage';
 import AdminStatsPage from './pages/admin/AdminStatsPage';
 import AdminShopCoordinatesPage from './pages/admin/AdminShopCoordinatesPage';
+import AdminRestaurantCoordinatesPage from './pages/admin/AdminRestaurantCoordinatesPage';
 import AdminLayout from './components/admin/AdminLayout';
 import { hasAdminToken } from './api/admin';
 import { useAuth } from './contexts/AuthContext';
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="/admin/events" element={<AdminEventsPage />} />
           <Route path="/admin/stats" element={<AdminStatsPage />} />
           <Route path="/admin/shop-coordinates" element={<AdminShopCoordinatesPage />} />
+          <Route path="/admin/restaurant-coordinates" element={<AdminRestaurantCoordinatesPage />} />
         </Route>
       </Routes>
     );
