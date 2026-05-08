@@ -34,6 +34,21 @@ export default function CtaBanner() {
         </div>
         <span className={styles.ctaArrow}>›</span>
       </div>
+
+      {/* オープンチャット誘導 */}
+      <a
+        href="https://line.me/ti/g2/4GMbHMaOESeHfxXHwgHZ7M1b1ktcqPa5zwORlQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.ctaCard}
+      >
+        <span className={styles.ctaIcon}>📣</span>
+        <div className={styles.ctaText}>
+          <span className={styles.ctaTitle}>友達に教える</span>
+          <span className={styles.ctaSub}>LINEオープンチャットに招待</span>
+        </div>
+        <span className={styles.ctaArrow}>›</span>
+      </a>
     </section>
   );
 }
