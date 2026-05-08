@@ -68,6 +68,30 @@ export async function setShopCoordinates(shopId: number, mapX: number | null, ma
   if (!res.ok) throw new Error(`Set coordinates failed: ${res.status}`);
 }
 
+// === レストラン座標（食べ歩きとは別マップ） ===
+
+export interface RestaurantLocation {
+  restaurant_name: string;
+  map_x: number | null;
+  map_y: number | null;
+}
+
+export async function fetchRestaurantLocations(): Promise<RestaurantLocation[]> {
+  const res = await fetch(`${AUTH_BASE}/restaurants/locations`);
+  if (!res.ok) throw new Error(`Restaurant locations API Error: ${res.status}`);
+  const data = await res.json();
+  return data.locations;
+}
+
+export async function setRestaurantCoordinates(name: string, mapX: number | null, mapY: number | null, apiKey: string): Promise<void> {
+  const res = await fetch(`${AUTH_BASE}/restaurants/${encodeURIComponent(name)}/coordinates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ map_x: mapX, map_y: mapY, api_key: apiKey }),
+  });
+  if (!res.ok) throw new Error(`Set restaurant coordinates failed: ${res.status}`);
+}
+
 export interface TabearukiMenu {
   id: number;
   shop_ids: number[];

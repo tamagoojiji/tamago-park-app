@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu } from '../api/restaurants';
-import { fetchStoreMenus, fetchShops, fetchTabearukiMenus } from '../api/restaurants';
+import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu, RestaurantLocation } from '../api/restaurants';
+import { fetchStoreMenus, fetchShops, fetchTabearukiMenus, fetchRestaurantLocations } from '../api/restaurants';
 import {
   RESTAURANT_GENRES,
   TABEARUKI_SUB_GENRES,
@@ -83,6 +83,21 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [tabearukiMenus, setTabearukiMenus] = useState<TabearukiItem[]>([]);
   const [shopsMap, setShopsMap] = useState<Map<number, Shop>>(new Map());
   const [isTabearukiLoading, setIsTabearukiLoading] = useState(true);
+  const [restaurantLocations, setRestaurantLocations] = useState<Map<string, RestaurantLocation>>(new Map());
+  const [isSavingCard, setIsSavingCard] = useState(false);
+
+  useEffect(() => {
+    fetchRestaurantLocations()
+      .then(locs => setRestaurantLocations(new Map(locs.map(l => [l.restaurant_name, l]))))
+      .catch(() => setRestaurantLocations(new Map()));
+  }, []);
+
+  // ボトムシート開いた瞬間に html-to-image を事前読込（初回タップの待ち時間を削減）
+  useEffect(() => {
+    if (selectedMenu) {
+      import('html-to-image').catch(() => {});
+    }
+  }, [selectedMenu]);
 
   // 食べ歩きメニュー + shopsをAPIから独立して取得（片方失敗してもメニュー一覧は維持）
   useEffect(() => {
@@ -229,6 +244,36 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   };
 
   const formatMultiline = (s: string): string => s.split(' / ').join('\n');
+
+  // カードを画像化して写真として保存（iOS=共有シートで「画像を保存」、それ以外=ダウンロード）
+  const saveFoodMapCard = async (menuName: string) => {
+    if (isSavingCard) return;
+    setIsSavingCard(true);
+    const card = document.querySelector('[data-savable="true"]') as HTMLElement | null;
+    if (!card) { setIsSavingCard(false); return; }
+    try {
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(card, { pixelRatio: 2, cacheBust: true, skipFonts: false });
+      const fileName = `${menuName.replace(/[\\/:*?"<>|]/g, '_')}.png`;
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], fileName, { type: 'image/png' });
+      const navAny = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+      if (navigator.share && navAny.canShare && navAny.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: menuName });
+          return;
+        } catch (_) {}
+      }
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      alert('画像化に失敗しました: ' + String(err));
+    } finally {
+      setIsSavingCard(false);
+    }
+  };
 
   const formatPrice = (p: number | null): string => {
     if (p == null) return '価格未定';
@@ -444,6 +489,34 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                   </ul>
                 )}
               </div>
+
+              {/* マップ＋マーカー（レストラン位置） */}
+              {(() => {
+                const loc = restaurantLocations.get(selected.restaurant_name);
+                return (
+                  <div className={styles.sheetMapSection}>
+                    <div className={styles.sheetLabel}>📍 場所マップ</div>
+                    {!loc || loc.map_x == null ? (
+                      <p className={styles.sheetMenuPlaceholder}>場所が未設定です</p>
+                    ) : (
+                      <div className={styles.menuMapContainer}>
+                        <div className={styles.mapBanner}>
+                          <div className={styles.mapBannerName}>🍽 {selected.restaurant_name}</div>
+                          {selected.dining_type && <div className={styles.mapBannerSub}>{selected.dining_type}</div>}
+                        </div>
+                        <img src="/images/park-map.jpg" alt="マップ" className={styles.menuMapImg} />
+                        <div
+                          className={styles.menuMapMarker}
+                          style={{ left: `${loc.map_x}%`, top: `${loc.map_y}%` }}
+                        >
+                          <div className={styles.markerDot} />
+                          <div className={styles.markerLabel}>{selected.restaurant_name}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -487,30 +560,52 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                 </div>
               )}
 
-              {/* マップ＋マーカー（食べ物画像 or 汎用アイコン） */}
+              {/* マップ＋マーカー（テンプレート: 青フレーム + 上左メニュー名 + 下右エリア） */}
               {(() => {
                 const shopsForMenu = selectedMenu.shopIds
                   .map(id => shopsMap.get(id))
                   .filter((s): s is Shop => !!s && s.map_x != null && s.map_y != null);
+                const areaText = selectedMenu.area || '';
                 return (
                   <div className={styles.sheetMapSection}>
                     <div className={styles.sheetLabel}>📍 販売場所マップ</div>
                     {shopsForMenu.length === 0 ? (
                       <p className={styles.sheetMenuPlaceholder}>店舗座標が未設定です</p>
                     ) : (
-                      <div className={styles.menuMapContainer}>
-                        <img src="/images/park-map.jpg" alt="マップ" className={styles.menuMapImg} />
-                        {shopsForMenu.map(s => (
-                          <div
-                            key={s.id}
-                            className={styles.menuMapMarker}
-                            style={{ left: `${s.map_x}%`, top: `${s.map_y}%` }}
-                          >
-                            <div className={styles.markerDot} />
-                            <div className={styles.markerLabel}>{s.canonical_name}</div>
+                      <>
+                        <div
+                          className={styles.foodMapCard}
+                          data-savable="true"
+                        >
+                          <div className={styles.foodMapTitle}>{selectedMenu.name}</div>
+                          <div className={styles.foodMapImageWrap}>
+                            <img src="/images/park-map.jpg" alt="マップ" className={styles.foodMapImg} crossOrigin="anonymous" />
+                            {shopsForMenu.map((s, idx) => (
+                              <div
+                                key={s.id}
+                                className={styles.menuMapMarker}
+                                style={{ left: `${s.map_x}%`, top: `${s.map_y}%` }}
+                              >
+                                <div className={styles.markerNumber}>{idx + 1}</div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                          <ol className={styles.shopLegend}>
+                            {shopsForMenu.map((s) => (
+                              <li key={s.id}>{s.canonical_name}</li>
+                            ))}
+                          </ol>
+                          <div className={styles.foodMapArea}>{areaText.split(' / ').join('\n')}</div>
+                        </div>
+                        <button
+                          type="button"
+                          className={styles.saveButton}
+                          onClick={() => saveFoodMapCard(selectedMenu.name)}
+                          disabled={isSavingCard}
+                        >
+                          {isSavingCard ? '⏳ 保存中...' : '📥 写真として保存'}
+                        </button>
+                      </>
                     )}
                   </div>
                 );

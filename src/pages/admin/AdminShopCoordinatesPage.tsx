@@ -99,7 +99,7 @@ export default function AdminShopCoordinatesPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>店舗座標設定</h1>
+      <h1 className={styles.title}>食べ歩き座標設定</h1>
 
       <div className={styles.apiKeyBar}>
         <label>MENU_API_KEY:</label>
