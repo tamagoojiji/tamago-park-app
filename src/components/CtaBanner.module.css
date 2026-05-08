@@ -48,6 +48,14 @@
   box-shadow: var(--shadow-hover);
 }
 
+.ctaCardButton {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .ctaIcon {
   font-size: 28px;
   flex-shrink: 0;
