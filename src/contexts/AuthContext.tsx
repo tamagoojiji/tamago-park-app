@@ -15,6 +15,7 @@ interface AuthContextType {
   loginWithLine: () => void;
   logout: () => void;
   updateProfile: (birthday: string, gender: string) => Promise<void>;
+  updateNickname: (nickname: string | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -111,6 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(updated);
   }, [token]);
 
+  const updateNickname = useCallback(async (nickname: string | null) => {
+    if (!token) throw new Error('Not authenticated');
+    await authApi.updateNickname(token, nickname);
+    const updated = await authApi.getMe(token);
+    setUser(updated);
+  }, [token]);
+
   const loginWithLine = useCallback(() => {
     if (!isLiffReady) return;
 
@@ -135,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, token, isLoading, isLiffReady,
-      loginWithLine, logout, updateProfile,
+      loginWithLine, logout, updateProfile, updateNickname,
     }}>
       {children}
     </AuthContext.Provider>

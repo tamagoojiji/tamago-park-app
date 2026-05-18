@@ -12,7 +12,7 @@ function getDaysInMonth(year: number, month: number) {
 }
 
 export default function ProfilePage() {
-  const { token, updateProfile } = useAuth();
+  const { token, updateProfile, updateNickname } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as { from?: string })?.from || '/';
@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [month, setMonth] = useState('');
   const [day, setDay] = useState('');
   const [gender, setGender] = useState('');
+  const [nickname, setNickname] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -41,6 +42,10 @@ export default function ProfilePage() {
     try {
       const birthday = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       await updateProfile(birthday, gender);
+      const trimmed = nickname.trim();
+      if (trimmed) {
+        await updateNickname(trimmed);
+      }
       navigate(redirectTo, { replace: true });
     } catch {
       setError('保存に失敗しました。もう一度お試しください。');
@@ -61,6 +66,19 @@ export default function ProfilePage() {
         </p>
 
         <div className={styles.form}>
+          {/* ニックネーム（任意） */}
+          <div>
+            <span className={styles.fieldLabel}>ニックネーム（任意）</span>
+            <input
+              type="text"
+              className={styles.nicknameInput}
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value.slice(0, 30))}
+              placeholder="未入力ならゲスト表示になります"
+              maxLength={30}
+            />
+          </div>
+
           {/* 生年月日 */}
           <div>
             <span className={styles.fieldLabel}>生年月日</span>

@@ -97,6 +97,24 @@
   display: block;
 }
 
+.nicknameInput {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: #fff;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.nicknameInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
 .birthdaySelects {
   display: flex;
   gap: 8px;

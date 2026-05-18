@@ -62,6 +62,7 @@ export default function WelcomePage() {
 
         <p className={styles.privacy}>
           あなたのデータは運営側からは閲覧できません。<br />
+          LINE名はこちらには伝わりません。<br />
           データはご自身の確認用としてのみ保存されます。
         </p>
       </div>

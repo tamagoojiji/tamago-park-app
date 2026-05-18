@@ -41,4 +41,12 @@ export const authApi = {
       body: JSON.stringify({ birthday, gender }),
     });
   },
+
+  updateNickname(token: string, nickname: string | null) {
+    return authFetch<AuthResponse>('/auth/nickname', {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ nickname }),
+    });
+  },
 };
