@@ -444,6 +444,70 @@
   gap: 8px;
 }
 
+/* 屋外映画上映バナー */
+.movieBanner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d54 100%);
+  color: #fff;
+  border-radius: var(--radius-card);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid #ffd84d;
+  margin-bottom: 4px;
+}
+
+.movieBannerHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.movieBannerEmoji {
+  font-size: 18px;
+}
+
+.movieBannerTitle {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  flex: 1;
+}
+
+.movieBannerTag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: #ffd84d;
+  color: #1a1a2e;
+}
+
+.movieBannerBody {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+
+.movieBannerTime {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: #ffd84d;
+  font-variant-numeric: tabular-nums;
+}
+
+.movieBannerMovie {
+  font-size: var(--text-base);
+  font-weight: 800;
+}
+
+.movieBannerPlace {
+  margin-top: 4px;
+  font-size: var(--text-xxs);
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
 .eventThemeGroup {
   margin-bottom: 16px;
 }

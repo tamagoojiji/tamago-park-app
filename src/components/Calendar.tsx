@@ -25,6 +25,20 @@ const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
+// 25周年 Discover U!!! 屋外映画上映スケジュール（グラマシーパーク・芝生）
+const MOVIE_SCREENINGS: Record<string, { time: string; title: string }> = {
+  '2026-06-05': { time: '17:30', title: 'ジョーズ' },
+  '2026-06-06': { time: '18:30', title: 'ウィキッド ふたりの魔女' },
+  '2026-06-07': { time: '18:30', title: 'ジュラシック・パーク' },
+  '2026-06-13': { time: '18:30', title: 'ブルース・ブラザーズ' },
+  '2026-06-14': { time: '18:00', title: 'バックドラフト' },
+  '2026-06-19': { time: '18:00', title: 'ウォーターワールド' },
+  '2026-06-21': { time: '18:00', title: 'バック・トゥ・ザ・フューチャー' },
+  '2026-06-26': { time: '17:30', title: 'E.T.' },
+  '2026-06-27': { time: '18:30', title: 'ジュラシック・ワールド' },
+  '2026-06-28': { time: '18:30', title: 'ミニオンズ' },
+};
+
 // 日本の祝日（2026年）
 const HOLIDAYS: Record<string, string> = {
   '2026-01-01': '元日',
@@ -491,7 +505,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
 
             const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents];
             const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id));
-            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0;
+            const movie = MOVIE_SCREENINGS[dateStr];
+            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || !!movie;
 
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
@@ -522,6 +537,20 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               </p>
             ) : (
               <div className={styles.eventListWrap}>
+                {movie && (
+                  <div className={styles.movieBanner}>
+                    <div className={styles.movieBannerHeader}>
+                      <span className={styles.movieBannerEmoji}>🎬</span>
+                      <span className={styles.movieBannerTitle}>屋外映画上映</span>
+                      <span className={styles.movieBannerTag}>25周年 Discover U!!!</span>
+                    </div>
+                    <div className={styles.movieBannerBody}>
+                      <span className={styles.movieBannerTime}>{movie.time}〜</span>
+                      <span className={styles.movieBannerMovie}>{movie.title}</span>
+                    </div>
+                    <div className={styles.movieBannerPlace}>📍 ニューヨーク・エリア グラマシーパーク（観覧無料・入退場自由・日本語吹替版）</div>
+                  </div>
+                )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (
                   <div key={theme.id} className={styles.eventThemeGroup}>
                     <div className={styles.eventThemeHeader}>
