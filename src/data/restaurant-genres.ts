@@ -53,6 +53,13 @@ export const CLOSED_RESTAURANTS = new Set([
   'フィネガンズ・バー＆グリル',
 ]);
 
+// 営業時間が公式に「クルーに問合せ」になっている店舗の表示テキスト上書き
+export const RESTAURANT_HOURS_OVERRIDE: Record<string, string> = {
+  'ルイズ N.Y. ピザパーラー': '一時クローズ',
+  'ロストワールド・レストラン': '一時クローズ',
+  'ロンバーズ・ランディング™': '名探偵コナン・ミステリー・レストラン参照',
+};
+
 // レストラン名 → ジャンルID のマッピング（複数ジャンル対応）
 export const RESTAURANT_GENRE_MAP: Record<string, string[]> = {
   'ルイズ N.Y. ピザパーラー': ['pizza'],
@@ -62,8 +69,8 @@ export const RESTAURANT_GENRE_MAP: Record<string, string[]> = {
   'ロストワールド・レストラン': ['plate', 'collab'],
   'ロンバーズ・ランディング™': ['plate'],
   'ハピネス・カフェ®': ['plate', 'collab'],
-  'スタジオ･スターズ･レストラン': ['plate', 'collab'],
-  'キノピオ・カフェ': ['collab'],
+  'スタジオ・スターズ・レストラン': ['plate', 'collab'],
+  'キノピオ・カフェ™': ['collab'],
   'スヌーピー™・バックロット・カフェ': ['pasta', 'collab'],
   'SAIDO': ['japanese'],
   'ザ・ドラゴンズ・パール': ['chinese'],
@@ -114,8 +121,8 @@ const BASE_RESTAURANT_IMAGE_MAP: Record<string, string> = {
   'アミティ・ランディング・レストラン': '/images/restaurants/amity-landing.jpg',
   'ロストワールド・レストラン': '/images/restaurants/lost-world-restaurant.jpg',
   'ハピネス・カフェ®': '/images/restaurants/happiness-cafe.jpg',
-  'スタジオ･スターズ･レストラン': '/images/restaurants/studio-stars-restaurant.jpg',
-  'キノピオ・カフェ': '/images/restaurants/kinopio-cafe.jpg',
+  'スタジオ・スターズ・レストラン': '/images/restaurants/studio-stars-restaurant.jpg',
+  'キノピオ・カフェ™': '/images/restaurants/kinopio-cafe.jpg',
   'スヌーピー™・バックロット・カフェ': '/images/restaurants/snoopy-backlot-cafe.jpg',
   'SAIDO': '/images/restaurants/saido.jpg',
   '三本の箒™': '/images/restaurants/three-broomsticks.jpg',

@@ -458,6 +458,41 @@
   white-space: nowrap;
 }
 
+.sheetHoursWeek {
+  width: 100%;
+  max-width: 280px;
+  margin-top: 8px;
+}
+
+.sheetHoursList {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sheetHoursItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--text-sm);
+}
+
+.sheetHoursItem:first-child {
+  font-weight: 600;
+}
+
+.sheetHoursDate {
+  color: var(--color-text-sub);
+  min-width: 64px;
+}
+
+.sheetHoursValue {
+  color: var(--color-text);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

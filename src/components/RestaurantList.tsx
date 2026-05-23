@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu, RestaurantLocation } from '../api/restaurants';
-import { fetchStoreMenus, fetchShops, fetchTabearukiMenus, fetchRestaurantLocations } from '../api/restaurants';
+import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu, RestaurantLocation, RestaurantHoursDay } from '../api/restaurants';
+import { fetchStoreMenus, fetchShops, fetchTabearukiMenus, fetchRestaurantLocations, fetchRestaurantHoursWeek } from '../api/restaurants';
 import {
   RESTAURANT_GENRES,
   TABEARUKI_SUB_GENRES,
@@ -10,6 +10,7 @@ import {
   RESTAURANT_IMAGE_MAP,
   TABEARUKI_IMAGE_MAP,
   CLOSED_RESTAURANTS,
+  RESTAURANT_HOURS_OVERRIDE,
   isTabearuki,
 } from '../data/restaurant-genres';
 import styles from './RestaurantList.module.css';
@@ -80,6 +81,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [selectedMenu, setSelectedMenu] = useState<TabearukiItem | null>(null);
   const [storeMenus, setStoreMenus] = useState<MenuItem[] | null>(null);
   const [isMenusLoading, setIsMenusLoading] = useState(false);
+  const [hoursWeek, setHoursWeek] = useState<RestaurantHoursDay[]>([]);
   const [tabearukiMenus, setTabearukiMenus] = useState<TabearukiItem[]>([]);
   const [shopsMap, setShopsMap] = useState<Map<number, Shop>>(new Map());
   const [isTabearukiLoading, setIsTabearukiLoading] = useState(true);
@@ -121,6 +123,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   useEffect(() => {
     if (!selected) {
       setStoreMenus(null);
+      setHoursWeek([]);
       return;
     }
     let cancelled = false;
@@ -134,6 +137,13 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       })
       .finally(() => {
         if (!cancelled) setIsMenusLoading(false);
+      });
+    fetchRestaurantHoursWeek(selected.restaurant_name)
+      .then((days) => {
+        if (!cancelled) setHoursWeek(days);
+      })
+      .catch(() => {
+        if (!cancelled) setHoursWeek([]);
       });
     return () => {
       cancelled = true;
@@ -380,11 +390,15 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
                         )}
                         <div className={styles.resultInfo}>
                           <span className={styles.resultName}>{r.restaurant_name}</span>
-                          {r.open_time && r.close_time && (
+                          {r.open_time && r.close_time ? (
                             <span className={styles.resultTime}>
                               {r.open_time}〜{r.close_time}
                             </span>
-                          )}
+                          ) : RESTAURANT_HOURS_OVERRIDE[r.restaurant_name] ? (
+                            <span className={styles.resultTime}>
+                              {RESTAURANT_HOURS_OVERRIDE[r.restaurant_name]}
+                            </span>
+                          ) : null}
                         </div>
                       </button>
                     );
@@ -461,14 +475,35 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
               )}
               <h3 className={styles.sheetName}>{selected.restaurant_name}</h3>
               <span className={styles.sheetCategory}>レストラン</span>
-              {selected.open_time && selected.close_time && (
+              {hoursWeek.length > 0 ? (
+                <div className={styles.sheetHoursWeek}>
+                  <div className={styles.sheetLabel}>営業時間（7日間）</div>
+                  <ul className={styles.sheetHoursList}>
+                    {hoursWeek.map((d) => {
+                      const dt = new Date(d.date);
+                      const wd = ['日', '月', '火', '水', '木', '金', '土'][dt.getDay()];
+                      const md = `${dt.getMonth() + 1}/${dt.getDate()}`;
+                      const override = RESTAURANT_HOURS_OVERRIDE[selected.restaurant_name];
+                      const text = d.open_time && d.close_time
+                        ? `${d.open_time}〜${d.close_time}`
+                        : override || '—';
+                      return (
+                        <li key={d.date} className={styles.sheetHoursItem}>
+                          <span className={styles.sheetHoursDate}>{md}({wd})</span>
+                          <span className={styles.sheetHoursValue}>{text}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : RESTAURANT_HOURS_OVERRIDE[selected.restaurant_name] ? (
                 <div className={styles.sheetRow}>
                   <span className={styles.sheetLabel}>営業時間</span>
                   <span className={styles.sheetValue}>
-                    {selected.open_time}〜{selected.close_time}
+                    {RESTAURANT_HOURS_OVERRIDE[selected.restaurant_name]}
                   </span>
                 </div>
-              )}
+              ) : null}
 
               <div className={styles.sheetMenuSection}>
                 <div className={styles.sheetLabel}>メニュー</div>

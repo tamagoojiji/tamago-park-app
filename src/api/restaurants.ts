@@ -46,6 +46,19 @@ export async function fetchStoreMenus(storeName: string): Promise<StoreMenusResp
   return res.json();
 }
 
+export interface RestaurantHoursDay {
+  date: string;
+  open_time: string | null;
+  close_time: string | null;
+}
+
+export async function fetchRestaurantHoursWeek(name: string): Promise<RestaurantHoursDay[]> {
+  const res = await fetch(`${AUTH_BASE}/restaurants/hours-week?name=${encodeURIComponent(name)}`);
+  if (!res.ok) throw new Error(`Restaurant hours week API Error: ${res.status}`);
+  const data = await res.json();
+  return data.days;
+}
+
 // === 食べ歩きフード（tabearuki_menus） ===
 
 export interface Shop {
