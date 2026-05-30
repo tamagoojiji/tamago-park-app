@@ -131,6 +131,31 @@ export const adminApi = {
     return adminFetch<{ success: boolean }>(`/admin/events/${id}`, { method: 'DELETE' });
   },
 
+  crowd(from: string, to: string) {
+    return adminFetch<{
+      from: string; to: string;
+      days: {
+        date: string;
+        auto_day_level: number | null; auto_am_level: number | null; auto_pm_level: number | null;
+        manual_day_level: number | null; manual_am_level: number | null; manual_pm_level: number | null;
+        auto_breakdown: Record<string, number>;
+        manual_note: string | null;
+        day_diff: number | null;
+        updated_at: string;
+      }[];
+    }>(`/admin/crowd?from=${from}&to=${to}`);
+  },
+
+  overrideCrowd(date: string, payload: { day_level: number | null; am_level: number | null; pm_level: number | null; note: string | null }) {
+    return adminFetch<{ success: boolean }>(`/admin/crowd/${date}`, {
+      method: 'POST', body: JSON.stringify(payload),
+    });
+  },
+
+  clearCrowdOverride(date: string) {
+    return adminFetch<{ success: boolean }>(`/admin/crowd/${date}`, { method: 'DELETE' });
+  },
+
   analytics(days = 30) {
     return adminFetch<{
       period: { from: string; to: string; days: number };

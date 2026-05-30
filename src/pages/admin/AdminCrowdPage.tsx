@@ -1,0 +1,246 @@
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { adminApi } from '../../api/admin';
+import { CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR } from '../../api/crowd';
+import styles from './Admin.module.css';
+
+type Day = Awaited<ReturnType<typeof adminApi.crowd>>['days'][number];
+type SortMode = 'date' | 'diff';
+
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const addDays = (iso: string, days: number) => {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const weekday = (iso: string) => ['日', '月', '火', '水', '木', '金', '土'][new Date(iso + 'T00:00:00').getDay()];
+
+const LevelBadge = ({ level }: { level: number | null }) => {
+  if (!level) return <span style={{ color: '#9ca3af', fontSize: '0.9em' }}>—</span>;
+  return (
+    <span style={{
+      display: 'inline-block',
+      minWidth: 22,
+      padding: '2px 6px',
+      background: CROWD_LEVEL_COLOR[level],
+      color: '#fff',
+      borderRadius: 4,
+      fontWeight: 700,
+      fontSize: '0.9em',
+      textAlign: 'center',
+    }}>{level}</span>
+  );
+};
+
+const LevelSelect = ({ value, autoValue, onChange, disabled }: {
+  value: number | null;
+  autoValue: number | null;
+  onChange: (v: number | null) => void;
+  disabled?: boolean;
+}) => (
+  <select
+    value={value ?? ''}
+    onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+    disabled={disabled}
+    style={{
+      width: 64,
+      padding: '2px 4px',
+      borderRadius: 4,
+      border: value !== null ? '2px solid #3b82f6' : '1px solid #d1d5db',
+      background: value !== null && CROWD_LEVEL_COLOR[value] ? `${CROWD_LEVEL_COLOR[value]}22` : '#fff',
+      fontWeight: value !== null ? 700 : 400,
+    }}
+  >
+    <option value="">— ({autoValue ?? '?'})</option>
+    {[1, 2, 3, 4, 5].map((n) => (
+      <option key={n} value={n}>{n} {CROWD_LEVEL_LABEL[n]}</option>
+    ))}
+  </select>
+);
+
+export default function AdminCrowdPage() {
+  const [from, setFrom] = useState(todayIso());
+  const [to, setTo] = useState(addDays(todayIso(), 365));
+  const [days, setDays] = useState<Day[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>('date');
+  const [diffOnly, setDiffOnly] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await adminApi.crowd(from, to);
+      setDays(res.days);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [from, to]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const updateLocal = useCallback((date: string, patch: Partial<Day>) => {
+    setDays((prev) => prev.map((d) => d.date === date ? {
+      ...d, ...patch,
+      day_diff: (patch.manual_day_level !== undefined ? patch.manual_day_level : d.manual_day_level) !== null
+        ? ((patch.manual_day_level !== undefined ? patch.manual_day_level : d.manual_day_level)! - d.auto_day_level!)
+        : null,
+    } : d));
+  }, []);
+
+  const displayed = useMemo(() => {
+    let list = [...days];
+    if (diffOnly) list = list.filter((d) => d.day_diff !== null && Math.abs(d.day_diff) >= 1);
+    if (sortMode === 'diff') {
+      list.sort((a, b) => Math.abs(b.day_diff ?? 0) - Math.abs(a.day_diff ?? 0));
+    }
+    return list;
+  }, [days, sortMode, diffOnly]);
+
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>混雑予想 管理（インライン編集）</h1>
+
+      <div className={styles.controls} style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
+        <label>From <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
+        <label>To <input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
+        <button onClick={load}>再読込</button>
+        <label><input type="checkbox" checked={diffOnly} onChange={(e) => setDiffOnly(e.target.checked)} /> 差分ありのみ</label>
+        <label>並び順:&nbsp;
+          <select value={sortMode} onChange={(e) => setSortMode(e.target.value as SortMode)}>
+            <option value="date">日付順</option>
+            <option value="diff">差分大きい順</option>
+          </select>
+        </label>
+        <span style={{ color: '#6b7280', fontSize: '0.85em' }}>※セルを変更すると自動保存されます</span>
+      </div>
+
+      {error && <div style={{ color: 'red', padding: 8 }}>{error}</div>}
+      {loading && <div>読み込み中...</div>}
+
+      <table className={styles.table} style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
+        <thead style={{ position: 'sticky', top: 0, background: '#f3f4f6' }}>
+          <tr style={{ textAlign: 'left', borderBottom: '2px solid #d1d5db' }}>
+            <th style={{ padding: '6px 8px' }}>日付</th>
+            <th style={{ padding: '6px 8px' }}>曜</th>
+            <th style={{ padding: '6px 8px' }} colSpan={3}>自動 (日/午前/午後)</th>
+            <th style={{ padding: '6px 8px' }} colSpan={3}>手動 (日/午前/午後)</th>
+            <th style={{ padding: '6px 8px' }}>差</th>
+            <th style={{ padding: '6px 8px' }}>メモ</th>
+            <th style={{ padding: '6px 8px' }}></th>
+          </tr>
+        </thead>
+        <tbody>
+          {displayed.map((d) => (
+            <CrowdRow key={d.date} day={d} onLocalUpdate={updateLocal} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function CrowdRow({ day, onLocalUpdate }: { day: Day; onLocalUpdate: (date: string, patch: Partial<Day>) => void }) {
+  const [saving, setSaving] = useState(false);
+  const [savedFlash, setSavedFlash] = useState(false);
+  const [rowError, setRowError] = useState<string | null>(null);
+  const [noteLocal, setNoteLocal] = useState(day.manual_note ?? '');
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => { setNoteLocal(day.manual_note ?? ''); }, [day.manual_note]);
+
+  const saveOverride = async (patch: { day_level?: number | null; am_level?: number | null; pm_level?: number | null; note?: string | null }) => {
+    setSaving(true);
+    setRowError(null);
+    try {
+      const payload = {
+        day_level: patch.day_level !== undefined ? patch.day_level : day.manual_day_level,
+        am_level: patch.am_level !== undefined ? patch.am_level : day.manual_am_level,
+        pm_level: patch.pm_level !== undefined ? patch.pm_level : day.manual_pm_level,
+        note: patch.note !== undefined ? patch.note : day.manual_note,
+      };
+      // 全部nullなら APIは DELETE 相当（クリア）として扱う
+      if (payload.day_level === null && payload.am_level === null && payload.pm_level === null && !payload.note) {
+        await adminApi.clearCrowdOverride(day.date);
+      } else {
+        await adminApi.overrideCrowd(day.date, payload);
+      }
+      onLocalUpdate(day.date, {
+        manual_day_level: payload.day_level,
+        manual_am_level: payload.am_level,
+        manual_pm_level: payload.pm_level,
+        manual_note: payload.note,
+      });
+      setSavedFlash(true);
+      setTimeout(() => setSavedFlash(false), 1200);
+    } catch (e) {
+      setRowError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onNoteChange = (v: string) => {
+    setNoteLocal(v);
+    if (noteTimer.current) clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(() => {
+      saveOverride({ note: v.trim() || null });
+    }, 600);
+  };
+
+  const wdColor = weekday(day.date) === '土' ? '#3b82f6' : weekday(day.date) === '日' ? '#ef4444' : '#374151';
+
+  return (
+    <tr style={{ borderBottom: '1px solid #e5e7eb', background: savedFlash ? '#dcfce7' : (saving ? '#fef3c7' : 'transparent'), transition: 'background 0.3s' }}>
+      <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>{day.date}</td>
+      <td style={{ padding: '4px 8px', color: wdColor, fontWeight: 600 }}>{weekday(day.date)}</td>
+      <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_day_level} /></td>
+      <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_am_level} /></td>
+      <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_pm_level} /></td>
+      <td style={{ padding: '4px 2px' }}>
+        <LevelSelect value={day.manual_day_level} autoValue={day.auto_day_level} disabled={saving}
+          onChange={(v) => saveOverride({ day_level: v, am_level: v, pm_level: v })} />
+      </td>
+      <td style={{ padding: '4px 2px' }}>
+        <LevelSelect value={day.manual_am_level} autoValue={day.auto_am_level} disabled={saving}
+          onChange={(v) => saveOverride({ am_level: v })} />
+      </td>
+      <td style={{ padding: '4px 2px' }}>
+        <LevelSelect value={day.manual_pm_level} autoValue={day.auto_pm_level} disabled={saving}
+          onChange={(v) => saveOverride({ pm_level: v })} />
+      </td>
+      <td style={{ padding: '4px 4px', fontWeight: 700, textAlign: 'center',
+        color: day.day_diff && day.day_diff > 0 ? '#ef4444' : day.day_diff && day.day_diff < 0 ? '#22c55e' : '#9ca3af' }}>
+        {day.day_diff !== null ? (day.day_diff > 0 ? `+${day.day_diff}` : `${day.day_diff}`) : '—'}
+      </td>
+      <td style={{ padding: '4px 4px' }}>
+        <input
+          value={noteLocal}
+          onChange={(e) => onNoteChange(e.target.value)}
+          placeholder="メモ"
+          style={{ width: '100%', minWidth: 120, padding: 4, border: '1px solid #d1d5db', borderRadius: 4 }}
+        />
+      </td>
+      <td style={{ padding: '4px 4px', fontSize: '0.8em', whiteSpace: 'nowrap' }}>
+        {saving && <span style={{ color: '#d97706' }}>保存中…</span>}
+        {savedFlash && <span style={{ color: '#16a34a' }}>✓</span>}
+        {rowError && <span style={{ color: '#ef4444' }} title={rowError}>⚠️</span>}
+        {day.auto_breakdown && Object.keys(day.auto_breakdown).length > 0 && (
+          <details style={{ display: 'inline-block', marginLeft: 6 }}>
+            <summary style={{ cursor: 'pointer', color: '#6b7280' }}>内訳</summary>
+            <pre style={{ position: 'absolute', background: '#fff', border: '1px solid #d1d5db', padding: 8, fontSize: '0.75em', zIndex: 10, maxWidth: 300, overflow: 'auto' }}>
+              {Object.entries(day.auto_breakdown).map(([k, v]) => `${k}: ${v}`).join('\n')}
+            </pre>
+          </details>
+        )}
+      </td>
+    </tr>
+  );
+}

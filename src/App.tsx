@@ -26,6 +26,9 @@ import AdminEventsPage from './pages/admin/AdminEventsPage';
 import AdminStatsPage from './pages/admin/AdminStatsPage';
 import AdminShopCoordinatesPage from './pages/admin/AdminShopCoordinatesPage';
 import AdminRestaurantCoordinatesPage from './pages/admin/AdminRestaurantCoordinatesPage';
+import AdminCrowdPage from './pages/admin/AdminCrowdPage';
+import QuizAdminPage from './pages/admin/QuizAdminPage';
+import QuizPage from './pages/QuizPage';
 import AdminLayout from './components/admin/AdminLayout';
 import { hasAdminToken } from './api/admin';
 import { useAuth } from './contexts/AuthContext';
@@ -75,6 +78,8 @@ export default function App() {
           <Route path="/admin/stats" element={<AdminStatsPage />} />
           <Route path="/admin/shop-coordinates" element={<AdminShopCoordinatesPage />} />
           <Route path="/admin/restaurant-coordinates" element={<AdminRestaurantCoordinatesPage />} />
+          <Route path="/admin/crowd" element={<AdminCrowdPage />} />
+          <Route path="/admin/quiz" element={<QuizAdminPage />} />
         </Route>
       </Routes>
     );
@@ -121,6 +126,7 @@ export default function App() {
         <Route path="/myplan" element={<ProtectedRoute><MyPlanPage /></ProtectedRoute>} />
         <Route path="/myplan/history" element={<ProtectedRoute><MyPlanHistoryPage /></ProtectedRoute>} />
         <Route path="/checklist" element={<ChecklistPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
 
         <Route path="/height" element={<HeightPage />} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />

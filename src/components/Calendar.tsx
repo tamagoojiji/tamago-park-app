@@ -8,6 +8,7 @@ import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
 import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
+import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from '../api/crowd';
 import ShowSchedule from './ShowSchedule';
 import RestaurantList from './RestaurantList';
 import styles from './Calendar.module.css';
@@ -78,7 +79,7 @@ function getTabEmptyMessage(tab: CalendarTab): string {
     case 'annual-pass': return '貸切の日は、営業時間が短いです';
     case 'events': return 'イベント情報は準備中です';
     case 'tickets': return '1デイ・スタジオ・パス（大人）の価格';
-    case 'crowd': return '混雑予想データは準備中です';
+    case 'crowd': return '混雑予想 (★1=空き〜★5=超混雑)';
     case 'restaurant': return 'レストラン一覧は準備中です';
     case 'closure': return '休止中のアトラクション情報';
   }
@@ -104,6 +105,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [annualPassExcluded, setAnnualPassExcluded] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(false);
+  const [crowdMap, setCrowdMap] = useState<Map<string, CrowdDay>>(new Map());
+  const [crowdViewMode, setCrowdViewMode] = useState<'day' | 'ampm'>('day');
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -137,6 +140,24 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   useEffect(() => {
     fetchClosures().then(setClosuresData);
   }, []);
+
+  // 混雑予想データ取得（タブ選択時 + 月変更時）
+  useEffect(() => {
+    if (activeTab !== 'crowd') return;
+    const y = currentMonth.year;
+    const m = currentMonth.month;
+    const from = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+    // 翌月の最終日まで取得（カレンダー余白セル含む）
+    const lastDay = new Date(y, m + 2, 0);
+    const to = `${lastDay.getFullYear()}-${String(lastDay.getMonth() + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
+    fetchCrowd(from, to)
+      .then((res) => {
+        const map = new Map<string, CrowdDay>();
+        res.days.forEach((d) => map.set(d.date, d));
+        setCrowdMap(map);
+      })
+      .catch((e) => console.error('混雑予想取得エラー:', e));
+  }, [activeTab, currentMonth]);
 
   // レストランデータ取得（日付非依存: 常にtodayを使用）
   useEffect(() => {
@@ -280,6 +301,24 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
         </button>
       </div>
 
+      {/* 混雑予想モード切替 */}
+      {activeTab === 'crowd' && (
+        <div className={styles.crowdViewToggle}>
+          <button
+            className={`${styles.crowdToggleBtn} ${crowdViewMode === 'day' ? styles.crowdToggleActive : ''}`}
+            onClick={() => setCrowdViewMode('day')}
+          >
+            1日
+          </button>
+          <button
+            className={`${styles.crowdToggleBtn} ${crowdViewMode === 'ampm' ? styles.crowdToggleActive : ''}`}
+            onClick={() => setCrowdViewMode('ampm')}
+          >
+            午前/午後
+          </button>
+        </div>
+      )}
+
       {/* カレンダーグリッド */}
       <div className={styles.calendarCard} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className={styles.weekdays}>
@@ -339,6 +378,25 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     {activeTab === 'shows' && availableDates.includes(dateStr) && (
                       <span className={styles.showAvailableLabel}>🎭</span>
                     )}
+                    {activeTab === 'crowd' && crowdMap.get(dateStr) && (() => {
+                      const c = crowdMap.get(dateStr)!;
+                      if (crowdViewMode === 'ampm' && c.am_level && c.pm_level) {
+                        return (
+                          <span className={styles.crowdLabelAmpm}>
+                            <span className={styles.crowdHalf} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.am_level] }}>{c.am_level}</span>
+                            <span className={styles.crowdHalf} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.pm_level] }}>{c.pm_level}</span>
+                          </span>
+                        );
+                      }
+                      if (c.day_level) {
+                        return (
+                          <span className={styles.crowdLabel} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.day_level] }}>
+                            {c.day_level}
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
                     {activeTab === 'closure' && closuresData && (() => {
                       const count = getClosuresForDate(closuresData, dateStr).length;
                       return count > 0 ? (
@@ -420,7 +478,26 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           <div className={styles.infoRow}>
             <span className={styles.infoIcon}>👥</span>
             <span className={styles.infoLabel}>混雑予想</span>
-            <span className={`${styles.infoValue} ${styles.textGray}`}>準備中</span>
+            {(() => {
+              const c = crowdMap.get(selectedDate);
+              if (!c || !c.day_level) {
+                return <span className={`${styles.infoValue} ${styles.textGray}`}>—</span>;
+              }
+              const sameAmPm = c.am_level === c.pm_level;
+              return (
+                <span className={styles.infoValue} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ background: CROWD_LEVEL_COLOR[c.day_level], color: '#fff', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>
+                    {c.day_level} {CROWD_LEVEL_LABEL[c.day_level]}
+                  </span>
+                  {!sameAmPm && c.am_level && c.pm_level && (
+                    <span style={{ fontSize: '0.85em', color: '#555' }}>
+                      (午前 {c.am_level} / 午後 {c.pm_level})
+                    </span>
+                  )}
+                  {c.is_manual && <span style={{ fontSize: '0.75em', color: '#888' }}>手動</span>}
+                </span>
+              );
+            })()}
           </div>
 
           {/* 貸切 */}

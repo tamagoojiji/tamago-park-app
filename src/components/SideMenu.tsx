@@ -11,6 +11,7 @@ const menuItems: MenuItem[] = [
   { id: 'restaurant', label: 'レストラン診断', path: '/restaurant', icon: '🍽️' },
   { id: 'ai', label: 'たまごの相談部屋', path: '/ai', icon: '💬', comingSoon: true },
   { id: 'checklist', label: 'チェックリスト', path: '/checklist', icon: '✅' },
+  { id: 'quiz', label: 'USJクイズ', path: '/quiz', icon: '❓' },
   { id: 'height', label: '身長制限リスト', path: '/height', icon: '📏' },
   { id: 'tickets', label: 'チケット値段一覧', path: '/tickets', icon: '🎟️', comingSoon: true },
   { id: 'guide', label: 'プランニング案内', path: '/guide', icon: '📸' },
