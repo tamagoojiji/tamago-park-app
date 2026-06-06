@@ -43,7 +43,12 @@ export async function fetchAllEvents(): Promise<ParkEvent[]> {
   if (cachedEvents) return cachedEvents;
   if (fetchPromise) return fetchPromise;
 
-  fetchPromise = fetchEvents()
+  // 直近の過去（昨日終わった貸切など）もカレンダーで見られるよう約1ヶ月前から取得
+  const from = new Date();
+  from.setDate(from.getDate() - 31);
+  const dateFrom = `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`;
+
+  fetchPromise = fetchEvents(dateFrom)
     .then(events => {
       cachedEvents = events;
       return events;
