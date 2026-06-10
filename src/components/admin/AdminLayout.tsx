@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { clearAdminToken } from '../../api/admin';
 import styles from './AdminLayout.module.css';
@@ -17,6 +18,13 @@ const NAV_ITEMS = [
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+
+  // 管理画面はテーブルが広いので #root の幅制限(1126px中央寄せ)を解除して全幅にする
+  useEffect(() => {
+    const root = document.getElementById('root');
+    root?.classList.add('admin-fullwidth');
+    return () => root?.classList.remove('admin-fullwidth');
+  }, []);
 
   const handleLogout = () => {
     clearAdminToken();
