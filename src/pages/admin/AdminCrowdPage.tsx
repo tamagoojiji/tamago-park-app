@@ -260,15 +260,17 @@ function CrowdRow({ day, schedule, onLocalUpdate }: { day: Day; schedule: Schedu
         color: day.day_diff && day.day_diff > 0 ? '#ef4444' : day.day_diff && day.day_diff < 0 ? '#22c55e' : '#9ca3af' }}>
         {day.day_diff !== null ? (day.day_diff > 0 ? `+${day.day_diff}` : `${day.day_diff}`) : '—'}
       </td>
-      <td style={{ padding: '4px 6px', fontSize: '0.78em', maxWidth: 240, verticalAlign: 'top' }}>
+      <td style={{ padding: '4px 6px', fontSize: '0.78em', minWidth: 200, maxWidth: 320, verticalAlign: 'top' }}>
         {schedule.length === 0 ? <span style={{ color: '#d1d5db' }}>—</span> : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {schedule.map((s, i) => (
               <span key={i} title={s.title} style={{
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                display: 'flex', gap: 4, alignItems: 'baseline',
+                lineHeight: 1.3,
                 color: SCHEDULE_COLOR[s.kind],
               }}>
-                {s.icon} {s.label}
+                <span style={{ flexShrink: 0 }}>{s.icon}</span>
+                <span style={{ wordBreak: 'break-word' }}>{s.label}</span>
               </span>
             ))}
           </div>
