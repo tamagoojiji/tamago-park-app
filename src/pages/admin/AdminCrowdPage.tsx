@@ -1,10 +1,46 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { adminApi } from '../../api/admin';
 import { CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR } from '../../api/crowd';
+import { fetchEvents, type ParkEvent } from '../../api/events';
+import { fetchClosures, type ClosuresData } from '../../data/closures';
 import styles from './Admin.module.css';
 
 type Day = Awaited<ReturnType<typeof adminApi.crowd>>['days'][number];
 type SortMode = 'date' | 'diff';
+
+// その日に「始まる/終わる」予定（イベント開始・終了 / アトラクション休止開始・最終日）
+type Scheduled = { kind: 'start' | 'end' | 'closeStart' | 'closeEnd'; icon: string; label: string; title: string };
+
+const SCHEDULE_COLOR: Record<Scheduled['kind'], string> = {
+  start: '#1d4ed8',      // 開始: 青
+  end: '#6b7280',        // 終了: グレー
+  closeStart: '#b91c1c', // 休止開始: 赤
+  closeEnd: '#15803d',   // 休止最終日(翌日再開): 緑
+};
+
+function eventIcon(e: ParkEvent): string {
+  if (e.category === 'private') return '🎪';
+  return e.sub_category === 'attraction' ? '🎢' : e.sub_category === 'show' ? '🎭' : '🎉';
+}
+
+function getScheduleForDate(date: string, events: ParkEvent[], closures: ClosuresData | null): Scheduled[] {
+  const out: Scheduled[] = [];
+  for (const e of events) {
+    if (e.date === date) out.push({ kind: 'start', icon: `🆕${eventIcon(e)}`, label: e.name, title: `開始: ${e.name}` });
+    if (e.end_date && e.end_date === date && e.end_date !== e.date) {
+      out.push({ kind: 'end', icon: `🏁${eventIcon(e)}`, label: e.name, title: `終了: ${e.name}` });
+    }
+  }
+  if (closures) {
+    for (const c of closures.closures) {
+      if (c.start === date) out.push({ kind: 'closeStart', icon: '🔒', label: c.name, title: `休止開始: ${c.name}（${c.period}）` });
+      if (c.end === date && c.end !== c.start) {
+        out.push({ kind: 'closeEnd', icon: '🔓', label: c.name, title: `休止最終日・翌日再開: ${c.name}（${c.period}）` });
+      }
+    }
+  }
+  return out;
+}
 
 const todayIso = () => {
   const d = new Date();
@@ -66,6 +102,8 @@ export default function AdminCrowdPage() {
   const [from, setFrom] = useState(todayIso());
   const [to, setTo] = useState(addDays(todayIso(), 365));
   const [days, setDays] = useState<Day[]>([]);
+  const [events, setEvents] = useState<ParkEvent[]>([]);
+  const [closures, setClosures] = useState<ClosuresData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('date');
@@ -75,8 +113,12 @@ export default function AdminCrowdPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await adminApi.crowd(from, to);
+      const [res, evs] = await Promise.all([
+        adminApi.crowd(from, to),
+        fetchEvents(from, to),
+      ]);
       setDays(res.days);
+      setEvents(evs);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -85,6 +127,7 @@ export default function AdminCrowdPage() {
   }, [from, to]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { fetchClosures().then(setClosures); }, []);
 
   const updateLocal = useCallback((date: string, patch: Partial<Day>) => {
     setDays((prev) => prev.map((d) => d.date === date ? {
@@ -103,6 +146,12 @@ export default function AdminCrowdPage() {
     }
     return list;
   }, [days, sortMode, diffOnly]);
+
+  const scheduleMap = useMemo(() => {
+    const m = new Map<string, Scheduled[]>();
+    for (const d of days) m.set(d.date, getScheduleForDate(d.date, events, closures));
+    return m;
+  }, [days, events, closures]);
 
   return (
     <div className={styles.container}>
@@ -133,13 +182,14 @@ export default function AdminCrowdPage() {
             <th style={{ padding: '6px 8px' }}>自動</th>
             <th style={{ padding: '6px 8px' }}>手動</th>
             <th style={{ padding: '6px 8px' }}>差</th>
+            <th style={{ padding: '6px 8px' }}>予定（開始/終了/休止）</th>
             <th style={{ padding: '6px 8px' }}>メモ</th>
             <th style={{ padding: '6px 8px' }}></th>
           </tr>
         </thead>
         <tbody>
           {displayed.map((d) => (
-            <CrowdRow key={d.date} day={d} onLocalUpdate={updateLocal} />
+            <CrowdRow key={d.date} day={d} schedule={scheduleMap.get(d.date) ?? []} onLocalUpdate={updateLocal} />
           ))}
         </tbody>
       </table>
@@ -147,7 +197,7 @@ export default function AdminCrowdPage() {
   );
 }
 
-function CrowdRow({ day, onLocalUpdate }: { day: Day; onLocalUpdate: (date: string, patch: Partial<Day>) => void }) {
+function CrowdRow({ day, schedule, onLocalUpdate }: { day: Day; schedule: Scheduled[]; onLocalUpdate: (date: string, patch: Partial<Day>) => void }) {
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
@@ -209,6 +259,20 @@ function CrowdRow({ day, onLocalUpdate }: { day: Day; onLocalUpdate: (date: stri
       <td style={{ padding: '4px 4px', fontWeight: 700, textAlign: 'center',
         color: day.day_diff && day.day_diff > 0 ? '#ef4444' : day.day_diff && day.day_diff < 0 ? '#22c55e' : '#9ca3af' }}>
         {day.day_diff !== null ? (day.day_diff > 0 ? `+${day.day_diff}` : `${day.day_diff}`) : '—'}
+      </td>
+      <td style={{ padding: '4px 6px', fontSize: '0.78em', maxWidth: 240, verticalAlign: 'top' }}>
+        {schedule.length === 0 ? <span style={{ color: '#d1d5db' }}>—</span> : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {schedule.map((s, i) => (
+              <span key={i} title={s.title} style={{
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                color: SCHEDULE_COLOR[s.kind],
+              }}>
+                {s.icon} {s.label}
+              </span>
+            ))}
+          </div>
+        )}
       </td>
       <td style={{ padding: '4px 4px' }}>
         <input
