@@ -16,7 +16,7 @@ import styles from './Calendar.module.css';
 const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
   { id: 'hours', label: '営業時間', icon: '🕐' },
   { id: 'tickets', label: 'チケット価格', icon: '💰' },
-  { id: 'crowd', label: '混雑予想(準備中)', icon: '👥', disabled: true },
+  { id: 'crowd', label: '混雑予想', icon: '👥' },
   { id: 'annual-pass', label: '年パス除外日\n貸切ナイト日', icon: '🎫' },
   { id: 'restaurant', label: 'レストラン\n一覧', icon: '🍽️' },
   { id: 'events', label: 'イベント', icon: '🎉' },
