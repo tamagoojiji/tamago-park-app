@@ -98,7 +98,23 @@ const LevelSelect = ({ value, autoValue, onChange, disabled }: {
   </select>
 );
 
+// 画面幅でスマホ/PCを判定（768px未満をスマホ扱い）
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < breakpoint
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = () => setIsMobile(mq.matches);
+    handler();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 export default function AdminCrowdPage() {
+  const isMobile = useIsMobile();
   const [from, setFrom] = useState(todayIso());
   const [to, setTo] = useState(addDays(todayIso(), 365));
   const [days, setDays] = useState<Day[]>([]);
@@ -177,19 +193,31 @@ export default function AdminCrowdPage() {
       <table className={styles.table} style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
         <thead style={{ position: 'sticky', top: 0, background: '#f3f4f6' }}>
           <tr style={{ textAlign: 'left', borderBottom: '2px solid #d1d5db' }}>
-            <th style={{ padding: '6px 8px' }}>日付</th>
-            <th style={{ padding: '6px 8px' }}>曜</th>
-            <th style={{ padding: '6px 8px' }}>自動</th>
-            <th style={{ padding: '6px 8px' }}>手動</th>
-            <th style={{ padding: '6px 8px' }}>差</th>
-            <th style={{ padding: '6px 8px' }}>予定（開始/終了/休止）</th>
-            <th style={{ padding: '6px 8px' }}>メモ</th>
-            <th style={{ padding: '6px 8px' }}></th>
+            {isMobile ? (
+              <>
+                <th style={{ padding: '6px 8px' }}>日付</th>
+                <th style={{ padding: '6px 4px' }}>自動</th>
+                <th style={{ padding: '6px 4px' }}>手動</th>
+                <th style={{ padding: '6px 6px' }}>予定</th>
+                <th style={{ padding: '6px 4px' }}></th>
+              </>
+            ) : (
+              <>
+                <th style={{ padding: '6px 8px' }}>日付</th>
+                <th style={{ padding: '6px 8px' }}>曜</th>
+                <th style={{ padding: '6px 8px' }}>自動</th>
+                <th style={{ padding: '6px 8px' }}>手動</th>
+                <th style={{ padding: '6px 8px' }}>差</th>
+                <th style={{ padding: '6px 8px' }}>予定（開始/終了/休止）</th>
+                <th style={{ padding: '6px 8px' }}>メモ</th>
+                <th style={{ padding: '6px 8px' }}></th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
           {displayed.map((d) => (
-            <CrowdRow key={d.date} day={d} schedule={scheduleMap.get(d.date) ?? []} onLocalUpdate={updateLocal} />
+            <CrowdRow key={d.date} day={d} schedule={scheduleMap.get(d.date) ?? []} compact={isMobile} onLocalUpdate={updateLocal} />
           ))}
         </tbody>
       </table>
@@ -197,10 +225,11 @@ export default function AdminCrowdPage() {
   );
 }
 
-function CrowdRow({ day, schedule, onLocalUpdate }: { day: Day; schedule: Scheduled[]; onLocalUpdate: (date: string, patch: Partial<Day>) => void }) {
+function CrowdRow({ day, schedule, compact, onLocalUpdate }: { day: Day; schedule: Scheduled[]; compact: boolean; onLocalUpdate: (date: string, patch: Partial<Day>) => void }) {
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const [noteLocal, setNoteLocal] = useState(day.manual_note ?? '');
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -247,6 +276,90 @@ function CrowdRow({ day, schedule, onLocalUpdate }: { day: Day; schedule: Schedu
 
   const wdColor = weekday(day.date) === '土' ? '#3b82f6' : weekday(day.date) === '日' ? '#ef4444' : '#374151';
 
+  const scheduleInner = schedule.length === 0
+    ? <span style={{ color: '#d1d5db' }}>—</span>
+    : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {schedule.map((s, i) => (
+          <span key={i} title={s.title} style={{ display: 'flex', gap: 4, alignItems: 'baseline', lineHeight: 1.3, color: SCHEDULE_COLOR[s.kind] }}>
+            <span style={{ flexShrink: 0 }}>{s.icon}</span>
+            <span style={{ wordBreak: 'break-word' }}>{s.label}</span>
+          </span>
+        ))}
+      </div>
+    );
+
+  const noteInput = (
+    <input
+      value={noteLocal}
+      onChange={(e) => onNoteChange(e.target.value)}
+      placeholder="メモ"
+      style={{ width: '100%', minWidth: 120, padding: 4, border: '1px solid #d1d5db', borderRadius: 4 }}
+    />
+  );
+
+  if (compact) {
+    const shortDate = `${Number(day.date.slice(5, 7))}/${Number(day.date.slice(8, 10))}`;
+    const scheduleSummary = schedule.length === 0
+      ? <span style={{ color: '#d1d5db' }}>—</span>
+      : (
+        <span title={schedule.map((s) => s.title).join('\n')} style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: SCHEDULE_COLOR[schedule[0].kind] }}>
+          {schedule[0].icon} {schedule[0].label}{schedule.length > 1 ? ` 他${schedule.length - 1}` : ''}
+        </span>
+      );
+    return (
+      <>
+        <tr onClick={() => setExpanded((e) => !e)}
+          style={{ borderBottom: expanded ? 'none' : '1px solid #e5e7eb', background: savedFlash ? '#dcfce7' : (saving ? '#fef3c7' : 'transparent'), transition: 'background 0.3s', cursor: 'pointer' }}>
+          <td style={{ padding: '8px', whiteSpace: 'nowrap' }}>
+            <span style={{ fontWeight: 600 }}>{shortDate}</span>
+            <span style={{ color: wdColor, fontWeight: 600, marginLeft: 4 }}>({weekday(day.date)})</span>
+          </td>
+          <td style={{ padding: '8px 4px', textAlign: 'center' }}><LevelBadge level={day.auto_day_level} /></td>
+          <td style={{ padding: '8px 2px' }} onClick={(e) => e.stopPropagation()}>
+            <LevelSelect value={day.manual_day_level} autoValue={day.auto_day_level} disabled={saving}
+              onChange={(v) => saveOverride({ day_level: v })} />
+          </td>
+          <td style={{ padding: '8px 6px', maxWidth: 120, fontSize: '0.8em', overflow: 'hidden' }}>{scheduleSummary}</td>
+          <td style={{ padding: '8px 4px', color: '#9ca3af', whiteSpace: 'nowrap', textAlign: 'center' }}>
+            {saving ? '…' : savedFlash ? '✓' : (expanded ? '▲' : '▼')}
+          </td>
+        </tr>
+        {expanded && (
+          <tr style={{ borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+            <td colSpan={5} style={{ padding: '8px 12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.9em' }}>
+                <div>
+                  <span style={{ color: '#6b7280' }}>差（手動−自動）: </span>
+                  <span style={{ fontWeight: 700, color: day.day_diff && day.day_diff > 0 ? '#ef4444' : day.day_diff && day.day_diff < 0 ? '#22c55e' : '#9ca3af' }}>
+                    {day.day_diff !== null ? (day.day_diff > 0 ? `+${day.day_diff}` : `${day.day_diff}`) : '—'}
+                  </span>
+                  {rowError && <span style={{ color: '#ef4444', marginLeft: 8 }} title={rowError}>⚠️ 保存失敗</span>}
+                </div>
+                <div>
+                  <div style={{ color: '#6b7280', marginBottom: 3 }}>予定（開始/終了/休止）</div>
+                  {scheduleInner}
+                </div>
+                <div>
+                  <div style={{ color: '#6b7280', marginBottom: 3 }}>メモ</div>
+                  {noteInput}
+                </div>
+                {day.auto_breakdown && Object.keys(day.auto_breakdown).length > 0 && (
+                  <details>
+                    <summary style={{ cursor: 'pointer', color: '#6b7280' }}>内訳</summary>
+                    <pre style={{ background: '#fff', border: '1px solid #d1d5db', padding: 8, fontSize: '0.85em', overflow: 'auto', marginTop: 4 }}>
+                      {Object.entries(day.auto_breakdown).map(([k, v]) => `${k}: ${v}`).join('\n')}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            </td>
+          </tr>
+        )}
+      </>
+    );
+  }
+
   return (
     <tr style={{ borderBottom: '1px solid #e5e7eb', background: savedFlash ? '#dcfce7' : (saving ? '#fef3c7' : 'transparent'), transition: 'background 0.3s' }}>
       <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>{day.date}</td>
@@ -261,28 +374,10 @@ function CrowdRow({ day, schedule, onLocalUpdate }: { day: Day; schedule: Schedu
         {day.day_diff !== null ? (day.day_diff > 0 ? `+${day.day_diff}` : `${day.day_diff}`) : '—'}
       </td>
       <td style={{ padding: '4px 6px', fontSize: '0.78em', minWidth: 200, maxWidth: 320, verticalAlign: 'top' }}>
-        {schedule.length === 0 ? <span style={{ color: '#d1d5db' }}>—</span> : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {schedule.map((s, i) => (
-              <span key={i} title={s.title} style={{
-                display: 'flex', gap: 4, alignItems: 'baseline',
-                lineHeight: 1.3,
-                color: SCHEDULE_COLOR[s.kind],
-              }}>
-                <span style={{ flexShrink: 0 }}>{s.icon}</span>
-                <span style={{ wordBreak: 'break-word' }}>{s.label}</span>
-              </span>
-            ))}
-          </div>
-        )}
+        {scheduleInner}
       </td>
       <td style={{ padding: '4px 4px' }}>
-        <input
-          value={noteLocal}
-          onChange={(e) => onNoteChange(e.target.value)}
-          placeholder="メモ"
-          style={{ width: '100%', minWidth: 120, padding: 4, border: '1px solid #d1d5db', borderRadius: 4 }}
-        />
+        {noteInput}
       </td>
       <td style={{ padding: '4px 4px', fontSize: '0.8em', whiteSpace: 'nowrap' }}>
         {saving && <span style={{ color: '#d97706' }}>保存中…</span>}
