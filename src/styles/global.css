@@ -46,3 +46,8 @@ img {
   margin: 0 auto;
   background: var(--color-bg);
 }
+
+/* 管理画面(AdminLayout)では幅制限(--max-width=520px)を解除して全幅表示にする */
+#root.admin-fullwidth {
+  max-width: 100%;
+}
