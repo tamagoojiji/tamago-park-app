@@ -130,8 +130,8 @@ export default function AdminCrowdPage() {
           <tr style={{ textAlign: 'left', borderBottom: '2px solid #d1d5db' }}>
             <th style={{ padding: '6px 8px' }}>日付</th>
             <th style={{ padding: '6px 8px' }}>曜</th>
-            <th style={{ padding: '6px 8px' }} colSpan={3}>自動 (日/午前/午後)</th>
-            <th style={{ padding: '6px 8px' }} colSpan={3}>手動 (日/午前/午後)</th>
+            <th style={{ padding: '6px 8px' }}>自動</th>
+            <th style={{ padding: '6px 8px' }}>手動</th>
             <th style={{ padding: '6px 8px' }}>差</th>
             <th style={{ padding: '6px 8px' }}>メモ</th>
             <th style={{ padding: '6px 8px' }}></th>
@@ -202,19 +202,9 @@ function CrowdRow({ day, onLocalUpdate }: { day: Day; onLocalUpdate: (date: stri
       <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>{day.date}</td>
       <td style={{ padding: '4px 8px', color: wdColor, fontWeight: 600 }}>{weekday(day.date)}</td>
       <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_day_level} /></td>
-      <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_am_level} /></td>
-      <td style={{ padding: '4px 4px' }}><LevelBadge level={day.auto_pm_level} /></td>
       <td style={{ padding: '4px 2px' }}>
         <LevelSelect value={day.manual_day_level} autoValue={day.auto_day_level} disabled={saving}
-          onChange={(v) => saveOverride({ day_level: v, am_level: v, pm_level: v })} />
-      </td>
-      <td style={{ padding: '4px 2px' }}>
-        <LevelSelect value={day.manual_am_level} autoValue={day.auto_am_level} disabled={saving}
-          onChange={(v) => saveOverride({ am_level: v })} />
-      </td>
-      <td style={{ padding: '4px 2px' }}>
-        <LevelSelect value={day.manual_pm_level} autoValue={day.auto_pm_level} disabled={saving}
-          onChange={(v) => saveOverride({ pm_level: v })} />
+          onChange={(v) => saveOverride({ day_level: v })} />
       </td>
       <td style={{ padding: '4px 4px', fontWeight: 700, textAlign: 'center',
         color: day.day_diff && day.day_diff > 0 ? '#ef4444' : day.day_diff && day.day_diff < 0 ? '#22c55e' : '#9ca3af' }}>
