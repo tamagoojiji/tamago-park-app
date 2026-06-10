@@ -461,7 +461,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   <span style={{ background: CROWD_LEVEL_COLOR[c.day_level], color: '#fff', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>
                     {c.day_level} {CROWD_LEVEL_LABEL[c.day_level]}
                   </span>
-                  {c.is_manual && <span style={{ fontSize: '0.75em', color: '#888' }}>手動</span>}
                 </span>
               );
             })()}
