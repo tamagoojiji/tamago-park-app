@@ -106,7 +106,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(false);
   const [crowdMap, setCrowdMap] = useState<Map<string, CrowdDay>>(new Map());
-  const [crowdViewMode, setCrowdViewMode] = useState<'day' | 'ampm'>('day');
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -301,24 +300,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
         </button>
       </div>
 
-      {/* 混雑予想モード切替 */}
-      {activeTab === 'crowd' && (
-        <div className={styles.crowdViewToggle}>
-          <button
-            className={`${styles.crowdToggleBtn} ${crowdViewMode === 'day' ? styles.crowdToggleActive : ''}`}
-            onClick={() => setCrowdViewMode('day')}
-          >
-            1日
-          </button>
-          <button
-            className={`${styles.crowdToggleBtn} ${crowdViewMode === 'ampm' ? styles.crowdToggleActive : ''}`}
-            onClick={() => setCrowdViewMode('ampm')}
-          >
-            午前/午後
-          </button>
-        </div>
-      )}
-
       {/* カレンダーグリッド */}
       <div className={styles.calendarCard} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className={styles.weekdays}>
@@ -380,14 +361,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     )}
                     {activeTab === 'crowd' && crowdMap.get(dateStr) && (() => {
                       const c = crowdMap.get(dateStr)!;
-                      if (crowdViewMode === 'ampm' && c.am_level && c.pm_level) {
-                        return (
-                          <span className={styles.crowdLabelAmpm}>
-                            <span className={styles.crowdHalf} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.am_level] }}>{c.am_level}</span>
-                            <span className={styles.crowdHalf} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.pm_level] }}>{c.pm_level}</span>
-                          </span>
-                        );
-                      }
                       if (c.day_level) {
                         return (
                           <span className={styles.crowdLabel} style={{ backgroundColor: CROWD_LEVEL_COLOR[c.day_level] }}>
@@ -483,17 +456,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               if (!c || !c.day_level) {
                 return <span className={`${styles.infoValue} ${styles.textGray}`}>—</span>;
               }
-              const sameAmPm = c.am_level === c.pm_level;
               return (
                 <span className={styles.infoValue} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                   <span style={{ background: CROWD_LEVEL_COLOR[c.day_level], color: '#fff', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>
                     {c.day_level} {CROWD_LEVEL_LABEL[c.day_level]}
                   </span>
-                  {!sameAmPm && c.am_level && c.pm_level && (
-                    <span style={{ fontSize: '0.85em', color: '#555' }}>
-                      (午前 {c.am_level} / 午後 {c.pm_level})
-                    </span>
-                  )}
                   {c.is_manual && <span style={{ fontSize: '0.75em', color: '#888' }}>手動</span>}
                 </span>
               );
