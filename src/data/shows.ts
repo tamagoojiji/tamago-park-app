@@ -32,3 +32,19 @@ export function getHoldMinutes(showName: string): number {
 export function isOpenShow(show: { name: string; times: string[]; endTime?: string }): boolean {
   return !!show.endTime;
 }
+
+// 2026年夏の夜のイベント: 専用セクションにまとめて最上部表示する対象。
+// 季節限定のため、夏が終わったらこの配列を空 [] にすれば全件が通常ショー表示へ戻る（コード削除不要）。
+export const summerNightShows: string[] = [
+  'サマーナイト・ストリート・アクション',
+  'サマービート・スプラッシュ',
+  'サマーナイト・バブル・ファンタジー',
+  'ハロー！ ネオンサマー・グリーティング',
+  'NO LIMIT! グロウアップ Oh! マツリ',
+  'サマー・グロウ・モーメント',
+];
+
+// 夏の夜のイベント判定（名前の厳密一致。部分一致は他ショー誤爆を避けるため使わない）
+export function isSummerNightShow(name: string): boolean {
+  return summerNightShows.includes(name);
+}

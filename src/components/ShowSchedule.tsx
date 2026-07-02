@@ -3,7 +3,7 @@ import type { PlanItem } from '../types';
 import type { ShowData } from '../api/shows';
 import type { ParkEvent } from '../api/events';
 import { getLimitedShows } from '../api/events';
-import { getHoldMinutes, showTemplates, isOpenShow } from '../data/shows';
+import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow } from '../data/shows';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { useShowFavorites } from '../hooks/useShowFavorites';
 import styles from './ShowSchedule.module.css';
@@ -30,6 +30,7 @@ function minutesToTime(minutes: number): string {
 }
 
 type ClassifiedShows = {
+  nightShows: ShowData[];
   favUpcoming: ShowData[];
   normalUpcoming: ShowData[];
   favFinished: ShowData[];
@@ -54,8 +55,13 @@ export default function ShowSchedule({
   const isToday = scheduleDate === today;
 
   const classified = useMemo<ClassifiedShows>(() => {
-    const openShows = shows.filter((s) => isOpenShow(s));
-    const regularShows = shows.filter((s) => !isOpenShow(s));
+    // 夏の夜のイベントを先に切り出し（最初の開始時刻順）、残りを open/regular に分類（二重表示を防ぐ）
+    const nightShows = shows
+      .filter((s) => isSummerNightShow(s.name))
+      .sort((a, b) => timeToMinutes(a.times[0]) - timeToMinutes(b.times[0]));
+    const rest = shows.filter((s) => !isSummerNightShow(s.name));
+    const openShows = rest.filter((s) => isOpenShow(s));
+    const regularShows = rest.filter((s) => !isOpenShow(s));
 
     if (isToday) {
       const upcoming: ShowData[] = [];
@@ -82,6 +88,7 @@ export default function ShowSchedule({
       });
 
       return {
+        nightShows,
         favUpcoming: upcoming.filter((s) => isFav(s.name)),
         normalUpcoming: upcoming.filter((s) => !isFav(s.name)),
         favFinished: finished.filter((s) => isFav(s.name)),
@@ -92,6 +99,7 @@ export default function ShowSchedule({
       };
     } else {
       return {
+        nightShows,
         favUpcoming: [],
         normalUpcoming: [],
         favFinished: [],
@@ -273,6 +281,16 @@ export default function ShowSchedule({
             終了
           </div>
         </div>
+      )}
+
+      {/* 夏の夜のイベント（全日共通・最上部・最初の開始時刻順） */}
+      {classified.nightShows.length > 0 && (
+        <>
+          <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
+            🌙 夏の夜のイベント（{classified.nightShows.length}件）
+          </div>
+          {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
+        </>
       )}
 
       {/* 当日表示 */}
