@@ -26,7 +26,9 @@ export function getHoldMinutes(showName: string): number {
   return showTemplates[showName]?.holdMinutes ?? 0;
 }
 
-// OPEN時間ショー判定: 公演1回のみ、ただし1回公演でもショー扱いするもの（パレード・サマー・グロウ・モーメント・NO LIMIT! グロウアップ）は除外
-export function isOpenShow(show: { name: string; times: string[] }): boolean {
-  return show.times.length === 1 && !show.name.includes('パレード') && !show.name.includes('サマー・グロウ・モーメント') && !show.name.includes('グロウアップ');
+// OPEN時間ショー判定: endTime を持つ随時運行ショー（オリバンダーの店・フォトオポチュニティ・
+// 4Dムービー等、開始〜終了の時間帯で運行するもの）のみ。単発の定時ショー（NO LIMIT! グロウアップ・
+// ミニオン BOO-YA 等）は公演が1回でも通常ショー扱い。
+export function isOpenShow(show: { name: string; times: string[]; endTime?: string }): boolean {
+  return !!show.endTime;
 }
