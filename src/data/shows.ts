@@ -26,7 +26,7 @@ export function getHoldMinutes(showName: string): number {
   return showTemplates[showName]?.holdMinutes ?? 0;
 }
 
-// OPEN時間ショー判定: 公演1回のみ、ただし1回公演でもショー扱いするもの（パレード・サマー・グロウ・モーメント）は除外
+// OPEN時間ショー判定: 公演1回のみ、ただし1回公演でもショー扱いするもの（パレード・サマー・グロウ・モーメント・NO LIMIT! グロウアップ）は除外
 export function isOpenShow(show: { name: string; times: string[] }): boolean {
-  return show.times.length === 1 && !show.name.includes('パレード') && !show.name.includes('サマー・グロウ・モーメント');
+  return show.times.length === 1 && !show.name.includes('パレード') && !show.name.includes('サマー・グロウ・モーメント') && !show.name.includes('グロウアップ');
 }
