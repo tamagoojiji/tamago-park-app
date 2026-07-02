@@ -283,18 +283,8 @@ export default function ShowSchedule({
         </div>
       )}
 
-      {/* 夏の夜のイベント（全日共通・最上部・最初の開始時刻順） */}
-      {classified.nightShows.length > 0 && (
-        <>
-          <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
-            🌙 夏の夜のイベント（{classified.nightShows.length}件）
-          </div>
-          {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
-        </>
-      )}
-
-      {/* 当日表示 */}
-      {isToday && (
+      {/* お気に入り（最上部） */}
+      {isToday ? (
         <>
           {classified.favUpcoming.length > 0 && (
             <>
@@ -304,6 +294,39 @@ export default function ShowSchedule({
               {classified.favUpcoming.map((s) => renderShowCard(s, animIdx++))}
             </>
           )}
+          {classified.favFinished.length > 0 && (
+            <>
+              <div className={`${styles.sectionHeader} ${styles.sectionFav}`}>
+                ★ お気に入り × 終了（{classified.favFinished.length}件）
+              </div>
+              {classified.favFinished.map((s) => renderShowCard(s, animIdx++))}
+            </>
+          )}
+        </>
+      ) : (
+        classified.favOther.length > 0 && (
+          <>
+            <div className={`${styles.sectionHeader} ${styles.sectionFav}`}>
+              ★ お気に入り（{classified.favOther.length}件）
+            </div>
+            {classified.favOther.map((s) => renderShowCard(s, animIdx++))}
+          </>
+        )
+      )}
+
+      {/* 🌙 夏の夜のイベント（お気に入りの下・その他の上・最初の開始時刻順） */}
+      {classified.nightShows.length > 0 && (
+        <>
+          <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
+            🌙 夏の夜のイベント（{classified.nightShows.length}件）
+          </div>
+          {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
+        </>
+      )}
+
+      {/* その他 */}
+      {isToday ? (
+        <>
           {classified.normalUpcoming.length > 0 && (
             <>
               <div
@@ -314,14 +337,6 @@ export default function ShowSchedule({
               {classified.normalUpcoming.map((s) =>
                 renderShowCard(s, animIdx++),
               )}
-            </>
-          )}
-          {classified.favFinished.length > 0 && (
-            <>
-              <div className={`${styles.sectionHeader} ${styles.sectionFav}`}>
-                ★ お気に入り × 終了（{classified.favFinished.length}件）
-              </div>
-              {classified.favFinished.map((s) => renderShowCard(s, animIdx++))}
             </>
           )}
           {classified.normalFinished.length > 0 && (
@@ -337,32 +352,20 @@ export default function ShowSchedule({
             </>
           )}
         </>
-      )}
-
-      {/* 当日以外 */}
-      {!isToday && (
-        <>
-          {classified.favOther.length > 0 && (
-            <>
-              <div className={`${styles.sectionHeader} ${styles.sectionFav}`}>
-                ★ お気に入り（{classified.favOther.length}件）
+      ) : (
+        classified.normalOther.length > 0 && (
+          <>
+            {(classified.favOther.length > 0 ||
+              classified.nightShows.length > 0) && (
+              <div
+                className={`${styles.sectionHeader} ${styles.sectionUpcoming}`}
+              >
+                その他（{classified.normalOther.length}件）
               </div>
-              {classified.favOther.map((s) => renderShowCard(s, animIdx++))}
-            </>
-          )}
-          {classified.normalOther.length > 0 && (
-            <>
-              {classified.favOther.length > 0 && (
-                <div
-                  className={`${styles.sectionHeader} ${styles.sectionUpcoming}`}
-                >
-                  その他（{classified.normalOther.length}件）
-                </div>
-              )}
-              {classified.normalOther.map((s) => renderShowCard(s, animIdx++))}
-            </>
-          )}
-        </>
+            )}
+            {classified.normalOther.map((s) => renderShowCard(s, animIdx++))}
+          </>
+        )
       )}
 
       {/* OPEN時間 */}
