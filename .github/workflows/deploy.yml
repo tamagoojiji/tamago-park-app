@@ -35,3 +35,4 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 207.180.238.184 >> ~/.ssh/known_hosts 2>/dev/null
           rsync -avz --delete dist/ root@207.180.238.184:/opt/docker/park-app/
+          ssh root@207.180.238.184 "docker exec nginx nginx -s reload"
