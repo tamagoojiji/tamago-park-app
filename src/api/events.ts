@@ -205,6 +205,41 @@ export function getUpcomingEvents(events: ParkEvent[], today: string): ParkEvent
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
+// 2026ハロウィーン特設セクション対象イベント（DB登録名と完全一致・この順で表示）
+export const HALLOWEEN_2026_EVENT_NAMES: string[] = [
+  'ストリート・ゾンビ',
+  '『バイオハザード レクイエム』ザ・ダイブ',
+  'ゾンビ・デ・ダンス',
+  'プレイバック・ゾンビ・デ・ダンス ～ハロウィーン・ホラー・ナイト 15周年～',
+  'ハロウィーン・ホラー・ナイト・アカデミー ～絶叫の15年～',
+  'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～',
+  '貞子の呪い ～ダーク・ホラー・ライド～',
+  'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』',
+  'チェンソーマン・ザ・カオス 4-D',
+  'チェンソーマン × ハリウッド・ドリーム・ザ・ライド ～IRIS OUT～',
+  'スマイリーズ・ハッピー・ハロウィーン・グリーティング',
+  'ゾンビ・デ・ダンス × ハリウッド・ドリーム・ザ・ライド',
+  'ジョーズ ～レッド・アラート～',
+  'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～',
+  'ホグワーツ・キャッスルウォーク',
+  'ミニオン・ベロウィーン・グリーティング',
+  'パーク中で「トリック・オア・トリート」',
+  'スーパー・ニンテンドー・ワールド5周年 ミート＆グリート',
+  'パワーアップバンド・キーチャレンジ ～みんなで無敵の5周年バージョン～',
+];
+
+// 名前の完全一致（「ゾンビ・デ・ダンス」が他の名前の部分文字列のため部分一致は不可）
+export function isHalloween2026Event(e: ParkEvent): boolean {
+  return HALLOWEEN_2026_EVENT_NAMES.includes(e.name);
+}
+
+// 該当イベントを HALLOWEEN_2026_EVENT_NAMES の順にソートして返す
+export function getHalloween2026Events(events: ParkEvent[]): ParkEvent[] {
+  return events
+    .filter(isHalloween2026Event)
+    .sort((a, b) => HALLOWEEN_2026_EVENT_NAMES.indexOf(a.name) - HALLOWEEN_2026_EVENT_NAMES.indexOf(b.name));
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));

@@ -553,6 +553,43 @@
   opacity: 0.8;
 }
 
+.eventThemeCollapse {
+  margin-bottom: 16px;
+}
+
+.eventThemeCollapseSummary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.eventThemeCollapseSummary::-webkit-details-marker {
+  display: none;
+}
+
+.eventThemeCollapseArrow {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.eventThemeCollapse[open] .eventThemeCollapseArrow {
+  transform: rotate(180deg);
+}
+
+.eventThemeCollapseNote {
+  font-size: var(--text-xxs);
+  color: var(--color-text-sub);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
 .eventGroupLabel {
   font-size: var(--text-sm);
   font-weight: 800;

@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
 import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, getHalloween2026Events, isHalloween2026Event, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from '../api/crowd';
@@ -542,14 +542,15 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             <p className={styles.tabPlaceholder}>イベント情報はまだありません</p>
           ) : (() => {
             const dateStr = selectedDate || today;
+            const halloweenEvents = getHalloween2026Events(parkEvents);
             const startEndEvents = getEventStartEndForDate(parkEvents, dateStr);
             const ongoingEvents = getOngoingLimitedEvents(parkEvents, dateStr);
             const singleEvents = getSingleDayEvents(parkEvents, dateStr);
 
-            const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents];
-            const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id));
+            const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents].filter(e => !isHalloween2026Event(e));
+            const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id) && !isHalloween2026Event(e));
             const movie = MOVIE_SCREENINGS[dateStr];
-            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || !!movie;
+            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || halloweenEvents.length > 0 || !!movie;
 
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
@@ -593,6 +594,58 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     </div>
                     <div className={styles.movieBannerPlace}>📍 ニューヨーク・エリア グラマシーパーク（観覧無料・入退場自由・日本語吹替版）</div>
                   </div>
+                )}
+                {halloweenEvents.length > 0 && (
+                  <details className={styles.eventThemeCollapse}>
+                    <summary className={styles.eventThemeCollapseSummary}>
+                      <span className={styles.eventThemeEmoji}>🎃</span>
+                      <span className={styles.eventThemeLabel}>2026ハロウィーンイベント</span>
+                      <span className={styles.eventThemeCount}>{halloweenEvents.length}件</span>
+                      <span className={styles.eventThemeCollapseArrow}>▼</span>
+                    </summary>
+                    <div className={styles.eventThemeCollapseNote}>9/10(木)〜11/8(日)開催 ※一部は2027年1月まで</div>
+                    {halloweenEvents.map(evt => (
+                      <details key={evt.id} className={styles.eventCompact}>
+                        <summary className={styles.eventCompactSummary}>
+                          <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
+                          {evt.official_url ? (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
+                          ) : (
+                            <span className={styles.eventCompactName}>{evt.name}</span>
+                          )}
+                          <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
+                        </summary>
+                        <div className={styles.eventDetailGrid}>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>期間</span>
+                            <span className={styles.eventDetailValue}>{formatPeriod(evt)}</span>
+                          </div>
+                          <div className={styles.eventDetailRow}>
+                            <span className={styles.eventDetailLabel}>種別</span>
+                            <span className={styles.eventDetailValue}>{subCatLabel(evt.sub_category)}</span>
+                          </div>
+                          {evt.location && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>開催場所</span>
+                              <span className={styles.eventDetailValue}>{evt.location}</span>
+                            </div>
+                          )}
+                          {evt.age_restriction && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>年齢制限</span>
+                              <span className={styles.eventDetailValue}>{evt.age_restriction}</span>
+                            </div>
+                          )}
+                          {evt.summary && (
+                            <div className={styles.eventDetailRow}>
+                              <span className={styles.eventDetailLabel}>概要</span>
+                              <span className={styles.eventDetailValue}>{evt.summary}</span>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    ))}
+                  </details>
                 )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (
                   <div key={theme.id} className={styles.eventThemeGroup}>
