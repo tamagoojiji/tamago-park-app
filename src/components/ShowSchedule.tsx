@@ -229,7 +229,9 @@ export default function ShowSchedule({
   if (isLoading) {
     return <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>ショースケジュールを読み込み中...</p>;
   }
-  if (shows.length === 0) {
+  // 公式スケジュール(show_schedules)が未掲載の日でも、期間限定ショー(events)があれば表示する
+  const limitedShows = getLimitedShows(parkEvents, scheduleDate || today);
+  if (shows.length === 0 && limitedShows.length === 0) {
     return (
       <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>
         {scheduleDate
@@ -240,7 +242,6 @@ export default function ShowSchedule({
   }
 
   const totalCount = shows.length;
-  const limitedShows = getLimitedShows(parkEvents, scheduleDate || today);
 
   let animIdx = 0;
 
@@ -264,9 +265,11 @@ export default function ShowSchedule({
             </a>
           </span>
         )}
-        <span className={styles.countBadge}>
-          全 <strong>{totalCount}</strong> 件
-        </span>
+        {totalCount > 0 && (
+          <span className={styles.countBadge}>
+            全 <strong>{totalCount}</strong> 件
+          </span>
+        )}
       </div>
 
       {/* 凡例（当日のみ） */}
