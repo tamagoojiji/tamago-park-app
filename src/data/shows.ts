@@ -29,8 +29,13 @@ export function getHoldMinutes(showName: string): number {
 // OPEN時間ショー判定: endTime を持つ随時運行ショー（オリバンダーの店・フォトオポチュニティ・
 // 4Dムービー等、開始〜終了の時間帯で運行するもの）のみ。単発の定時ショー（NO LIMIT! グロウアップ・
 // ミニオン BOO-YA 等）は公演が1回でも通常ショー扱い。
+// 例外: 公式に終了時刻の掲載がないが実際は開始〜終園まで随時運行のショー（名前の厳密一致）。
+const openShowNames: string[] = [
+  'ハローキティのリボン・コレクション',
+];
+
 export function isOpenShow(show: { name: string; times: string[]; endTime?: string }): boolean {
-  return !!show.endTime;
+  return !!show.endTime || openShowNames.includes(show.name);
 }
 
 // 2026年夏の夜のイベント: 専用セクションにまとめて最上部表示する対象。
