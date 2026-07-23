@@ -648,12 +648,13 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   </details>
                 )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (
-                  <div key={theme.id} className={styles.eventThemeGroup}>
-                    <div className={styles.eventThemeHeader}>
+                  <details key={theme.id} className={styles.eventThemeCollapse}>
+                    <summary className={styles.eventThemeCollapseSummary}>
                       <span className={styles.eventThemeEmoji}>{theme.emoji}</span>
                       <span className={styles.eventThemeLabel}>{theme.label}</span>
                       <span className={styles.eventThemeCount}>{themeEvents.length}件</span>
-                    </div>
+                      <span className={styles.eventThemeCollapseArrow}>▼</span>
+                    </summary>
                     {themeEvents.map(evt => {
                       // 初日・最終日 → 詳細カード
                       if (isStartEnd(evt)) {
@@ -780,15 +781,16 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                         </details>
                       );
                     })}
-                  </div>
+                  </details>
                 ))}
                 {upcomingEvents.length > 0 && (
-                  <div className={styles.eventThemeGroup}>
-                    <div className={styles.eventThemeHeader}>
+                  <details className={styles.eventThemeCollapse}>
+                    <summary className={styles.eventThemeCollapseSummary}>
                       <span className={styles.eventThemeEmoji}>🗓</span>
                       <span className={styles.eventThemeLabel}>今後のイベント</span>
                       <span className={styles.eventThemeCount}>{upcomingEvents.length}件</span>
-                    </div>
+                      <span className={styles.eventThemeCollapseArrow}>▼</span>
+                    </summary>
                     {upcomingEvents.map(evt => (
                       <details key={evt.id} className={styles.eventCompact}>
                         <summary className={styles.eventCompactSummary}>
@@ -824,7 +826,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                         </div>
                       </details>
                     ))}
-                  </div>
+                  </details>
                 )}
               </div>
             );
