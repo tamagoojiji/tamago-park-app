@@ -599,7 +599,10 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   <details className={styles.eventThemeCollapse}>
                     <summary className={styles.eventThemeCollapseSummary}>
                       <span className={styles.eventThemeEmoji}>🎃</span>
-                      <span className={styles.eventThemeLabel}>2026ハロウィーンイベント</span>
+                      <span className={styles.eventThemeLabel}>
+                        2026ハロウィーンイベント
+                        <span className={styles.eventThemeSubLabel}>(ハロウィーン・ホラー・ナイト)</span>
+                      </span>
                       <span className={styles.eventThemeCount}>{halloweenEvents.length}件</span>
                       <span className={styles.eventThemeCollapseArrow}>▼</span>
                     </summary>
@@ -651,7 +654,10 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   <details key={theme.id} className={styles.eventThemeCollapse}>
                     <summary className={styles.eventThemeCollapseSummary}>
                       <span className={styles.eventThemeEmoji}>{theme.emoji}</span>
-                      <span className={styles.eventThemeLabel}>{theme.label}</span>
+                      <span className={styles.eventThemeLabel}>
+                        {theme.label}
+                        {theme.sublabel && <span className={styles.eventThemeSubLabel}>{theme.sublabel}</span>}
+                      </span>
                       <span className={styles.eventThemeCount}>{themeEvents.length}件</span>
                       <span className={styles.eventThemeCollapseArrow}>▼</span>
                     </summary>

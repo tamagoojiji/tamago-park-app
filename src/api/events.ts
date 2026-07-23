@@ -118,11 +118,13 @@ export function getSingleDayEvents(events: ParkEvent[], date: string): ParkEvent
 export interface EventTheme {
   id: string;
   label: string;
+  sublabel?: string;
   emoji: string;
   keywords: string[];
 }
 
 const EVENT_THEMES: EventTheme[] = [
+  { id: 'summer2026', label: '2026年夏イベント', sublabel: '(ユニバーサル・サマー・マツリ・ナイト ～ネオン・グロウアップ～)', emoji: '🏮', keywords: ['マツリ', 'BOO-YA', 'ネオンサマー', 'サマーナイト', 'サマービート', 'サマー・グロウ', 'クール・グリーン・ストリート', 'クールダウン・ステーション'] },
   { id: '25th', label: '25周年 Discover U!!!', emoji: '🎂', keywords: ['Discover U', '25周年', 'Back to 2001', 'NO LIMIT! パレード', '周年ソング', 'カーズ・アンド・スターズ'] },
   { id: 'cooljapan', label: 'COOL JAPAN', emoji: '🇯🇵', keywords: ['コナン', '呪術廻戦', 'フリーレン', 'マスカレード', '東野圭吾'] },
   { id: 'jurassic', label: 'ジュラシック・ワールド', emoji: '🦖', keywords: ['ジュラシック'] },
