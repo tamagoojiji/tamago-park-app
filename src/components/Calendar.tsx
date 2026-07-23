@@ -845,7 +845,6 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             today={today}
             planItems={planItems}
             onAddPlan={onAddPlan}
-            parkEvents={parkEvents}
           />
         </div>
       ) : (

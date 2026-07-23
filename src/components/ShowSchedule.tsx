@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
 import type { PlanItem } from '../types';
 import type { ShowData } from '../api/shows';
-import type { ParkEvent } from '../api/events';
-import { getLimitedShows } from '../api/events';
 import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow } from '../data/shows';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { useShowFavorites } from '../hooks/useShowFavorites';
@@ -15,7 +13,6 @@ interface ShowScheduleProps {
   today: string;
   planItems: PlanItem[];
   onAddPlan?: (item: PlanItem) => void;
-  parkEvents: ParkEvent[];
 }
 
 function timeToMinutes(time: string): number {
@@ -47,7 +44,6 @@ export default function ShowSchedule({
   today,
   planItems,
   onAddPlan,
-  parkEvents,
 }: ShowScheduleProps) {
   const currentMinutes = useCurrentTime();
   const { isFav, toggleFav } = useShowFavorites();
@@ -229,9 +225,7 @@ export default function ShowSchedule({
   if (isLoading) {
     return <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>ショースケジュールを読み込み中...</p>;
   }
-  // 公式スケジュール(show_schedules)が未掲載の日でも、期間限定ショー(events)があれば表示する
-  const limitedShows = getLimitedShows(parkEvents, scheduleDate || today);
-  if (shows.length === 0 && limitedShows.length === 0) {
+  if (shows.length === 0) {
     return (
       <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>
         {scheduleDate
@@ -381,39 +375,6 @@ export default function ShowSchedule({
         </>
       )}
 
-      {/* 期間限定ショー */}
-      {limitedShows.length > 0 && (
-        <>
-          <div className={styles.limitedLabel}>🎭 期間限定ショー</div>
-          {limitedShows.map((evt) => (
-            <div key={evt.id} className={styles.showCard}>
-              <div className={styles.limitedName}>
-                ✨{' '}
-                {evt.official_url ? (
-                  <a
-                    href={evt.official_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.limitedLink}
-                  >
-                    {evt.name}
-                  </a>
-                ) : (
-                  evt.name
-                )}
-              </div>
-              {evt.summary && (
-                <div className={styles.limitedSummary}>{evt.summary}</div>
-              )}
-              {evt.official_url && (
-                <div className={styles.limitedHint}>
-                  👆 タイトルタップで公式サイトへ
-                </div>
-              )}
-            </div>
-          ))}
-        </>
-      )}
     </div>
   );
 }
