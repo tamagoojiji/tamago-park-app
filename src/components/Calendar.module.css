@@ -770,6 +770,15 @@
   flex: 1;
 }
 
+.officialBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: underline;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .eventCompactDate {
   font-size: var(--text-xxs);
   color: var(--color-text-sub);

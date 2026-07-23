@@ -611,10 +611,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       <details key={evt.id} className={styles.eventCompact}>
                         <summary className={styles.eventCompactSummary}>
                           <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                          {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
-                          ) : (
-                            <span className={styles.eventCompactName}>{evt.name}</span>
+                          <span className={styles.eventCompactName}>{evt.name}</span>
+                          {evt.official_url && (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.officialBadge} onClick={e => e.stopPropagation()}>(公式)</a>
                           )}
                           <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
                         </summary>
@@ -670,13 +669,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                               <span className={styles.eventCardBadge} data-type={isStart(evt) ? 'start' : 'end'}>
                                 {isStart(evt) ? '開始' : '終了'}
                               </span>
-                              {evt.official_url ? (
-                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
-                              ) : (
-                                <span className={styles.eventCardName}>{evt.name}</span>
+                              <span className={styles.eventCardName}>{evt.name}</span>
+                              {evt.official_url && (
+                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.officialBadge} onClick={e => e.stopPropagation()}>(公式)</a>
                               )}
                             </div>
-                            {evt.official_url && <div className={styles.eventCardHint}>👆 タイトルタップで公式サイトへ</div>}
                             {evt.source_image_url && (() => {
                               const url = evt.source_image_url!;
                               if (url.startsWith('/')) {
@@ -740,10 +737,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                           <div key={evt.id} className={styles.eventCard}>
                             <div className={styles.eventCardHeader}>
                               <span className={styles.eventCardEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                              {evt.official_url ? (
-                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCardLink}>{evt.name}</a>
-                              ) : (
-                                <span className={styles.eventCardName}>{evt.name}</span>
+                              <span className={styles.eventCardName}>{evt.name}</span>
+                              {evt.official_url && (
+                                <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.officialBadge} onClick={e => e.stopPropagation()}>(公式)</a>
                               )}
                             </div>
                             {evt.summary && <div className={styles.eventCardSummary}>{evt.summary}</div>}
@@ -755,10 +751,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                         <details key={evt.id} className={styles.eventCompact}>
                           <summary className={styles.eventCompactSummary}>
                             <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                            {evt.official_url ? (
-                              <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
-                            ) : (
-                              <span className={styles.eventCompactName}>{evt.name}</span>
+                            <span className={styles.eventCompactName}>{evt.name}</span>
+                            {evt.official_url && (
+                              <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.officialBadge} onClick={e => e.stopPropagation()}>(公式)</a>
                             )}
                             <span className={styles.eventCompactDate}>{formatEndDate(evt)}</span>
                           </summary>
@@ -801,10 +796,9 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       <details key={evt.id} className={styles.eventCompact}>
                         <summary className={styles.eventCompactSummary}>
                           <span className={styles.eventCompactEmoji}>{subCatEmoji(evt.sub_category)}</span>
-                          {evt.official_url ? (
-                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.eventCompactLink} onClick={e => e.stopPropagation()}>{evt.name}</a>
-                          ) : (
-                            <span className={styles.eventCompactName}>{evt.name}</span>
+                          <span className={styles.eventCompactName}>{evt.name}</span>
+                          {evt.official_url && (
+                            <a href={evt.official_url} target="_blank" rel="noopener noreferrer" className={styles.officialBadge} onClick={e => e.stopPropagation()}>(公式)</a>
                           )}
                           <span className={styles.eventCompactDate}>{formatPeriod(evt)}</span>
                         </summary>
