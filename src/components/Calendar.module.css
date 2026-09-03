@@ -965,6 +965,12 @@
   line-height: 1;
 }
 
+:global(body.halloween) .activeTab {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px rgba(242, 106, 27, 0.3);
+}
+
 /* 今日・選択中を優先させる */
 :global(body.halloween) .today {
   background: var(--color-primary);
