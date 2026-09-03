@@ -8,8 +8,6 @@ import { fetchParkHours } from '../../data/hours';
 import { fetchClosures, getClosuresForDate } from '../../data/closures';
 import type { ShowData } from '../../api/shows';
 import { fetchShows } from '../../api/shows';
-import type { RestaurantInfo } from '../../api/restaurants';
-import { fetchRestaurants } from '../../api/restaurants';
 import { submitSurvey, getSurvey, updateSurvey } from '../../api/survey';
 
 import ProgressBar from './components/ProgressBar';
@@ -84,7 +82,6 @@ export default function SurveyPage() {
   const [closures, setClosures] = useState<ClosureEntry[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
   const [showsLoaded, setShowsLoaded] = useState(false);
-  const [_restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const fetchedDateRef = useRef('');
 
   // localStorage下書き保存
@@ -109,10 +106,6 @@ export default function SurveyPage() {
       setShows(result.shows);
       setShowsLoaded(true);
     }).catch(() => { setShows([]); setShowsLoaded(true); });
-
-    fetchRestaurants(primaryDate).then((result) => {
-      setRestaurants(result.restaurants);
-    }).catch(() => setRestaurants([]));
   }, [primaryDate]);
 
 

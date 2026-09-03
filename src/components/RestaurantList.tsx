@@ -272,7 +272,9 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
         try {
           await navigator.share({ files: [file], title: menuName });
           return;
-        } catch (_) {}
+        } catch {
+          // 共有をキャンセルした場合は下のダウンロードにフォールバック
+        }
       }
       const link = document.createElement('a');
       link.download = fileName;
