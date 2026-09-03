@@ -279,6 +279,31 @@
   overflow: hidden;
 }
 
+/* ハロウィーン枠（画像/PDF書き出しでも出るよう実要素で描画） */
+.timelineHalloween {
+  border: 3px solid #F26A1B;
+  border-radius: 14px;
+}
+
+.hwFrameHead {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: #FFD24A;
+  background: #1F1435;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.hwFrameFoot {
+  font-size: var(--text-xxs);
+  font-weight: 700;
+  color: #7A5FA8;
+  margin-top: 12px;
+  text-align: center;
+}
+
 .timelineRow {
   display: flex;
   gap: 12px;

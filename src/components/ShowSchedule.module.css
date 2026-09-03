@@ -308,6 +308,66 @@
   font-weight: 700;
 }
 
+/* === ハロウィーン ナイトゾーン === */
+.nightZone {
+  background: #1F1435;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 14px 0 6px;
+  color: #F3EEF9;
+}
+
+.nightZone .sectionHeader {
+  margin-top: 0;
+  color: #FFD24A;
+}
+
+.nightZone .sectionHeader::after {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nightZone .showCard {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.nightZone .showName,
+.nightZone .openName {
+  color: #F3EEF9;
+}
+
+.nightZone .timeChip {
+  color: #FFB27A;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nightZone .timeChipAdded {
+  color: #1F1435;
+  background: #FFB27A;
+}
+
+/* 当日の状態表示（終了/次の回）が夜色の通常チップに負けないよう後ろに置く */
+.nightZone .timeChipPast {
+  color: #8B7FA3;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nightZone .timeChipNext {
+  color: #1F1435;
+  background: #FFD24A;
+  box-shadow: none;
+}
+
+.nightZoneLink {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-size: var(--text-xxs);
+  font-weight: 800;
+  color: #fff;
+  background: #F26A1B;
+  border-radius: var(--radius-pill);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

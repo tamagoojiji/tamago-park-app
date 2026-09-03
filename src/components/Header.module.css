@@ -55,6 +55,51 @@
   display: block;
   width: 20px;
   height: 2px;
-  background: #4A90D9;
+  background: var(--color-primary);
   border-radius: 1px;
+}
+
+/* === ハロウィーン演出 === */
+:global(body.halloween) .header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #1F1435, #5B2E8C, #F26A1B);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.hwPumpkin {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  font-size: 22px;
+  line-height: 1;
+  z-index: 5;
+}
+
+.hwBats {
+  position: absolute;
+  right: 64px;
+  top: 6px;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 5;
+  animation: hwBatFly 6s linear infinite;
+}
+
+@keyframes hwBatFly {
+  0% { transform: translateX(24px); opacity: 0; }
+  12% { opacity: 0.9; }
+  85% { opacity: 0.9; }
+  100% { transform: translateX(-240px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hwBats {
+    animation: none;
+  }
 }

@@ -11,6 +11,8 @@ import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from '../api/crowd';
 import ShowSchedule from './ShowSchedule';
 import RestaurantList from './RestaurantList';
+import { useHalloween } from '../hooks/useHalloween';
+import { isHalloweenDate, ALL_NIGHT_DATES } from '../data/halloween';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
@@ -91,6 +93,7 @@ interface CalendarProps {
 }
 
 export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
+  const halloween = useHalloween();
   const [activeTab, setActiveTab] = useState<CalendarTab>('hours');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [weather, setWeather] = useState<DailyWeather[]>([]);
@@ -225,6 +228,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     const dateStr = getDateStr(day);
     const dayOfWeek = new Date(currentMonth.year, currentMonth.month, day).getDay();
     const classes = [styles.day];
+    if (halloween && isHalloweenDate(dateStr)) classes.push(styles.halloweenDay);
+    if (halloween && ALL_NIGHT_DATES.includes(dateStr)) classes.push(styles.halloweenAllNight);
     if (dateStr === today) classes.push(styles.today);
     if (dateStr === selectedDate) classes.push(styles.selected);
     if (dayOfWeek === 0 || HOLIDAYS[dateStr]) classes.push(styles.sunday);
@@ -596,7 +601,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                   </div>
                 )}
                 {halloweenEvents.length > 0 && (
-                  <details className={styles.eventThemeCollapse}>
+                  <details className={`${styles.eventThemeCollapse} ${halloween ? styles.eventThemeHalloween : ''}`}>
                     <summary className={styles.eventThemeCollapseSummary}>
                       <span className={styles.eventThemeEmoji}>🎃</span>
                       <span className={styles.eventThemeLabel}>

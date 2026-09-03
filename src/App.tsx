@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -29,9 +30,11 @@ import AdminRestaurantCoordinatesPage from './pages/admin/AdminRestaurantCoordin
 import AdminCrowdPage from './pages/admin/AdminCrowdPage';
 import QuizAdminPage from './pages/admin/QuizAdminPage';
 import QuizPage from './pages/QuizPage';
+import HalloweenPage from './pages/HalloweenPage';
 import AdminLayout from './components/admin/AdminLayout';
 import { hasAdminToken } from './api/admin';
 import { useAuth } from './contexts/AuthContext';
+import { useHalloween } from './hooks/useHalloween';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
 
@@ -61,9 +64,16 @@ function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   const location = useLocation();
   const { isLoading } = useAuth();
+  const halloween = useHalloween();
 
   const isFullscreen = FULLSCREEN_PATHS.includes(location.pathname);
   const isAdmin = location.pathname.startsWith('/admin');
+
+  // ハロウィーン期間のカラースキン（管理画面には当てない）
+  useEffect(() => {
+    document.body.classList.toggle('halloween', halloween && !isAdmin);
+    return () => document.body.classList.remove('halloween');
+  }, [halloween, isAdmin]);
 
   if (isAdmin) {
     return (
@@ -117,6 +127,7 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/welcome" element={<WelcomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/halloween" element={<HalloweenPage />} />
 
         {/* 保護ページ（ログイン必須） */}
         <Route path="/survey" element={<ProtectedRoute><PlanningPortalPage /></ProtectedRoute>} />

@@ -54,3 +54,12 @@ export const summerNightShows: string[] = [
 export function isSummerNightShow(name: string): boolean {
   return summerNightShows.includes(name);
 }
+
+// ハロウィーンのナイトゾーン対象キーワード。
+// 公式スケジュールの名称に「～15周年～」等の接尾辞の揺れがあるため部分一致で判定する
+// （summer 側は上記のとおり完全一致のまま）。
+export const halloweenNightShowKeywords: string[] = ['ゾンビ', 'ホラー・ナイト', '残像'];
+
+export function isHalloweenNightShow(name: string): boolean {
+  return halloweenNightShowKeywords.some((kw) => name.includes(kw));
+}

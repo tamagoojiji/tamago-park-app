@@ -1,0 +1,50 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px var(--content-padding) 0;
+  padding: 12px 14px;
+  background: #1F1435;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid var(--color-accent);
+}
+
+.banner:active {
+  transform: scale(0.99);
+}
+
+.moon {
+  font-size: 22px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: #FFD24A;
+  line-height: 1.4;
+}
+
+.sub {
+  font-size: var(--text-xxs);
+  font-weight: 600;
+  color: #C7BFD6;
+  line-height: 1.4;
+}
+
+.arrow {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}

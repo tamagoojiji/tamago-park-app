@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import type { MenuItem } from '../types';
+import { useHalloween } from '../hooks/useHalloween';
 import styles from './SideMenu.module.css';
 
 const menuItems: MenuItem[] = [
   { id: 'home', label: 'ホーム', path: '/', icon: '🏠' },
+  { id: 'halloween', label: 'ハロウィーン攻略', path: '/halloween', icon: '🎃', seasonal: true },
   { id: 'survey', label: 'プランニング依頼者専用', path: '/survey', icon: '📝' },
   { id: 'myplan', label: 'マイプラン作成', path: '/myplan', icon: '📋' },
   { id: 'myplan-history', label: 'マイプラン履歴', path: '/myplan/history', icon: '📂' },
@@ -24,6 +26,7 @@ interface Props {
 
 export default function SideMenu({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
+  const halloween = useHalloween();
 
   const handleItemClick = (item: MenuItem) => {
     if (item.comingSoon) {
@@ -45,16 +48,19 @@ export default function SideMenu({ isOpen, onClose }: Props) {
           </button>
         </div>
         <ul className={styles.menuList}>
-          {menuItems.map((item) => (
+          {menuItems.filter((item) => !item.seasonal || halloween).map((item) => (
             <li key={item.id} className={styles.menuItem}>
               <button
-                className={styles.menuLink}
+                className={`${styles.menuLink} ${item.seasonal ? styles.menuLinkSeasonal : ''}`}
                 onClick={() => handleItemClick(item)}
               >
                 <span className={styles.menuIcon}>{item.icon}</span>
                 <span className={styles.menuLabel}>{item.label}</span>
                 {item.comingSoon && (
                   <span className={styles.comingSoonBadge}>準備中</span>
+                )}
+                {item.seasonal && (
+                  <span className={styles.seasonalBadge}>期間限定</span>
                 )}
               </button>
             </li>

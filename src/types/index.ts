@@ -35,6 +35,7 @@ export interface MenuItem {
   path: string;
   icon: string;
   comingSoon?: boolean;
+  seasonal?: boolean; // 期間限定（ハロウィーン等。期間外は非表示）
 }
 
 // 認証

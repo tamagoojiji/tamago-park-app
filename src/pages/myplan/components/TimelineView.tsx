@@ -19,11 +19,12 @@ interface Props {
   onRemoveShow?: (name: string, time: string) => void;
   editable?: boolean;
   id?: string;
+  halloween?: boolean;
 }
 
 export default function TimelineView({
   openTime, closeTime, attractions, shows,
-  onRemoveAttraction, onRemoveShow, editable = false, id,
+  onRemoveAttraction, onRemoveShow, editable = false, id, halloween = false,
 }: Props) {
   const timeSlots = useMemo(() => generateTimeSlots(openTime, closeTime), [openTime, closeTime]);
 
@@ -82,7 +83,8 @@ export default function TimelineView({
   }, [shows, timeSlots]);
 
   return (
-    <div className={styles.timeline} id={id}>
+    <div className={`${styles.timeline} ${halloween ? styles.timelineHalloween : ''}`} id={id}>
+      {halloween && <div className={styles.hwFrameHead}>🎃 ハロウィーン・プラン</div>}
       {timeSlots.map((slot) => {
         const slotItems = itemsBySlot.get(slot) || [];
         const hasItems = slotItems.length > 0;
@@ -130,6 +132,9 @@ export default function TimelineView({
           </div>
         );
       })}
+      {halloween && (
+        <div className={styles.hwFrameFoot}>たまごのパーク攻略 ・ park.tamago-ai-world.com 🦇</div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,14 @@
+/* ハロウィーン期間限定カラースキン（body.halloween のときだけ変数を上書き） */
+body.halloween {
+  --color-primary: #5B2E8C;
+  --color-primary-light: #8A5BC4;
+  --color-primary-dark: #3F1D66;
+  --color-accent: #F26A1B;
+  --color-cta: #F26A1B;
+  --color-footer-bg: #1F1435;
+  --color-bg: #F3EFF8;
+
+  --marker-color: rgba(242, 106, 27, 0.3);
+  --marker-color-strong: rgba(242, 106, 27, 0.5);
+  --dashed-border: 2px dashed var(--color-accent);
+}

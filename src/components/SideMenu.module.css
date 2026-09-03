@@ -98,6 +98,28 @@
   border-radius: var(--radius-pill);
 }
 
+/* 期間限定メニュー（ハロウィーン） */
+.menuLinkSeasonal {
+  background: #1F1435;
+  color: #FFD24A;
+  border-radius: 10px;
+  margin: 4px 8px;
+  width: calc(100% - 16px);
+}
+
+.menuLinkSeasonal:active {
+  background: #2A1548;
+}
+
+.seasonalBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #F26A1B;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

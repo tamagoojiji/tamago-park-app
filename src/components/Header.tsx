@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SideMenu from './SideMenu';
+import { useHalloween } from '../hooks/useHalloween';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const halloween = useHalloween();
   const isHome = location.pathname === '/';
 
   const handleLogoClick = () => {
@@ -16,6 +18,12 @@ export default function Header() {
   return (
     <>
       <header className={styles.header}>
+        {halloween && (
+          <>
+            <span className={styles.hwPumpkin} aria-hidden="true">🎃</span>
+            <span className={styles.hwBats} aria-hidden="true">🦇🦇</span>
+          </>
+        )}
         <h1
           className={`${styles.title} ${isHome ? '' : styles.clickable}`}
           onClick={handleLogoClick}

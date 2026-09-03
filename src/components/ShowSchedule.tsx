@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import type { PlanItem } from '../types';
 import type { ShowData } from '../api/shows';
-import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow } from '../data/shows';
+import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow, isHalloweenNightShow } from '../data/shows';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { useShowFavorites } from '../hooks/useShowFavorites';
+import { useHalloween } from '../hooks/useHalloween';
 import styles from './ShowSchedule.module.css';
 
 interface ShowScheduleProps {
@@ -47,15 +48,18 @@ export default function ShowSchedule({
 }: ShowScheduleProps) {
   const currentMinutes = useCurrentTime();
   const { isFav, toggleFav } = useShowFavorites();
+  const halloween = useHalloween();
 
   const isToday = scheduleDate === today;
 
   const classified = useMemo<ClassifiedShows>(() => {
-    // 夏の夜のイベントを先に切り出し（最初の開始時刻順）、残りを open/regular に分類（二重表示を防ぐ）
+    // 夜のイベントを先に切り出し（最初の開始時刻順）、残りを open/regular に分類（二重表示を防ぐ）
+    const isNight = (name: string) =>
+      isSummerNightShow(name) || (halloween && isHalloweenNightShow(name));
     const nightShows = shows
-      .filter((s) => isSummerNightShow(s.name))
+      .filter((s) => isNight(s.name))
       .sort((a, b) => timeToMinutes(a.times[0]) - timeToMinutes(b.times[0]));
-    const rest = shows.filter((s) => !isSummerNightShow(s.name));
+    const rest = shows.filter((s) => !isNight(s.name));
     const openShows = rest.filter((s) => isOpenShow(s));
     const regularShows = rest.filter((s) => !isOpenShow(s));
 
@@ -105,7 +109,7 @@ export default function ShowSchedule({
         openShows,
       };
     }
-  }, [shows, isToday, currentMinutes, isFav]);
+  }, [shows, isToday, currentMinutes, isFav, halloween]);
 
   const isPlanAdded = (showName: string, time: string) =>
     planItems.some((p) => p.showName === showName && p.time === time);
@@ -311,14 +315,26 @@ export default function ShowSchedule({
         )
       )}
 
-      {/* 🌙 夏の夜のイベント（お気に入りの下・その他の上・最初の開始時刻順） */}
+      {/* 🌙 夜のイベント（お気に入りの下・その他の上・最初の開始時刻順） */}
       {classified.nightShows.length > 0 && (
-        <>
-          <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
-            🌙 夏の夜のイベント（{classified.nightShows.length}件）
+        halloween ? (
+          <div className={styles.nightZone}>
+            <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
+              🌙 ナイトゾーン（{classified.nightShows.length}件）
+            </div>
+            {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
+            <a href="/dancers/board" className={styles.nightZoneLink}>
+              出演ダンサーを見る ›
+            </a>
           </div>
-          {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
-        </>
+        ) : (
+          <>
+            <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
+              🌙 夏の夜のイベント（{classified.nightShows.length}件）
+            </div>
+            {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
+          </>
+        )
       )}
 
       {/* その他 */}
