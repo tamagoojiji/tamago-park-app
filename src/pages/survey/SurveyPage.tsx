@@ -236,6 +236,7 @@ export default function SurveyPage() {
             onChange={handleChange}
             shows={shows}
             showsLoaded={showsLoaded}
+            visitDate={primaryDate}
           />
         );
       case 6:
