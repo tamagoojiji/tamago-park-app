@@ -220,18 +220,18 @@ export const SEASONAL_SHOW_OPTIONS = [
 // end 指定があるものは個別に延長。timetable=true は公式ショースケジュール掲載対象（「この日は公演なし」バッジ判定の対象）
 export const HALLOWEEN_PERIOD = { start: '2026-09-11', end: '2026-11-08' } as const;
 
-export const HALLOWEEN_EVENT_OPTIONS: { name: string; end?: string; timetable?: boolean }[] = [
+export const HALLOWEEN_EVENT_OPTIONS: { name: string; start?: string; end?: string; timetable?: boolean }[] = [
   // ショー
   { name: 'ゾンビ・デ・ダンス', timetable: true },
   { name: 'プレイバック・ゾンビ・デ・ダンス ～ハロウィーン・ホラー・ナイト 15周年～', timetable: true },
   { name: 'ハロウィーン・ホラー・ナイト・アカデミー ～絶叫の15年～', timetable: true },
   { name: '残像' },
-  // グリーティング・イベント
   { name: 'ミニオン・ベロウィーン・グリーティング', timetable: true },
+  // グリーティング・イベント
   { name: 'スマイリーズ・ハッピー・ハロウィーン・グリーティング' },
   { name: 'ストリート・ゾンビ' },
   { name: 'パーク中で「トリック・オア・トリート」' },
-  { name: 'ハロウィーン・ホラー・ナイト ～オールナイト～', end: '2026-09-25' },
+  { name: 'ハロウィーン・ホラー・ナイト ～オールナイト～', start: '2026-09-25', end: '2026-09-25' }, // 9/25の1日限り
   // ホラー・アトラクション
   { name: 'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～' },
   { name: 'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』' },
@@ -247,7 +247,9 @@ export const HALLOWEEN_EVENT_OPTIONS: { name: string; end?: string; timetable?: 
 /** 来園日に表示するハロウィーン項目。日付未入力なら空 */
 export function activeHalloweenOptions(visitDate: string): { name: string; timetable?: boolean }[] {
   if (!visitDate || visitDate < HALLOWEEN_PERIOD.start) return [];
-  return HALLOWEEN_EVENT_OPTIONS.filter((o) => visitDate <= (o.end ?? HALLOWEEN_PERIOD.end));
+  return HALLOWEEN_EVENT_OPTIONS.filter(
+    (o) => visitDate >= (o.start ?? HALLOWEEN_PERIOD.start) && visitDate <= (o.end ?? HALLOWEEN_PERIOD.end),
+  );
 }
 
 // Q19: グリーティング
