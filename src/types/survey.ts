@@ -42,32 +42,32 @@ export interface SurveyFormData {
   // Step 6: ショー・イベント・グリーティング
   shows: string[];                 // Q17
   seasonal_events: string[];       // Q18
-  greetings: string[];             // Q19
+  greetings: string[];             // Q20
 
   // Step 7: 食事
-  morning_meal: string;            // Q20
-  lunch: string;                   // Q21
-  lunch_food_types: string[];      // Q21: ランチ何系
-  lunch_comment: string;           // Q21: 食べたいものコメント
-  dinner: string;                  // Q22
-  dinner_food_types: string[];     // Q22: ディナー何系
-  dinner_comment: string;          // Q22: 食べたいものコメント
-  food_preferences: string;        // Q23
-  allergies: string;               // Q24
+  morning_meal: string;            // Q21
+  lunch: string;                   // Q22
+  lunch_food_types: string[];      // Q22: ランチ何系
+  lunch_comment: string;           // Q22: 食べたいものコメント
+  dinner: string;                  // Q23
+  dinner_food_types: string[];     // Q23: ディナー何系
+  dinner_comment: string;          // Q23: 食べたいものコメント
+  food_preferences: string;        // Q24
+  allergies: string;               // Q25
 
   // Step 8: その他
-  budget_level: string;            // Q25
-  power_up_band: string;           // Q26
-  magic_wand: string;              // Q27
-  club_universal: string;          // Q28
-  official_app: string;            // Q29
-  ticket_registered: string;       // Q30
-  special_requests: string;        // Q31
-  unknown_terms: string[];         // Q32
-  referral_source: string[];       // Q33
-  referral_introducer: string;     // Q33: Instagram発信者名
-  referral_acquaintance: string;   // Q33: 知り合いのアカウント
-  meet_ok: string;                 // Q34
+  budget_level: string;            // Q26
+  power_up_band: string;           // Q27
+  magic_wand: string;              // Q28
+  club_universal: string;          // Q29
+  official_app: string;            // Q30
+  ticket_registered: string;       // Q31
+  special_requests: string;        // Q32
+  unknown_terms: string[];         // Q33
+  referral_source: string[];       // Q34
+  referral_introducer: string;     // Q34: Instagram発信者名
+  referral_acquaintance: string;   // Q34: 知り合いのアカウント
+  meet_ok: string;                 // Q35
 
   // 全項目共通: 「その他」選択時のコメント
   other_comments: Record<string, string>;

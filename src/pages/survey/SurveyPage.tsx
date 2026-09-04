@@ -240,7 +240,7 @@ export default function SurveyPage() {
           />
         );
       case 6:
-        return <StepDining data={formData} onChange={handleChange} />;
+        return <StepDining data={formData} onChange={handleChange} visitDate={primaryDate} />;
       case 7:
         return <StepExtras data={formData} onChange={handleChange} />;
       default:

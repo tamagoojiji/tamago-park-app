@@ -139,7 +139,6 @@ export const KIDS_ATTRACTION_OPTIONS = [
   'ビッグバードのビッグトップ・サーカス',
   'エルモのバブル・バブル',
   'エルモのリトル・ドライブ',
-  'セサミのビッグ・ドライブ',
   'ハローキティのカップケーキ・ドリーム',
   'ミニオン・ハチャメチャ・アイス',
   'ミニオン・ハチャメチャ・ミッション ～大悪党への道～',
@@ -190,7 +189,6 @@ export const YOYAKUNORI_ATTRACTIONS = new Set([
 export const SHOW_OPTIONS = [
   'ユニバーサル・モンスター・ライブ・ロックンロール・ショー',
   'ウォーターワールド',
-  'モッピーのラッキー・ダンス・パーティ',
   'シング・オン・ツアー',
   'プレイング・ウィズおさるのジョージ™',
   '名探偵コナン 4-D ライブ・ショー ～星空の宝石（ジュエル）～',
@@ -206,9 +204,7 @@ export const SEASONAL_SHOW_OPTIONS = [
   'アルティメット・ブルース・バッシュ ～音楽の色～',
   'ウィキッド ～オズの魔女たち～',
   'クロミ・ライブ ～ Discover Me Discover U!!! ～',
-  'ジュラシック・ワールド・ディノ・エンカウンター（草食恐竜）',
-  'ジュラシック・ワールド・ベイビー・ディノ・アドベンチャー（赤ちゃん恐竜）',
-  'ジュラシック・ワールド・ラプター・アラート（肉食恐竜）',
+  'ジュラシック・パーク・ダイナソー・ミート ＆ グリート',
   'パワー・オブ・ロック ～ユー・ロック！～',
   'ヒッポグリフ・マジカル・レッスン',
   'フロッグ・クワイア',
@@ -216,43 +212,45 @@ export const SEASONAL_SHOW_OPTIONS = [
   'ユニバーサル・ワンダーランド ～レッツ・スマイル・トゥギャザー！〜',
 ] as const;
 
-// Q18: ハロウィーン限定（ハロウィーン・ホラー・ナイト 2026）。来園日が期間内のときだけ表示。
+// Q19: ハロウィーン限定（ハロウィーン・ホラー・ナイト 2026）。来園日が期間内のときだけ表示。
 // end 指定があるものは個別に延長。timetable=true は公式ショースケジュール掲載対象（「この日は公演なし」バッジ判定の対象）
 export const HALLOWEEN_PERIOD = { start: '2026-09-11', end: '2026-11-08' } as const;
 
-export const HALLOWEEN_EVENT_OPTIONS: { name: string; start?: string; end?: string; timetable?: boolean }[] = [
+export const HALLOWEEN_EVENT_OPTIONS: { name: string; label?: string; age?: string; start?: string; end?: string; timetable?: boolean }[] = [
   // ショー
-  { name: 'ゾンビ・デ・ダンス', timetable: true },
+  { name: 'ゾンビ・デ・ダンス', label: 'ゾンビ・デ・ダンス（18:00〜）', timetable: true },
   { name: 'プレイバック・ゾンビ・デ・ダンス ～ハロウィーン・ホラー・ナイト 15周年～', timetable: true },
   { name: 'ハロウィーン・ホラー・ナイト・アカデミー ～絶叫の15年～', timetable: true },
-  { name: '残像' },
-  { name: 'ミニオン・ベロウィーン・グリーティング', timetable: true },
+  { name: '残像', age: 'R-18（誓約書必須）' },
   // グリーティング・イベント
   { name: 'スマイリーズ・ハッピー・ハロウィーン・グリーティング' },
-  { name: 'ストリート・ゾンビ' },
-  { name: 'パーク中で「トリック・オア・トリート」' },
-  { name: 'ハロウィーン・ホラー・ナイト ～オールナイト～', start: '2026-09-25', end: '2026-09-25' }, // 9/25の1日限り
+  { name: 'ストリート・ゾンビ', label: 'ストリート・ゾンビ（18:00〜）' },
+  { name: 'トリック・オア・トリート（飴集め）' },
+  { name: 'ハロウィーン・ホラー・ナイト ～オールナイト～', age: '18歳未満入場不可', start: '2026-09-25', end: '2026-09-25' }, // 9/25の1日限り
   // ホラー・アトラクション
-  { name: 'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～' },
-  { name: 'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』' },
-  { name: 'チェンソーマン・ザ・カオス 4-D' },
+  { name: 'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～', age: '中学生以下不可' },
+  { name: 'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』', age: '小学生以下不可' },
+  { name: 'チェンソーマン・ザ・カオス 4-D', age: '12歳以下は保護者同意' },
   { name: 'チェンソーマン × ハリウッド・ドリーム・ザ・ライド ～IRIS OUT～' },
   { name: 'ゾンビ・デ・ダンス × ハリウッド・ドリーム・ザ・ライド' },
-  { name: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～' },
-  { name: '貞子の呪い ～ダーク・ホラー・ライド～', end: '2027-01-04' },
-  { name: 'ジョーズ ～レッド・アラート～', end: '2027-01-31' },
-  { name: '『バイオハザード レクイエム』ザ・ダイブ', end: '2026-12-27' },
+  { name: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～', label: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～（日没後）' },
+  { name: '貞子の呪い ～ダーク・ホラー・ライド～', age: '12歳以下は保護者同意', end: '2027-01-04' },
+  { name: 'ジョーズ ～レッド・アラート～', label: 'ジョーズ ～レッド・アラート～（日没後）', end: '2027-01-31' },
+  { name: '『バイオハザード レクイエム』ザ・ダイブ', age: 'R-15（中学生以下不可）', end: '2026-12-27' },
 ];
 
+// Q20: ハロウィーン期間中だけグリーティングに追加する項目
+export const HALLOWEEN_GREETING = 'ミニオン・ベロウィーン・グリーティング';
+
 /** 来園日に表示するハロウィーン項目。日付未入力なら空 */
-export function activeHalloweenOptions(visitDate: string): { name: string; timetable?: boolean }[] {
+export function activeHalloweenOptions(visitDate: string): typeof HALLOWEEN_EVENT_OPTIONS {
   if (!visitDate || visitDate < HALLOWEEN_PERIOD.start) return [];
   return HALLOWEEN_EVENT_OPTIONS.filter(
     (o) => visitDate >= (o.start ?? HALLOWEEN_PERIOD.start) && visitDate <= (o.end ?? HALLOWEEN_PERIOD.end),
   );
 }
 
-// Q19: グリーティング
+// Q20: グリーティング
 export const GREETING_OPTIONS = [
   'いいえ',
   'ミニオン',
@@ -262,7 +260,7 @@ export const GREETING_OPTIONS = [
   'シュレック',
 ] as const;
 
-// Q20: モーニング
+// Q21: モーニング
 export const MORNING_MEAL_OPTIONS = [
   '荷物検査場入るまでに食べる',
   'OPEN後に食べる',
@@ -270,7 +268,7 @@ export const MORNING_MEAL_OPTIONS = [
   'その他',
 ] as const;
 
-// Q21: ランチ
+// Q22: ランチ
 export const LUNCH_OPTIONS = [
   '食べ歩き',
   '簡単なレストラン',
@@ -279,7 +277,7 @@ export const LUNCH_OPTIONS = [
   'その他',
 ] as const;
 
-// Q22: ディナー
+// Q23: ディナー
 export const DINNER_OPTIONS = [
   '食べ歩き',
   '簡単なレストラン',
@@ -289,7 +287,7 @@ export const DINNER_OPTIONS = [
   'その他',
 ] as const;
 
-// Q21/Q22: 食事ジャンル（食べ歩き・簡単なレストラン選択時）
+// Q22/Q23: 食事ジャンル（食べ歩き・簡単なレストラン選択時）
 export const FOOD_TYPE_OPTIONS = [
   'サンド系',
   'ハンバーガー',
@@ -302,7 +300,7 @@ export const FOOD_TYPE_OPTIONS = [
   '和食',
 ] as const;
 
-// Q25: 課金レベル
+// Q26: 課金レベル
 export const BUDGET_OPTIONS = [
   '考えていない',
   'ショー・パレード時短課金',
@@ -310,7 +308,7 @@ export const BUDGET_OPTIONS = [
   'その他',
 ] as const;
 
-// Q26: パワーアップバンド
+// Q27: パワーアップバンド
 export const POWER_UP_BAND_OPTIONS = [
   '購入予定',
   '持参',
@@ -318,7 +316,7 @@ export const POWER_UP_BAND_OPTIONS = [
   'その他',
 ] as const;
 
-// Q27: 魔法の杖
+// Q28: 魔法の杖
 export const MAGIC_WAND_OPTIONS = [
   '購入予定',
   '持参',
@@ -326,14 +324,14 @@ export const MAGIC_WAND_OPTIONS = [
   'その他',
 ] as const;
 
-// Q28: クラブユニバーサル
+// Q29: クラブユニバーサル
 export const CLUB_UNIVERSAL_OPTIONS = [
   '作成済み',
   '未作成',
   'その他',
 ] as const;
 
-// Q29: 公式アプリ
+// Q30: 公式アプリ
 export const OFFICIAL_APP_OPTIONS = [
   '代表者のみ',
   '2人以上',
@@ -341,7 +339,7 @@ export const OFFICIAL_APP_OPTIONS = [
   'その他',
 ] as const;
 
-// Q30: チケット登録
+// Q31: チケット登録
 export const TICKET_REGISTERED_OPTIONS = [
   '登録済み',
   '未登録（方法わかる）',
@@ -350,7 +348,7 @@ export const TICKET_REGISTERED_OPTIONS = [
   'その他',
 ] as const;
 
-// Q32: 知らない言葉
+// Q33: 知らない言葉
 export const UNKNOWN_TERMS_OPTIONS = [
   'インパ',
   'アウパ',
@@ -363,7 +361,7 @@ export const UNKNOWN_TERMS_OPTIONS = [
   'キャノピー',
 ] as const;
 
-// Q33: 流入元
+// Q34: 流入元
 export const REFERRAL_OPTIONS = [
   'Instagram',
   'Facebook',
@@ -375,7 +373,7 @@ export const REFERRAL_OPTIONS = [
   'その他',
 ] as const;
 
-// Q34: 当日会う
+// Q35: 当日会う
 export const MEET_OPTIONS = [
   '会ってもいい',
   '会いたくない',

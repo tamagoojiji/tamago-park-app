@@ -21,7 +21,7 @@ interface Props {
 export default function StepExtras({ data, onChange }: Props) {
   return (
     <>
-      <QuestionCard label="Q25. 課金はどこまで考えてますか？">
+      <QuestionCard label="Q26. 課金はどこまで考えてますか？">
         <SingleSelect
           name="budget_level"
           options={BUDGET_OPTIONS}
@@ -50,7 +50,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="budget_level" data={data} onChange={onChange} show={data.budget_level === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q26. パワーアップバンド購入予定ですか？">
+      <QuestionCard label="Q27. パワーアップバンド購入予定ですか？">
         <SingleSelect
           name="power_up_band"
           options={POWER_UP_BAND_OPTIONS}
@@ -60,7 +60,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="power_up_band" data={data} onChange={onChange} show={data.power_up_band === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q27. ハリーポッター魔法の杖購入予定ですか？">
+      <QuestionCard label="Q28. ハリーポッター魔法の杖購入予定ですか？">
         <SingleSelect
           name="magic_wand"
           options={MAGIC_WAND_OPTIONS}
@@ -70,7 +70,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="magic_wand" data={data} onChange={onChange} show={data.magic_wand === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q28. クラブユニバーサルのアカウントは作成済みですか？">
+      <QuestionCard label="Q29. クラブユニバーサルのアカウントは作成済みですか？">
         <SingleSelect
           name="club_universal"
           options={CLUB_UNIVERSAL_OPTIONS}
@@ -80,7 +80,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="club_universal" data={data} onChange={onChange} show={data.club_universal === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q29. ユニバ公式アプリはダウンロードできていますか？">
+      <QuestionCard label="Q30. ユニバ公式アプリはダウンロードできていますか？">
         <SingleSelect
           name="official_app"
           options={OFFICIAL_APP_OPTIONS}
@@ -90,7 +90,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="official_app" data={data} onChange={onChange} show={data.official_app === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q30. 公式アプリにチケット登録は終わっていますか？">
+      <QuestionCard label="Q31. 公式アプリにチケット登録は終わっていますか？">
         <SingleSelect
           name="ticket_registered"
           options={TICKET_REGISTERED_OPTIONS}
@@ -100,7 +100,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="ticket_registered" data={data} onChange={onChange} show={data.ticket_registered === 'その他'} />
       </QuestionCard>
 
-      <QuestionCard label="Q31. 特別な要望や期待はある？">
+      <QuestionCard label="Q32. 特別な要望や期待はある？">
         <TextInput
           value={data.special_requests}
           onChange={(v) => onChange({ special_requests: v })}
@@ -109,7 +109,7 @@ export default function StepExtras({ data, onChange }: Props) {
         />
       </QuestionCard>
 
-      <QuestionCard label="Q32. 知らない言葉どれぐらいありますか？" note="知らない言葉を選んでください">
+      <QuestionCard label="Q33. 知らない言葉どれぐらいありますか？" note="知らない言葉を選んでください">
         <MultiSelect
           name="unknown_terms"
           options={UNKNOWN_TERMS_OPTIONS.map((o) => ({ value: o }))}
@@ -118,7 +118,7 @@ export default function StepExtras({ data, onChange }: Props) {
         />
       </QuestionCard>
 
-      <QuestionCard label="Q33. どこで（誰から）たまごを知りましたか？">
+      <QuestionCard label="Q34. どこで（誰から）たまごを知りましたか？">
         <MultiSelect
           name="referral_source"
           options={REFERRAL_OPTIONS.map((o) => ({ value: o }))}
@@ -152,7 +152,7 @@ export default function StepExtras({ data, onChange }: Props) {
         <OtherComment fieldName="referral_source" data={data} onChange={onChange} show={data.referral_source.includes('その他')} />
       </QuestionCard>
 
-      <QuestionCard label="Q34. 当日、会っても大丈夫？">
+      <QuestionCard label="Q35. 当日、会っても大丈夫？">
         <SingleSelect
           name="meet_ok"
           options={MEET_OPTIONS}

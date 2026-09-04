@@ -20,6 +20,9 @@ interface Props {
   closures: ClosureEntry[];
 }
 
+// 商標記号・空白の差を吸収して名称を比較する（closures.json は™なし表記）
+const normName = (s: string) => s.replace(/[™®\s]/g, '');
+
 // アトラクションの身長制限を取得
 function getRestriction(name: string): HeightRestriction | undefined {
   return heightRestrictions.find(
@@ -33,14 +36,14 @@ export default function StepAttractions({ data, onChange, closures }: Props) {
   const kidsOptions = useMemo(() => applySeasonalVariants(KIDS_ATTRACTION_OPTIONS, today), [today]);
 
   const closedNames = useMemo(
-    () => new Set(closures.map((c) => c.name)),
+    () => new Set(closures.map((c) => normName(c.name))),
     [closures]
   );
 
   // アトラクション選択肢にバッジを付与（休止中は一番下へ）
   const buildOptions = (opts: readonly string[], showYoyakunori = false, useWithAdult = false): MultiSelectOption[] => {
     const mapped = opts.map((name) => {
-      const isClosed = closedNames.has(name);
+      const isClosed = closedNames.has(normName(name));
       const restriction = getRestriction(name);
       const isYoyakunori = showYoyakunori && YOYAKUNORI_ATTRACTIONS.has(name);
       const displayLabel = isYoyakunori ? `${name}（よやくのり対象）` : name;
