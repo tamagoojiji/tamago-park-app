@@ -8,7 +8,7 @@ import {
   DINNER_OPTIONS,
   FOOD_TYPE_OPTIONS,
 } from '../../../data/survey-options';
-import { activeCollabMenus, collabValue, COLLAB_PREFIX } from '../../../data/collab-menus';
+import { activeCollabMenus, activeCollabStores, collabValue, COLLAB_PREFIX } from '../../../data/collab-menus';
 
 interface Props {
   data: SurveyFormData;
@@ -18,20 +18,61 @@ interface Props {
 
 const FOOD_TYPE_TRIGGER = ['食べ歩き', '簡単なレストラン'];
 
+const subLabelStyle = { fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-sub)', marginBottom: 8 } as const;
+
+// 来園日に食べられるコラボ飯を店舗ごとの見出し付きで並べる
+function CollabMenuSelect({
+  name,
+  visitDate,
+  values,
+  onChange,
+}: {
+  name: string;
+  visitDate: string;
+  values: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const menus = useMemo(() => activeCollabMenus(visitDate), [visitDate]);
+  const stores = useMemo(() => activeCollabStores(visitDate), [visitDate]);
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={subLabelStyle}>来園日に食べられるコラボ飯（複数選択OK）</div>
+      {stores.map((store) => {
+        const storeMenus = menus.filter((m) => m.store === store.key);
+        const storeValues = storeMenus.map((m) => collabValue(m));
+        const options: MultiSelectOption[] = storeMenus.map((m) => ({
+          value: collabValue(m),
+          label: m.menu,
+          badge: m.price,
+          badgeType: m.price ? ('active' as const) : undefined,
+        }));
+        return (
+          <div key={store.key}>
+            <div style={{ ...subLabelStyle, marginTop: 10 }}>{store.title}</div>
+            {store.note && (
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-sub)', marginBottom: 8 }}>
+                {store.note}
+              </div>
+            )}
+            <MultiSelect
+              name={`${name}_${store.key}`}
+              options={options}
+              values={values.filter((v) => storeValues.includes(v))}
+              onChange={(v) => onChange([...values.filter((e) => !storeValues.includes(e)), ...v])}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function StepDining({ data, onChange, visitDate }: Props) {
   const showLunchFoodTypes = FOOD_TYPE_TRIGGER.includes(data.lunch);
   const showDinnerFoodTypes = FOOD_TYPE_TRIGGER.includes(data.dinner);
 
   const collabMenus = useMemo(() => activeCollabMenus(visitDate), [visitDate]);
-  const collabOptions: MultiSelectOption[] = useMemo(
-    () => collabMenus.map((m) => ({
-      value: collabValue(m),
-      label: m.note ? `${m.menu}（${m.note}）` : m.menu,
-      badge: m.store,
-      badgeType: 'active' as const,
-    })),
-    [collabMenus]
-  );
 
   // ジャンル選択の変更。「コラボ飯」を外したらコラボ飯の選択も一緒に落とす
   const handleFoodTypes = (key: 'lunch_food_types' | 'dinner_food_types') => (v: string[]) => {
@@ -48,8 +89,6 @@ export default function StepDining({ data, onChange, visitDate }: Props) {
 
   const collabValues = (key: 'lunch_food_types' | 'dinner_food_types') =>
     data[key].filter((e) => e.startsWith(COLLAB_PREFIX));
-
-  const subLabelStyle = { fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-sub)', marginBottom: 8 } as const;
 
   return (
     <>
@@ -81,18 +120,13 @@ export default function StepDining({ data, onChange, visitDate }: Props) {
               values={data.lunch_food_types}
               onChange={handleFoodTypes('lunch_food_types')}
             />
-            {data.lunch_food_types.includes('コラボ飯') && collabOptions.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                <div style={subLabelStyle}>
-                  来園日に食べられるコラボ飯（複数選択OK）
-                </div>
-                <MultiSelect
-                  name="lunch_collab"
-                  options={collabOptions}
-                  values={collabValues('lunch_food_types')}
-                  onChange={handleCollab('lunch_food_types')}
-                />
-              </div>
+            {data.lunch_food_types.includes('コラボ飯') && collabMenus.length > 0 && (
+              <CollabMenuSelect
+                name="lunch_collab"
+                visitDate={visitDate}
+                values={collabValues('lunch_food_types')}
+                onChange={handleCollab('lunch_food_types')}
+              />
             )}
           </div>
         )}
@@ -126,18 +160,13 @@ export default function StepDining({ data, onChange, visitDate }: Props) {
               values={data.dinner_food_types}
               onChange={handleFoodTypes('dinner_food_types')}
             />
-            {data.dinner_food_types.includes('コラボ飯') && collabOptions.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                <div style={subLabelStyle}>
-                  来園日に食べられるコラボ飯（複数選択OK）
-                </div>
-                <MultiSelect
-                  name="dinner_collab"
-                  options={collabOptions}
-                  values={collabValues('dinner_food_types')}
-                  onChange={handleCollab('dinner_food_types')}
-                />
-              </div>
+            {data.dinner_food_types.includes('コラボ飯') && collabMenus.length > 0 && (
+              <CollabMenuSelect
+                name="dinner_collab"
+                visitDate={visitDate}
+                values={collabValues('dinner_food_types')}
+                onChange={handleCollab('dinner_food_types')}
+              />
             )}
           </div>
         )}
