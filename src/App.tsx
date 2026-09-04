@@ -33,7 +33,7 @@ import QuizPage from './pages/QuizPage';
 import HalloweenPage from './pages/HalloweenPage';
 import AdminLayout from './components/admin/AdminLayout';
 import { hasAdminToken } from './api/admin';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/auth';
 import { useHalloween } from './hooks/useHalloween';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];

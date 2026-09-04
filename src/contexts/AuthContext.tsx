@@ -1,24 +1,12 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import liff from '@line/liff';
 import type { User } from '../types';
 import { authApi } from '../api/auth';
+import { AuthContext } from './auth';
 
 const LIFF_ID = '2009683881-HQ5uHile';
 const TOKEN_KEY = 'tamago_park_token';
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  isLiffReady: boolean;
-  loginWithLine: () => void;
-  logout: () => void;
-  updateProfile: (birthday: string, gender: string) => Promise<void>;
-  updateNickname: (nickname: string | null) => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -148,10 +136,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
 }

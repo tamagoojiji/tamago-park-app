@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth';
 import { myplanApi } from '../../api/myplan';
 import type { MyPlan, MyPlanAttraction, MyPlanShow } from '../../types/myplan';
 import { DRAFT_KEY, defaultPlanName } from '../../types/myplan';

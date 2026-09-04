@@ -1,6 +1,7 @@
 import type { SurveyFormData, PartyInfo, ChildHeightEntry } from '../../../types/survey';
 import QuestionCard from '../components/QuestionCard';
-import { NumberGrid, toHalfWidth } from '../components/FormComponents';
+import { NumberGrid } from '../components/FormComponents';
+import { toHalfWidth } from '../utils/toHalfWidth';
 import { PARTY_CATEGORIES, ELEMENTARY_GRADE_OPTIONS, YOUNG_CHILDREN_AGE_OPTIONS } from '../../../data/survey-options';
 import styles from '../components/FormComponents.module.css';
 

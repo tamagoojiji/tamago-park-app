@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth';
 import { myplanApi } from '../../api/myplan';
 import type { MyPlan } from '../../types/myplan';
 import styles from './MyPlanHistoryPage.module.css';

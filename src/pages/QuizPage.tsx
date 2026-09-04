@@ -10,7 +10,7 @@ import {
   type Quiz,
   type QuizDifficulty,
 } from '../types/quiz';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth';
 
 type Phase = 'mode-select' | 'in-progress' | 'result';
 type ModeView = 'main' | 'category' | 'difficulty';

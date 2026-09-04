@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/auth';
 import type { SurveyFormData } from '../../types/survey';
 import { INITIAL_SURVEY, STEPS } from '../../types/survey';
 import type { ClosureEntry } from '../../data/closures';

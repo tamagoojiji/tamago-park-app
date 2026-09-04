@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { MyPlan } from '../../../types/myplan';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/auth';
 import { myplanApi } from '../../../api/myplan';
 import { exportToPng, exportToPdf } from '../utils/pdfExport';
 import { isHalloweenDate } from '../../../data/halloween';

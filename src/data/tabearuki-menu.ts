@@ -40,7 +40,7 @@ const GENRE_OF = {
 // 公式コピペ書式の揺れに寛容: 半角/全角スペース・〜/～両対応・年省略可
 function parseSaleRange(range: string): { saleStart?: string; saleEnd?: string } {
   if (!range) return {};
-  const re = /(\d{4})年[\s　]*(\d{1,2})月[\s　]*(\d{1,2})日（[^）]+）[\s　]*[～〜][\s　]*(?:(\d{4})年[\s　]*)?(\d{1,2})月[\s　]*(\d{1,2})日/;
+  const re = /(\d{4})年[\s\u3000]*(\d{1,2})月[\s\u3000]*(\d{1,2})日（[^）]+）[\s\u3000]*[～〜][\s\u3000]*(?:(\d{4})年[\s\u3000]*)?(\d{1,2})月[\s\u3000]*(\d{1,2})日/;
   const m = range.match(re);
   if (!m) return {};
   const [, y1, m1, d1, y2opt, m2, d2] = m;
