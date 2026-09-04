@@ -2,6 +2,9 @@
 
 export const HALLOWEEN_PERIOD = { start: '2026-09-11', end: '2026-11-08' };
 
+// ハロウィーン仕様の見た目に切り替える開始日（パーク開催初日9/11より前倒しで告知用。終了は HALLOWEEN_PERIOD.end）
+export const UI_START_DATE = '2026-09-09';
+
 // オールナイト開催日
 export const ALL_NIGHT_DATES: string[] = ['2026-09-25'];
 
@@ -16,9 +19,10 @@ export function localDateString(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-// 端末ローカル日付でハロウィーン期間中か
+// 端末ローカル日付でハロウィーン仕様を表示する期間か（UI_START_DATE 〜 HALLOWEEN_PERIOD.end）
 export function isHalloweenPeriodNow(): boolean {
-  return isHalloweenDate(localDateString());
+  const today = localDateString();
+  return today >= UI_START_DATE && today <= HALLOWEEN_PERIOD.end;
 }
 
 // ゾンビ出現情報（ハロウィーン攻略ページ）
