@@ -110,6 +110,21 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [restaurantsLoading, setRestaurantsLoading] = useState(false);
   const [crowdMap, setCrowdMap] = useState<Map<string, CrowdDay>>(new Map());
   const [lightbox, setLightbox] = useState<AllNightMaterial | null>(null);
+  // ビューアは履歴に1段積み、ブラウザの「戻る」（横スワイプ含む）でも閉じられるようにする
+  const openLightbox = (m: AllNightMaterial) => {
+    window.history.pushState({ lightbox: true }, '');
+    setLightbox(m);
+  };
+  const closeLightbox = () => {
+    if (window.history.state?.lightbox) window.history.back();
+    else setLightbox(null);
+  };
+  useEffect(() => {
+    if (!lightbox) return;
+    const onPop = () => setLightbox(null);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [lightbox]);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -516,12 +531,12 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               <div className={styles.materialsGrid}>
                 {ALL_NIGHT_MATERIALS[selectedDate].map(m => (
                   <div key={m.src} className={styles.materialCard}>
-                    <button type="button" className={styles.materialThumb} onClick={() => setLightbox(m)} aria-label={`${m.label}を表示`}>
+                    <button type="button" className={styles.materialThumb} onClick={() => openLightbox(m)} aria-label={`${m.label}を表示`}>
                       <img src={m.thumb} alt={m.label} loading="lazy" />
                     </button>
                     <div className={styles.materialLabel}>{m.label}</div>
                     <div className={styles.materialActions}>
-                      <button type="button" className={styles.materialBtn} onClick={() => setLightbox(m)}>見る</button>
+                      <button type="button" className={styles.materialBtn} onClick={() => openLightbox(m)}>見る</button>
                       <a className={`${styles.materialBtn} ${styles.materialBtnPrimary}`} href={m.src} download={m.filename}>保存</a>
                     </div>
                   </div>
@@ -883,14 +898,13 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
       )}
 
       {lightbox && (
-        <div className={styles.lightbox} onClick={() => setLightbox(null)} role="dialog" aria-modal="true" aria-label={lightbox.label}>
-          <div className={styles.lightboxBar} onClick={e => e.stopPropagation()}>
-            <span className={styles.lightboxTitle}>{lightbox.label}</span>
-            <a className={styles.lightboxSave} href={lightbox.src} download={lightbox.filename}>保存</a>
-            <button type="button" className={styles.lightboxClose} onClick={() => setLightbox(null)} aria-label="閉じる">✕</button>
-          </div>
-          <div className={styles.lightboxBody} onClick={e => e.stopPropagation()}>
+        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={lightbox.label}>
+          <div className={styles.lightboxBody}>
             <img src={lightbox.src} alt={lightbox.label} />
+          </div>
+          <div className={styles.lightboxFooter}>
+            <button type="button" className={styles.lightboxBtn} onClick={closeLightbox}>‹ 戻る</button>
+            <a className={`${styles.lightboxBtn} ${styles.lightboxBtnPrimary}`} href={lightbox.src} download={lightbox.filename}>保存</a>
           </div>
         </div>
       )}
