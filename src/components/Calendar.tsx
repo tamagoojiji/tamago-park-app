@@ -12,7 +12,7 @@ import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from 
 import ShowSchedule from './ShowSchedule';
 import RestaurantList from './RestaurantList';
 import { useHalloween } from '../hooks/useHalloween';
-import { isHalloweenDate, ALL_NIGHT_DATES } from '../data/halloween';
+import { isHalloweenDate, ALL_NIGHT_DATES, ALL_NIGHT_MATERIALS, type AllNightMaterial } from '../data/halloween';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
@@ -109,6 +109,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(false);
   const [crowdMap, setCrowdMap] = useState<Map<string, CrowdDay>>(new Map());
+  const [lightbox, setLightbox] = useState<AllNightMaterial | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -507,6 +508,27 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
               <span className={`${styles.infoValue} ${styles.textGray}`}>読込中</span>
             )}
           </div>
+
+          {/* オールナイト資料（閲覧・ダウンロード） */}
+          {ALL_NIGHT_MATERIALS[selectedDate] && (
+            <div className={styles.materialsBlock}>
+              <div className={styles.materialsTitle}>🌙 オールナイト資料</div>
+              <div className={styles.materialsGrid}>
+                {ALL_NIGHT_MATERIALS[selectedDate].map(m => (
+                  <div key={m.src} className={styles.materialCard}>
+                    <button type="button" className={styles.materialThumb} onClick={() => setLightbox(m)} aria-label={`${m.label}を表示`}>
+                      <img src={m.thumb} alt={m.label} loading="lazy" />
+                    </button>
+                    <div className={styles.materialLabel}>{m.label}</div>
+                    <div className={styles.materialActions}>
+                      <button type="button" className={styles.materialBtn} onClick={() => setLightbox(m)}>見る</button>
+                      <a className={`${styles.materialBtn} ${styles.materialBtnPrimary}`} href={m.src} download={m.filename}>保存</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
       {/* タブコンテンツ */}
@@ -857,6 +879,19 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           <p className={styles.tabPlaceholder}>
             {getTabEmptyMessage(activeTab)}
           </p>
+        </div>
+      )}
+
+      {lightbox && (
+        <div className={styles.lightbox} onClick={() => setLightbox(null)} role="dialog" aria-modal="true" aria-label={lightbox.label}>
+          <div className={styles.lightboxBar} onClick={e => e.stopPropagation()}>
+            <span className={styles.lightboxTitle}>{lightbox.label}</span>
+            <a className={styles.lightboxSave} href={lightbox.src} download={lightbox.filename}>保存</a>
+            <button type="button" className={styles.lightboxClose} onClick={() => setLightbox(null)} aria-label="閉じる">✕</button>
+          </div>
+          <div className={styles.lightboxBody} onClick={e => e.stopPropagation()}>
+            <img src={lightbox.src} alt={lightbox.label} />
+          </div>
         </div>
       )}
     </section>

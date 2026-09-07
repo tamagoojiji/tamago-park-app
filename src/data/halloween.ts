@@ -44,3 +44,12 @@ export const SCARE_LEVELS: Record<string, { level: number; note: string }> = {
   'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』': { level: 3, note: '' },
   '『バイオハザード レクイエム』ザ・ダイブ': { level: 4, note: '' },
 };
+
+// オールナイト開催日の配布資料（日付詳細カードで閲覧・ダウンロード）
+export type AllNightMaterial = { label: string; src: string; thumb: string; filename: string };
+export const ALL_NIGHT_MATERIALS: Record<string, AllNightMaterial[]> = {
+  '2026-09-25': [
+    { label: 'アトラクションスケジュール', src: '/images/allnight/2026-09-25-attractions.png', thumb: '/images/allnight/2026-09-25-attractions-thumb.jpg', filename: 'ハロウィーン・ホラー・ナイト_オールナイト_アトラクションスケジュール_2026-09-25.png' },
+    { label: 'ショースケジュール', src: '/images/allnight/2026-09-25-shows.png', thumb: '/images/allnight/2026-09-25-shows-thumb.jpg', filename: 'ハロウィーン・ホラー・ナイト_オールナイト_ショースケジュール_2026-09-25.png' },
+  ],
+};
