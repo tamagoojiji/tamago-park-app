@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: '/admin/stats', label: '統計' },
   { to: '/admin/shop-coordinates', label: '食べ歩き座標' },
   { to: '/admin/restaurant-coordinates', label: 'レストラン座標' },
+  { to: '/admin/venue-coordinates', label: '会場座標' },
   { to: '/admin/crowd', label: '混雑予想' },
   { to: '/admin/quiz', label: 'クイズ管理' },
 ];
