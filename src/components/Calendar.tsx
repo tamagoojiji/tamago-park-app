@@ -125,6 +125,24 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, [lightbox]);
+  // iPhoneでは <a download> が「ファイル」アプリに落ちるため、Web Share APIで共有シートを開き
+  // 「画像を保存」→写真アプリへ入れられるようにする。非対応環境（PC等）は従来のダウンロード
+  const saveMaterial = async (m: AllNightMaterial) => {
+    try {
+      const blob = await (await fetch(m.src)).blob();
+      const file = new File([blob], m.filename, { type: blob.type || 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: m.label });
+        return;
+      }
+    } catch (e) {
+      if ((e as DOMException)?.name === 'AbortError') return; // 共有シートをキャンセル
+    }
+    const a = document.createElement('a');
+    a.href = m.src;
+    a.download = m.filename;
+    a.click();
+  };
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -537,7 +555,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     <div className={styles.materialLabel}>{m.label}</div>
                     <div className={styles.materialActions}>
                       <button type="button" className={styles.materialBtn} onClick={() => openLightbox(m)}>見る</button>
-                      <a className={`${styles.materialBtn} ${styles.materialBtnPrimary}`} href={m.src} download={m.filename}>保存</a>
+                      <button type="button" className={`${styles.materialBtn} ${styles.materialBtnPrimary}`} onClick={() => saveMaterial(m)}>保存</button>
                     </div>
                   </div>
                 ))}
@@ -904,7 +922,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
           </div>
           <div className={styles.lightboxFooter}>
             <button type="button" className={styles.lightboxBtn} onClick={closeLightbox}>‹ 戻る</button>
-            <a className={`${styles.lightboxBtn} ${styles.lightboxBtnPrimary}`} href={lightbox.src} download={lightbox.filename}>保存</a>
+            <button type="button" className={`${styles.lightboxBtn} ${styles.lightboxBtnPrimary}`} onClick={() => saveMaterial(lightbox)}>保存</button>
           </div>
         </div>
       )}
