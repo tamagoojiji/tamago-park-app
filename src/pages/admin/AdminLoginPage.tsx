@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi, setAdminToken, hasAdminToken } from '../../api/admin';
 import styles from './Admin.module.css';
@@ -17,11 +17,14 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const loggedIn = hasAdminToken();
 
-  if (hasAdminToken()) {
-    navigate(takeRedirect(), { replace: true });
-    return null;
-  }
+  // 描画中の navigate は初回が捨てられるため useEffect で1回だけ遷移する
+  useEffect(() => {
+    if (loggedIn) navigate(takeRedirect(), { replace: true });
+  }, [loggedIn, navigate]);
+
+  if (loggedIn) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
