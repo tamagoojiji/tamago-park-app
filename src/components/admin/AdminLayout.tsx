@@ -5,6 +5,7 @@ import styles from './AdminLayout.module.css';
 
 const NAV_ITEMS = [
   { to: '/admin/dashboard', label: 'ダッシュボード' },
+  { to: '/admin/halloween-scare', label: 'ハロウィーン怖さ' },
   { to: '/admin/users', label: 'ユーザー' },
   { to: '/admin/surveys', label: 'アンケート' },
   { to: '/admin/shows', label: 'ショー' },
@@ -13,7 +14,6 @@ const NAV_ITEMS = [
   { to: '/admin/shop-coordinates', label: '食べ歩き座標' },
   { to: '/admin/restaurant-coordinates', label: 'レストラン座標' },
   { to: '/admin/venue-coordinates', label: '会場座標' },
-  { to: '/admin/halloween-scare', label: 'ハロウィーン怖さ' },
   { to: '/admin/crowd', label: '混雑予想' },
   { to: '/admin/quiz', label: 'クイズ管理' },
 ];

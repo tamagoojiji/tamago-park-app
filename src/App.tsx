@@ -57,7 +57,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   if (!hasAdminToken()) {
+    // ログイン後に元の管理ページ（例: /admin/halloween-scare）へ戻す
+    sessionStorage.setItem('tamago_park_admin_redirect', location.pathname);
     return <Navigate to="/admin" replace />;
   }
   return <>{children}</>;

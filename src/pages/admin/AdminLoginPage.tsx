@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { adminApi, setAdminToken, hasAdminToken } from '../../api/admin';
 import styles from './Admin.module.css';
 
+const REDIRECT_KEY = 'tamago_park_admin_redirect';
+
+// ログイン前に開こうとした管理ページがあればそこへ、無ければダッシュボードへ
+function takeRedirect(): string {
+  const dest = sessionStorage.getItem(REDIRECT_KEY);
+  sessionStorage.removeItem(REDIRECT_KEY);
+  return dest && dest.startsWith('/admin/') ? dest : '/admin/dashboard';
+}
+
 export default function AdminLoginPage() {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -10,7 +19,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (hasAdminToken()) {
-    navigate('/admin/dashboard', { replace: true });
+    navigate(takeRedirect(), { replace: true });
     return null;
   }
 
@@ -21,7 +30,7 @@ export default function AdminLoginPage() {
     try {
       const res = await adminApi.login(password);
       setAdminToken(res.token);
-      navigate('/admin/dashboard', { replace: true });
+      navigate(takeRedirect(), { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ログインに失敗しました');
     } finally {
