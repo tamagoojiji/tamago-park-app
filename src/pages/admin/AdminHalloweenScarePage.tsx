@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/admin';
 import { fetchHalloweenEventsFresh, type ParkEvent } from '../../api/events';
 import styles from './AdminHalloweenScare.module.css';
 
 const LEVELS = [1, 2, 3, 4, 5];
+// 未反映の入力をブラウザに保持するキー（ログインし直しても消えないように）
+const DRAFTS_KEY = 'tamago_park_scare_drafts';
+
+function loadSavedDrafts(): Record<number, Draft> {
+  try {
+    return JSON.parse(sessionStorage.getItem(DRAFTS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
 
 const SUB_CATEGORY_LABEL: Record<string, string> = {
   show: 'ショー',
@@ -33,6 +44,7 @@ function isDirty(a: Draft, b: Draft): boolean {
 }
 
 export default function AdminHalloweenScarePage() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<ParkEvent[]>([]);
   const [original, setOriginal] = useState<Record<number, Draft>>({});
   const [drafts, setDrafts] = useState<Record<number, Draft>>({});
@@ -50,7 +62,11 @@ export default function AdminHalloweenScarePage() {
       list.forEach(e => { base[e.id] = toDraft(e); });
       setEvents(list);
       setOriginal(base);
-      setDrafts({ ...base });
+      // 保存前に離脱（ログインし直し等）した入力があれば復元する
+      const saved = loadSavedDrafts();
+      const restored: Record<number, Draft> = { ...base };
+      list.forEach(e => { if (saved[e.id]) restored[e.id] = saved[e.id]; });
+      setDrafts(restored);
     } catch (err) {
       setError('読み込みに失敗しました: ' + String(err));
     } finally {
@@ -63,6 +79,14 @@ export default function AdminHalloweenScarePage() {
   const dirtyIds = events
     .map(e => e.id)
     .filter(id => original[id] && drafts[id] && isDirty(original[id], drafts[id]));
+
+  // 未反映の入力だけをブラウザに保持（反映済みなら空にする）
+  useEffect(() => {
+    if (isLoading) return;
+    const pending: Record<number, Draft> = {};
+    dirtyIds.forEach(id => { pending[id] = drafts[id]; });
+    sessionStorage.setItem(DRAFTS_KEY, JSON.stringify(pending));
+  }, [drafts, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setLevel = (id: number, level: number | null) => {
     setDrafts(prev => ({ ...prev, [id]: { ...prev[id], level } }));
@@ -83,12 +107,19 @@ export default function AdminHalloweenScarePage() {
         scare_level: drafts[id].level,
         scare_note: drafts[id].note.trim() === '' ? null : drafts[id].note.trim(),
       })));
+      sessionStorage.removeItem(DRAFTS_KEY);
       await load();
       setToast(`反映しました（${count}件）`);
       setTimeout(() => setToast(''), 2500);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setError(msg === '認証エラー' ? 'ログインし直してください' : '反映に失敗しました: ' + msg);
+      if (msg === '認証エラー') {
+        // 入力は sessionStorage に保持済み。ログイン後にこのページへ戻って再度「反映する」を押せる
+        sessionStorage.setItem('tamago_park_admin_redirect', '/admin/halloween-scare');
+        navigate('/admin', { replace: true });
+        return;
+      }
+      setError('反映に失敗しました: ' + msg);
     } finally {
       setSaving(false);
     }

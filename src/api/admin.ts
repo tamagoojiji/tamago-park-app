@@ -13,8 +13,22 @@ export function clearAdminToken() {
   localStorage.removeItem(ADMIN_TOKEN_KEY);
 }
 
+// JWT の exp を見て期限切れなら false（期限切れトークンは捨てる）。
+// 期限切れのまま管理ページを開けてしまい、保存時に 403 で落ちるのを防ぐ。
 export function hasAdminToken(): boolean {
-  return !!localStorage.getItem(ADMIN_TOKEN_KEY);
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()) {
+      clearAdminToken();
+      return false;
+    }
+  } catch {
+    clearAdminToken();
+    return false;
+  }
+  return true;
 }
 
 async function adminFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
