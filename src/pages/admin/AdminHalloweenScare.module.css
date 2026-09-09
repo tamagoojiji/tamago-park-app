@@ -1,0 +1,195 @@
+.container {
+  max-width: 720px;
+  /* 画面下の固定バーでリスト末尾が隠れないよう余白を確保 */
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: var(--text-lg);
+  color: var(--color-text);
+}
+
+.lead {
+  margin: 0 0 16px;
+  font-size: var(--text-xs);
+  color: var(--color-text-sub);
+  line-height: 1.5;
+}
+
+.error {
+  color: var(--color-red);
+  font-size: var(--text-sm);
+  margin: 0 0 12px;
+}
+
+.empty {
+  color: var(--color-text-light);
+  font-size: var(--text-sm);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cardName {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+  flex: 1;
+  word-break: break-word;
+}
+
+.dirtyTag {
+  flex-shrink: 0;
+  font-size: var(--text-tiny);
+  color: #F26A1B;
+  border: 1px solid #F26A1B;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.badge {
+  font-size: var(--text-tiny);
+  background: var(--color-bg-section);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+}
+
+.period {
+  font-size: var(--text-xxs);
+  color: var(--color-text-light);
+}
+
+.levelRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.levelBtn {
+  flex: 1;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text-sub);
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.levelBtnNum {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.levelBtnNone {
+  background: #8A8F98;
+  border-color: #8A8F98;
+  color: #fff;
+}
+
+.levelBtnOn {
+  background: #F26A1B;
+  border-color: #F26A1B;
+  color: #fff;
+}
+
+.levelBtnMax {
+  background: #5B2E8C;
+  border-color: #5B2E8C;
+  color: #fff;
+}
+
+.noteInput {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  /* iOSのフォーカス時ズーム防止のため16px以上 */
+  font-size: 16px;
+  font-family: var(--font-main);
+  box-sizing: border-box;
+}
+
+.noteInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.saveBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--color-border);
+}
+
+.saveBtn {
+  display: block;
+  width: 100%;
+  max-width: 688px;
+  margin: 0 auto;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #5B2E8C;
+  color: #fff;
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saveBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  font-size: var(--text-sm);
+  padding: 10px 18px;
+  border-radius: 999px;
+  white-space: nowrap;
+}

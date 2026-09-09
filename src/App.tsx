@@ -28,6 +28,7 @@ import AdminStatsPage from './pages/admin/AdminStatsPage';
 import AdminShopCoordinatesPage from './pages/admin/AdminShopCoordinatesPage';
 import AdminRestaurantCoordinatesPage from './pages/admin/AdminRestaurantCoordinatesPage';
 import AdminVenueCoordinatesPage from './pages/admin/AdminVenueCoordinatesPage';
+import AdminHalloweenScarePage from './pages/admin/AdminHalloweenScarePage';
 import AdminCrowdPage from './pages/admin/AdminCrowdPage';
 import QuizAdminPage from './pages/admin/QuizAdminPage';
 import QuizPage from './pages/QuizPage';
@@ -90,6 +91,7 @@ export default function App() {
           <Route path="/admin/shop-coordinates" element={<AdminShopCoordinatesPage />} />
           <Route path="/admin/restaurant-coordinates" element={<AdminRestaurantCoordinatesPage />} />
           <Route path="/admin/venue-coordinates" element={<AdminVenueCoordinatesPage />} />
+          <Route path="/admin/halloween-scare" element={<AdminHalloweenScarePage />} />
           <Route path="/admin/crowd" element={<AdminCrowdPage />} />
           <Route path="/admin/quiz" element={<QuizAdminPage />} />
         </Route>

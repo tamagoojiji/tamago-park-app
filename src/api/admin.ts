@@ -131,6 +131,12 @@ export const adminApi = {
     return adminFetch<{ success: boolean }>(`/admin/events/${id}`, { method: 'DELETE' });
   },
 
+  updateScareLevels(items: { id: number; scare_level: number | null; scare_note: string | null }[]) {
+    return adminFetch<{ success: boolean; updated: number }>('/admin/events/scare-levels', {
+      method: 'PUT', body: JSON.stringify({ items }),
+    });
+  },
+
   crowd(from: string, to: string) {
     return adminFetch<{
       from: string; to: string;

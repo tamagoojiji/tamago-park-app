@@ -33,18 +33,6 @@ export const ZOMBIE_INFO =
 export const KIDS_NOTE =
   'ゾンビが出るエリアはハリウッド側から回避。ミニオン・ベロウィーン・グリーティングとスマイリーズ・ハッピー・ハロウィーン・グリーティングは昼の安全枠。';
 
-// 怖さメーター（キーはイベント名と完全一致。定義のあるものだけメーターを表示し、
-// 未定義のイベントは名前と期間のみ表示する）
-export const SCARE_LEVELS: Record<string, { level: number; note: string }> = {
-  '貞子の呪い ～ダーク・ホラー・ライド～': { level: 5, note: 'ガチ勢向け。待ち時間は夜ほど長い' },
-  'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～': { level: 4, note: '歩いて進むタイプ' },
-  '残像': { level: 4, note: 'ショー枠' },
-  'チェンソーマン・ザ・カオス 4-D': { level: 3, note: '座って観るので子連れでも入りやすい' },
-  'ストリート・ゾンビ': { level: 4, note: '遠目なら子連れでも' },
-  'KATE PRESENTS『18番地の魔女 ～感情と戯れる魔女の館～』': { level: 3, note: '' },
-  '『バイオハザード レクイエム』ザ・ダイブ': { level: 4, note: '' },
-};
-
 // オールナイト開催日の配布資料（日付詳細カードで閲覧・ダウンロード）
 export type AllNightMaterial = { label: string; src: string; thumb: string; filename: string };
 export const ALL_NIGHT_MATERIALS: Record<string, AllNightMaterial[]> = {

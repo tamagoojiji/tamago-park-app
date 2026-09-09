@@ -13,6 +13,8 @@ export interface ParkEvent {
   duration: string | null;
   age_restriction: string | null;
   source_image_url: string | null;
+  scare_level: number | null;
+  scare_note: string | null;
   status: string;
   created_at: string;
   updated_at: string;
@@ -241,6 +243,12 @@ export function getHalloween2026Events(events: ParkEvent[]): ParkEvent[] {
   return events
     .filter(isHalloween2026Event)
     .sort((a, b) => HALLOWEEN_2026_EVENT_NAMES.indexOf(a.name) - HALLOWEEN_2026_EVENT_NAMES.indexOf(b.name));
+}
+
+// 管理画面用: キャッシュを使わずハロウィーン対象イベントを取得
+export async function fetchHalloweenEventsFresh(): Promise<ParkEvent[]> {
+  const events = await fetchEvents('2026-09-01', '2026-11-08');
+  return getHalloween2026Events(events);
 }
 
 // 期間限定アトラクション: 期間中のもの

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchAllEvents, getHalloween2026Events, type ParkEvent } from '../api/events';
-import { SCARE_LEVELS, ZOMBIE_INFO, KIDS_NOTE } from '../data/halloween';
+import { ZOMBIE_INFO, KIDS_NOTE } from '../data/halloween';
 import styles from './HalloweenPage.module.css';
 
 type Filter = 'all' | 'show' | 'attraction' | 'event';
@@ -70,7 +70,7 @@ export default function HalloweenPage() {
       ) : (
         <div className={styles.list}>
           {filtered.map((e) => {
-            const scare = SCARE_LEVELS[e.name];
+            const scareLevel = typeof e.scare_level === 'number' ? e.scare_level : null;
             return (
               <div key={e.id} className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -87,7 +87,7 @@ export default function HalloweenPage() {
                   )}
                 </div>
                 <div className={styles.cardPeriod}>{formatPeriod(e)}</div>
-                {scare && (
+                {scareLevel !== null && (
                   <div className={styles.scare}>
                     <span className={styles.scareLabel}>怖さ</span>
                     <span className={styles.scareBars}>
@@ -95,7 +95,7 @@ export default function HalloweenPage() {
                         <span
                           key={n}
                           className={`${styles.scareBar} ${
-                            n <= scare.level
+                            n <= scareLevel
                               ? n === 5
                                 ? styles.scareBarMax
                                 : styles.scareBarOn
@@ -104,7 +104,7 @@ export default function HalloweenPage() {
                         />
                       ))}
                     </span>
-                    {scare.note && <span className={styles.scareNote}>{scare.note}</span>}
+                    {e.scare_note && <span className={styles.scareNote}>{e.scare_note}</span>}
                   </div>
                 )}
               </div>
