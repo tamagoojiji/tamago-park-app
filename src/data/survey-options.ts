@@ -216,7 +216,8 @@ export const SEASONAL_SHOW_OPTIONS = [
 // end 指定があるものは個別に延長。timetable=true は公式ショースケジュール掲載対象（「この日は公演なし」バッジ判定の対象）
 export const HALLOWEEN_PERIOD = { start: '2026-09-11', end: '2026-11-08' } as const;
 
-export const HALLOWEEN_EVENT_OPTIONS: { name: string; label?: string; age?: string; start?: string; end?: string; timetable?: boolean }[] = [
+// time: 公式時刻表に無い項目の固定表記（show_times にそのまま入る）
+export const HALLOWEEN_EVENT_OPTIONS: { name: string; label?: string; age?: string; start?: string; end?: string; timetable?: boolean; time?: string }[] = [
   // ショー
   { name: 'ゾンビ・デ・ダンス', label: 'ゾンビ・デ・ダンス（18:00〜）', timetable: true },
   { name: 'プレイバック・ゾンビ・デ・ダンス ～ハロウィーン・ホラー・ナイト 15周年～', timetable: true },
@@ -225,7 +226,7 @@ export const HALLOWEEN_EVENT_OPTIONS: { name: string; label?: string; age?: stri
   // グリーティング・イベント
   { name: 'スマイリーズ・ハッピー・ハロウィーン・グリーティング' },
   { name: 'ストリート・ゾンビ', label: 'ストリート・ゾンビ（18:00〜）' },
-  { name: 'トリック・オア・トリート（飴集め）' },
+  { name: 'トリック・オア・トリート（飴集め）', label: 'トリック・オア・トリート（飴集め・〜18:00）', time: '〜18:00' },
   { name: 'ハロウィーン・ホラー・ナイト ～オールナイト～', age: '18歳未満入場不可', start: '2026-09-25', end: '2026-09-25' }, // 9/25の1日限り
   // ホラー・アトラクション
   { name: 'ファクトリー・オブ・フィアー ～絶望のゾンビ・ツアー～', age: '中学生以下不可' },
@@ -233,9 +234,9 @@ export const HALLOWEEN_EVENT_OPTIONS: { name: string; label?: string; age?: stri
   { name: 'チェンソーマン・ザ・カオス 4-D', age: '12歳以下は保護者同意' },
   { name: 'チェンソーマン × ハリウッド・ドリーム・ザ・ライド ～IRIS OUT～' },
   { name: 'ゾンビ・デ・ダンス × ハリウッド・ドリーム・ザ・ライド' },
-  { name: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～', label: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～（日没後）' },
+  { name: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～', label: 'ジュラシック・パーク・ザ・ライド ～イン・ザ・ダーク～（18:30〜）', time: '18:30〜' },
   { name: '貞子の呪い ～ダーク・ホラー・ライド～', age: '12歳以下は保護者同意', end: '2027-01-04' },
-  { name: 'ジョーズ ～レッド・アラート～', label: 'ジョーズ ～レッド・アラート～（日没後）', end: '2027-01-31' },
+  { name: 'ジョーズ ～レッド・アラート～', label: 'ジョーズ ～レッド・アラート～（18:30〜）', time: '18:30〜', end: '2027-01-31' },
   { name: '『バイオハザード レクイエム』ザ・ダイブ', age: 'R-15（中学生以下不可）', end: '2026-12-27' },
 ];
 

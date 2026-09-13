@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { SurveyFormData } from '../../../types/survey';
-import type { ShowData } from '../../../api/shows';
+import { findShow, type ShowData } from '../../../api/shows';
 import QuestionCard from '../components/QuestionCard';
 import { MultiSelect, type MultiSelectOption } from '../components/FormComponents';
 import {
@@ -89,7 +89,7 @@ export default function StepEntertainment({ data, onChange, shows, showsLoaded, 
     return halloween.map((o): MultiSelectOption => {
       if (o.age) return { value: o.name, label: o.label, badge: o.age, badgeType: 'height' as const };
       if (!o.timetable || !showsLoaded || shows.length === 0) return { value: o.name, label: o.label };
-      const isActive = shows.some(s => s.name.includes(o.name) || o.name.includes(s.name));
+      const isActive = !!findShow(shows, o.name);
       return {
         value: o.name,
         label: o.label,

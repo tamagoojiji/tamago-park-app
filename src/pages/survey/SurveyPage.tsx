@@ -7,7 +7,8 @@ import type { ClosureEntry } from '../../data/closures';
 import { fetchParkHours } from '../../data/hours';
 import { fetchClosures, getClosuresForDate } from '../../data/closures';
 import type { ShowData } from '../../api/shows';
-import { fetchShows } from '../../api/shows';
+import { fetchShows, findShow, pickFallbackDate } from '../../api/shows';
+import { HALLOWEEN_EVENT_OPTIONS } from '../../data/survey-options';
 import { submitSurvey, getSurvey, updateSurvey } from '../../api/survey';
 
 import ProgressBar from './components/ProgressBar';
@@ -158,11 +159,7 @@ export default function SurveyPage() {
       const selectedShows = [...formData.shows, ...formData.seasonal_events];
       if (selectedShows.length > 0 && primaryDate) {
         const primary = await fetchShows(primaryDate);
-        const targetDay = new Date(primaryDate).getDay();
-        const fallbackDate = primary.availableDates
-          .filter((d) => new Date(d).getDay() === targetDay && d < primaryDate)
-          .sort()
-          .pop();
+        const fallbackDate = pickFallbackDate(primary.availableDates, primaryDate, parkHoursData);
 
         let fallbackShows: ShowData[] | null = null;
         const loadFallback = async (): Promise<ShowData[]> => {
@@ -177,15 +174,12 @@ export default function SurveyPage() {
           return fallbackShows;
         };
 
-        const findMatch = (list: ShowData[], name: string): ShowData | undefined =>
-          list.find((s) => s.name.includes(name) || name.includes(s.name));
-
         for (const name of selectedShows) {
-          let match = findMatch(primary.shows, name);
+          let match = findShow(primary.shows, name);
           let isFallback = false;
           if (!match) {
             const fb = await loadFallback();
-            match = findMatch(fb, name);
+            match = findShow(fb, name);
             if (match) isFallback = true;
           }
           if (!match) continue;
@@ -197,6 +191,13 @@ export default function SurveyPage() {
           }
         }
       }
+      // 公式時刻表に無いハロウィーン項目は固定表記で補完
+      for (const name of selectedShows) {
+        if (showTimes[name]) continue;
+        const fixed = HALLOWEEN_EVENT_OPTIONS.find((o) => o.name === name)?.time;
+        if (fixed) showTimes[name] = fixed;
+      }
+
       enriched.show_times = showTimes;
       enriched.show_times_fallback = showTimesFallback;
 
