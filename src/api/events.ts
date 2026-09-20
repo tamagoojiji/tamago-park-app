@@ -251,6 +251,30 @@ export async function fetchHalloweenEventsFresh(): Promise<ParkEvent[]> {
   return getHalloween2026Events(events);
 }
 
+// 2026クリスマス（ユニバーサル・ホリデー・ワンダーズ）特設セクション対象イベント（DB登録名と完全一致・この順で表示）
+export const CHRISTMAS_2026_EVENT_NAMES: string[] = [
+  'ユニバーサル・ホリデー・ワンダーズ ～Discover U!!!～',
+  'ライト・アップ・ザ・ナイト ～クリスマス・セレブレーション～',
+  'ジョイ・オブ・ライツ',
+  '『ライト・アップ・ザ・ナイト／ジョイ・オブ・ライツ』特別鑑賞エリア入場券',
+  'ホグワーツ・マジカル・ナイト ～ウインター・マジック～',
+  'ユニバーサル・フード・フェスティバル',
+  'ミニオン・ジングル・ベロー・ミート＆グリート',
+  'ユニバーサル・ワンダーランド ～レッツ・スマイル・トゥギャザー！～（冬限定）',
+  'パワー・オブ・ロック ～ホリデー・ロッキン！～',
+  'スーパー・ニンテンドー・ワールド 5周年フィナーレ ステッカー配布',
+];
+
+export function isChristmas2026Event(e: ParkEvent): boolean {
+  return CHRISTMAS_2026_EVENT_NAMES.includes(e.name);
+}
+
+export function getChristmas2026Events(events: ParkEvent[]): ParkEvent[] {
+  return events
+    .filter(isChristmas2026Event)
+    .sort((a, b) => CHRISTMAS_2026_EVENT_NAMES.indexOf(a.name) - CHRISTMAS_2026_EVENT_NAMES.indexOf(b.name));
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));

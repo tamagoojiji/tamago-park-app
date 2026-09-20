@@ -1035,6 +1035,41 @@
   color: #FFB27A;
 }
 
+/* === クリスマスイベントグループ（深緑×赤） === */
+.eventThemeChristmas .eventThemeCollapseSummary {
+  background: linear-gradient(90deg, #0F4D2E, #B3222B);
+  color: #FFF3C4;
+}
+
+.eventThemeChristmas .eventThemeCollapseNote {
+  background: #123B27;
+  color: #F1F7F2;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.eventThemeChristmas .eventCompact {
+  background: #123B27;
+}
+
+.eventThemeChristmas .eventCompact[open] .eventCompactSummary {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.eventThemeChristmas .eventCompactName,
+.eventThemeChristmas .eventDetailLabel {
+  color: #F1F7F2;
+}
+
+.eventThemeChristmas .eventCompactDate,
+.eventThemeChristmas .eventDetailValue {
+  color: #BFD8C6;
+}
+
+.eventThemeChristmas .officialBadge {
+  color: #FFD27A;
+}
+
 @media (max-width: 380px) {
   .dayNumber {
     font-size: var(--text-xxs);
