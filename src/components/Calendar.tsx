@@ -612,7 +612,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             // ただしハリー・ポッター系（キャッスルウォーク・マジカル・ナイト等）は「ハリー・ポッター」グループにも出す（両方表示）
             const isSeasonalOnly = (e: ParkEvent) => (isHalloween2026Event(e) || isChristmas2026Event(e)) && getEventTheme(e) !== 'harrypotter';
             const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents].filter(e => !isSeasonalOnly(e));
-            const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id) && !isHalloween2026Event(e) && !isChristmas2026Event(e));
+            // 今後のイベント: ハロウィーン特設分は除外、クリスマス特設分は開始前の予告として重ねて出す（2026-09-21 ユーザー指示）
+            const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id) && !isHalloween2026Event(e));
             const movie = MOVIE_SCREENINGS[dateStr];
             const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || halloweenEvents.length > 0 || christmasEvents.length > 0 || !!movie;
 
