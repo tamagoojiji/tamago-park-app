@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
 import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, getHalloween2026Events, isHalloween2026Event, getChristmas2026Events, isChristmas2026Event, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, getHalloween2026Events, isHalloween2026Event, getChristmas2026Events, isChristmas2026Event, getEventTheme, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from '../api/crowd';
@@ -608,7 +608,10 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             const ongoingEvents = getOngoingLimitedEvents(parkEvents, dateStr);
             const singleEvents = getSingleDayEvents(parkEvents, dateStr);
 
-            const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents].filter(e => !isHalloween2026Event(e) && !isChristmas2026Event(e));
+            // 季節特設（ハロウィーン/クリスマス）に載せたイベントはテーマ別グループから外す。
+            // ただしハリー・ポッター系（キャッスルウォーク・マジカル・ナイト等）は「ハリー・ポッター」グループにも出す（両方表示）
+            const isSeasonalOnly = (e: ParkEvent) => (isHalloween2026Event(e) || isChristmas2026Event(e)) && getEventTheme(e) !== 'harrypotter';
+            const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents].filter(e => !isSeasonalOnly(e));
             const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id) && !isHalloween2026Event(e) && !isChristmas2026Event(e));
             const movie = MOVIE_SCREENINGS[dateStr];
             const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || halloweenEvents.length > 0 || christmasEvents.length > 0 || !!movie;
