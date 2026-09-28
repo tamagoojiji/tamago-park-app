@@ -5,7 +5,7 @@ import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
 import { fetchParkHours } from '../data/hours';
 import { fetchAnnualPassExcluded } from '../data/annual-pass';
 import { fetchTicketPrices, getPriceLevel, formatPrice } from '../data/tickets';
-import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, getHalloween2026Events, isHalloween2026Event, getChristmas2026Events, isChristmas2026Event, getEventTheme, type ParkEvent } from '../api/events';
+import { AUTH_BASE, fetchAllEvents, getEventsForDate, getEventStartEndForDate, getOngoingLimitedEvents, getSingleDayEvents, hasPrivateEventOnDate, hasEventStartOrEndOnDate, hasEventOnDate, groupEventsByTheme, getUpcomingEvents, getHalloween2026Events, isHalloween2026Event, getChristmas2026Events, isChristmas2026Event, getCountdown2027Events, isCountdown2027Event, getEventTheme, type ParkEvent } from '../api/events';
 import { fetchClosures, getClosuresForDate, type ClosuresData } from '../data/closures';
 import { fetchRestaurants, type RestaurantInfo } from '../api/restaurants';
 import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from '../api/crowd';
@@ -604,18 +604,19 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             const dateStr = selectedDate || today;
             const halloweenEvents = getHalloween2026Events(parkEvents);
             const christmasEvents = getChristmas2026Events(parkEvents);
+            const countdownEvents = getCountdown2027Events(parkEvents);
             const startEndEvents = getEventStartEndForDate(parkEvents, dateStr);
             const ongoingEvents = getOngoingLimitedEvents(parkEvents, dateStr);
             const singleEvents = getSingleDayEvents(parkEvents, dateStr);
 
             // 季節特設（ハロウィーン/クリスマス）に載せたイベントはテーマ別グループから外す。
             // ただしハリー・ポッター系（キャッスルウォーク・マジカル・ナイト等）は「ハリー・ポッター」グループにも出す（両方表示）
-            const isSeasonalOnly = (e: ParkEvent) => (isHalloween2026Event(e) || isChristmas2026Event(e)) && getEventTheme(e) !== 'harrypotter';
+            const isSeasonalOnly = (e: ParkEvent) => (isHalloween2026Event(e) || isChristmas2026Event(e) || isCountdown2027Event(e)) && getEventTheme(e) !== 'harrypotter';
             const allDateEvents = [...startEndEvents, ...ongoingEvents, ...singleEvents].filter(e => !isSeasonalOnly(e));
             // 今後のイベント: ハロウィーン特設分は除外、クリスマス特設分は開始前の予告として重ねて出す（2026-09-21 ユーザー指示）
             const upcomingEvents = getUpcomingEvents(parkEvents, today).filter(e => !allDateEvents.some(d => d.id === e.id) && !isHalloween2026Event(e));
             const movie = MOVIE_SCREENINGS[dateStr];
-            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || halloweenEvents.length > 0 || christmasEvents.length > 0 || !!movie;
+            const hasContent = allDateEvents.length > 0 || upcomingEvents.length > 0 || halloweenEvents.length > 0 || christmasEvents.length > 0 || countdownEvents.length > 0 || !!movie;
 
             const formatPeriod = (e: ParkEvent) => {
               const fmt = (d: string) => {
@@ -729,6 +730,21 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                     </summary>
                     <div className={styles.eventThemeCollapseNote}>11/13(金)〜1/17(日)開催 ※ナイトショー2本は11/25〜1/11</div>
                     {christmasEvents.map(renderCompactEvent)}
+                  </details>
+                )}
+                {countdownEvents.length > 0 && (
+                  <details className={`${styles.eventThemeCollapse} ${styles.eventThemeCountdown}`}>
+                    <summary className={styles.eventThemeCollapseSummary}>
+                      <span className={styles.eventThemeEmoji}>🎆</span>
+                      <span className={styles.eventThemeLabel}>
+                        カウントダウンイベント
+                        <span className={styles.eventThemeSubLabel}>(NO LIMIT! カウントダウン 2027)</span>
+                      </span>
+                      <span className={styles.eventThemeCount}>{countdownEvents.length}件</span>
+                      <span className={styles.eventThemeCollapseArrow}>▼</span>
+                    </summary>
+                    <div className={styles.eventThemeCollapseNote}>12/31(木)19:00〜1/1(金)21:00 最大26時間 ※パーティ・パス必要・10/7(水)21:00〜順次発売</div>
+                    {countdownEvents.map(renderCompactEvent)}
                   </details>
                 )}
                 {themedGroups.map(({ theme, events: themeEvents }) => (

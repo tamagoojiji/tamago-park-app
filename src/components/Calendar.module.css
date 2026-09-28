@@ -1070,6 +1070,41 @@
   color: #FFD27A;
 }
 
+/* === カウントダウンイベントグループ（夜空×花火の金） === */
+.eventThemeCountdown .eventThemeCollapseSummary {
+  background: linear-gradient(90deg, #1B1F4B, #4A2C6B);
+  color: #FFF1C9;
+}
+
+.eventThemeCountdown .eventThemeCollapseNote {
+  background: #1E2250;
+  color: #F3F0FF;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.eventThemeCountdown .eventCompact {
+  background: #1E2250;
+}
+
+.eventThemeCountdown .eventCompact[open] .eventCompactSummary {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.eventThemeCountdown .eventCompactName,
+.eventThemeCountdown .eventDetailLabel {
+  color: #F3F0FF;
+}
+
+.eventThemeCountdown .eventCompactDate,
+.eventThemeCountdown .eventDetailValue {
+  color: #D9C88A;
+}
+
+.eventThemeCountdown .officialBadge {
+  color: #FFD27A;
+}
+
 @media (max-width: 380px) {
   .dayNumber {
     font-size: var(--text-xxs);

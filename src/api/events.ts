@@ -276,6 +276,27 @@ export function getChristmas2026Events(events: ParkEvent[]): ParkEvent[] {
     .sort((a, b) => CHRISTMAS_2026_EVENT_NAMES.indexOf(a.name) - CHRISTMAS_2026_EVENT_NAMES.indexOf(b.name));
 }
 
+// カウントダウン2027（NO LIMIT! カウントダウン 2027）特設セクション対象イベント（DB登録名と完全一致・この順で表示）
+export const COUNTDOWN_2027_EVENT_NAMES: string[] = [
+  'NO LIMIT! カウントダウン 2027 ～Discover U!!!～',
+  'パーティ・パス（カウントダウン 2027 入場チケット）',
+  'カウントダウン・モーメント（約5,000発の花火）',
+  'カウントダウン・スペシャル・ステージ',
+  'USJ グランド・ミュージック・リバイバル ～USJ名曲復活祭～',
+  'ニューイヤー・グリーティング',
+  'ユニバーサル VIP エクスペリエンス・プライベート・ツアー（カウントダウン 2027）',
+];
+
+export function isCountdown2027Event(e: ParkEvent): boolean {
+  return COUNTDOWN_2027_EVENT_NAMES.includes(e.name);
+}
+
+export function getCountdown2027Events(events: ParkEvent[]): ParkEvent[] {
+  return events
+    .filter(isCountdown2027Event)
+    .sort((a, b) => COUNTDOWN_2027_EVENT_NAMES.indexOf(a.name) - COUNTDOWN_2027_EVENT_NAMES.indexOf(b.name));
+}
+
 // 期間限定アトラクション: 期間中のもの
 export function getLimitedAttractions(events: ParkEvent[], date: string): ParkEvent[] {
   return events.filter(e => e.sub_category === 'attraction' && isEventOnDate(e, date));
