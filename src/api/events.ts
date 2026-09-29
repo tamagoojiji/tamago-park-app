@@ -128,7 +128,7 @@ export interface EventTheme {
 const EVENT_THEMES: EventTheme[] = [
   { id: 'summer2026', label: '2026年夏イベント', sublabel: '(ユニバーサル・サマー・マツリ・ナイト ～ネオン・グロウアップ～)', emoji: '🏮', keywords: ['マツリ', 'BOO-YA', 'ネオンサマー', 'サマーナイト', 'サマービート', 'サマー・グロウ', 'クール・グリーン・ストリート', 'クールダウン・ステーション'] },
   { id: '25th', label: '25周年 Discover U!!!', emoji: '🎂', keywords: ['Discover U', '25周年', 'Back to 2001', 'NO LIMIT! パレード', '周年ソング', 'カーズ・アンド・スターズ'] },
-  { id: 'cooljapan', label: 'COOL JAPAN', emoji: '🇯🇵', keywords: ['コナン', '呪術廻戦', 'フリーレン', 'マスカレード', '東野圭吾'] },
+  { id: 'cooljapan', label: 'COOL JAPAN', emoji: '🇯🇵', keywords: ['コナン', '呪術廻戦', 'フリーレン', 'マスカレード', '東野圭吾', 'クールジャパン', 'セーラームーン'] },
   { id: 'jurassic', label: 'ジュラシック・ワールド', emoji: '🦖', keywords: ['ジュラシック'] },
   { id: 'harrypotter', label: 'ハリー・ポッター', emoji: '⚡', keywords: ['バタービール', 'ホグワーツ', 'ハリー・ポッター', 'ホグズミード', 'ヒッポグリフ'] },
   { id: 'monsterhunter', label: 'モンスターハンター', emoji: '⚔️', keywords: ['モンスターハンター', 'モリバーの宴'] },
@@ -164,6 +164,9 @@ const THEME_EVENT_ORDER: Record<string, string[]> = {
     'フリーレン ストーリー・ウォーク',
     'フリーレン×ストーリー・ライド',
     'フリーレン ～追憶のレストラン～',
+    'ユニバーサル・クールジャパン 2027',
+    'セーラームーン・ザ・ミラクル 4-D',
+    'セーラームーン×ストーリー・ライド',
   ],
 };
 
