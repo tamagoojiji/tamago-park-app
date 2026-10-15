@@ -724,6 +724,10 @@
   color: var(--color-text-sub);
 }
 
+.birthdayItem {
+  display: block;
+}
+
 .eventCompact {
   background: var(--color-bg-card);
   border-radius: var(--radius-card);

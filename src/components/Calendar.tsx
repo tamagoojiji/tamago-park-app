@@ -13,6 +13,7 @@ import ShowSchedule from './ShowSchedule';
 import RestaurantList from './RestaurantList';
 import { useHalloween } from '../hooks/useHalloween';
 import { isHalloweenDate, ALL_NIGHT_DATES, ALL_NIGHT_MATERIALS, type AllNightMaterial } from '../data/halloween';
+import { getCharacterBirthdaysForEvent } from '../data/character-birthdays';
 import styles from './Calendar.module.css';
 
 const tabs: { id: CalendarTab; label: string; icon: string; disabled?: boolean }[] = [
@@ -639,6 +640,23 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
             const isStart = (e: ParkEvent) => e.date === dateStr;
             const isSingle = (e: ParkEvent) => !e.end_date;
 
+            const renderBirthdayRow = (evt: ParkEvent) => {
+              const list = getCharacterBirthdaysForEvent(evt);
+              if (list.length === 0) return null;
+              return (
+                <div className={styles.eventDetailRow}>
+                  <span className={styles.eventDetailLabel}>🎂 誕生日</span>
+                  <span className={styles.eventDetailValue}>
+                    {list.map(c => (
+                      <span key={c.name} className={styles.birthdayItem}>
+                        {c.name} {c.date}{c.note ? `（${c.note}）` : ''}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              );
+            };
+
             const renderCompactEvent = (evt: ParkEvent) => (
               <details key={evt.id} className={styles.eventCompact}>
                 <summary className={styles.eventCompactSummary}>
@@ -676,6 +694,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                       <span className={styles.eventDetailValue}>{evt.summary}</span>
                     </div>
                   )}
+                  {renderBirthdayRow(evt)}
                 </div>
               </details>
             );
@@ -825,6 +844,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                                   <span className={styles.eventDetailValue}>{evt.summary}</span>
                                 </div>
                               )}
+                              {renderBirthdayRow(evt)}
                             </div>
                           </div>
                         );
@@ -876,6 +896,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                                 <span className={styles.eventDetailValue}>{evt.summary}</span>
                               </div>
                             )}
+                            {renderBirthdayRow(evt)}
                           </div>
                         </details>
                       );
@@ -921,6 +942,7 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
                               <span className={styles.eventDetailValue}>{evt.summary}</span>
                             </div>
                           )}
+                          {renderBirthdayRow(evt)}
                         </div>
                       </details>
                     ))}
