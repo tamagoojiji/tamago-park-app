@@ -44,7 +44,12 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 本体JSが届くまでの表示（ホーム画面アプリ初回起動の白画面対策）。React起動時に置き換わる -->
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#4A90D9 0%,#6FB3F2 50%,#87CEEB 100%);color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:16px;">
+        読み込み中...
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
