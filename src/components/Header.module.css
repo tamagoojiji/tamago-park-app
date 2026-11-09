@@ -103,3 +103,48 @@
     animation: none;
   }
 }
+
+/* === クリスマス演出 === */
+:global(body.christmas) .header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #0F4D2E, #B3222B, #FFD27A);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.xmTree {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  font-size: 22px;
+  line-height: 1;
+  z-index: 5;
+}
+
+.xmSnow {
+  position: absolute;
+  right: 64px;
+  top: 6px;
+  font-size: 16px;
+  line-height: 1;
+  z-index: 5;
+  animation: xmSnowFall 8s linear infinite;
+}
+
+@keyframes xmSnowFall {
+  0% { transform: translateY(-8px); opacity: 0; }
+  12% { opacity: 0.9; }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(28px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmSnow {
+    animation: none;
+  }
+}

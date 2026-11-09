@@ -1004,6 +1004,66 @@
   color: #fff;
 }
 
+/* === クリスマス期間ハイライト === */
+.christmasDay {
+  background: #E4F1E8;
+  box-shadow: inset 0 0 0 1px #B9D9C4;
+  border-radius: 8px;
+}
+
+.christmasDay .dayNumber {
+  color: #0F4D2E;
+  font-weight: 700;
+}
+
+/* 12/24・12/25 */
+.christmasHoliday {
+  position: relative;
+}
+
+.christmasHoliday::after {
+  content: '🎄';
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+:global(body.christmas) .activeTab {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px rgba(179, 34, 43, 0.3);
+}
+
+/* 今日・選択中を優先させる */
+:global(body.christmas) .today {
+  background: var(--color-primary);
+  box-shadow: none;
+}
+
+:global(body.christmas) .today .dayNumber {
+  color: #fff;
+}
+
+:global(body.christmas) .selected {
+  background: #E4F1E8;
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+:global(body.christmas) .today.selected {
+  background: var(--color-primary);
+  box-shadow: inset 0 0 0 2px var(--color-primary-dark);
+}
+
+:global(body.christmas) .selected .dayNumber {
+  color: #0F4D2E;
+}
+
+:global(body.christmas) .today.selected .dayNumber {
+  color: #fff;
+}
+
 /* === ハロウィーンイベントグループ（夜色） === */
 .eventThemeHalloween .eventThemeCollapseSummary {
   background: linear-gradient(90deg, #2A1548, #5B2E8C);

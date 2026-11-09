@@ -20,11 +20,12 @@ interface Props {
   editable?: boolean;
   id?: string;
   halloween?: boolean;
+  christmas?: boolean;
 }
 
 export default function TimelineView({
   openTime, closeTime, attractions, shows,
-  onRemoveAttraction, onRemoveShow, editable = false, id, halloween = false,
+  onRemoveAttraction, onRemoveShow, editable = false, id, halloween = false, christmas = false,
 }: Props) {
   const timeSlots = useMemo(() => generateTimeSlots(openTime, closeTime), [openTime, closeTime]);
 
@@ -83,8 +84,9 @@ export default function TimelineView({
   }, [shows, timeSlots]);
 
   return (
-    <div className={`${styles.timeline} ${halloween ? styles.timelineHalloween : ''}`} id={id}>
+    <div className={`${styles.timeline} ${halloween ? styles.timelineHalloween : ''} ${christmas ? styles.timelineChristmas : ''}`} id={id}>
       {halloween && <div className={styles.hwFrameHead}>🎃 ハロウィーン・プラン</div>}
+      {christmas && <div className={styles.xmFrameHead}>🎄 ホリデー・プラン</div>}
       {timeSlots.map((slot) => {
         const slotItems = itemsBySlot.get(slot) || [];
         const hasItems = slotItems.length > 0;
@@ -134,6 +136,9 @@ export default function TimelineView({
       })}
       {halloween && (
         <div className={styles.hwFrameFoot}>たまごのパーク攻略 ・ park.tamago-ai-world.com 🦇</div>
+      )}
+      {christmas && (
+        <div className={styles.xmFrameFoot}>たまごのパーク攻略 ・ park.tamago-ai-world.com ❄️</div>
       )}
     </div>
   );

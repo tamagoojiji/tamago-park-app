@@ -63,3 +63,10 @@ export const halloweenNightShowKeywords: string[] = ['ゾンビ', 'ホラー・�
 export function isHalloweenNightShow(name: string): boolean {
   return halloweenNightShowKeywords.some((kw) => name.includes(kw));
 }
+
+// クリスマスの夜のショー対象キーワード（ハロウィーン同様、名称の揺れに備えて部分一致）
+export const christmasNightShowKeywords: string[] = ['ライト・アップ・ザ・ナイト', 'ジョイ・オブ・ライツ', 'ウインター・マジック'];
+
+export function isChristmasNightShow(name: string): boolean {
+  return christmasNightShowKeywords.some((kw) => name.includes(kw));
+}

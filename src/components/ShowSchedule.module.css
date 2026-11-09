@@ -117,6 +117,10 @@
   color: #6C5CE7;
 }
 
+:global(body.christmas) .sectionNight {
+  color: #0F3B26;
+}
+
 /* ショーカード */
 .showCard {
   padding: 10px 0;

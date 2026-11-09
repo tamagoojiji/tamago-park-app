@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { CalendarTab, PlanItem } from '../types';
 import { fetchWeather, weatherCodeToEmoji, type DailyWeather } from '../api/weather';
 import { fetchShows, type ShowData, type ShowsResult } from '../api/shows';
@@ -12,7 +13,9 @@ import { fetchCrowd, CROWD_LEVEL_LABEL, CROWD_LEVEL_COLOR, type CrowdDay } from 
 import ShowSchedule from './ShowSchedule';
 import RestaurantList from './RestaurantList';
 import { useHalloween } from '../hooks/useHalloween';
+import { useChristmas } from '../hooks/useChristmas';
 import { isHalloweenDate, ALL_NIGHT_DATES, ALL_NIGHT_MATERIALS, type AllNightMaterial } from '../data/halloween';
+import { isChristmasDate, CHRISTMAS_HOLIDAYS } from '../data/christmas';
 import { getCharacterBirthdaysForEvent } from '../data/character-birthdays';
 import styles from './Calendar.module.css';
 
@@ -95,7 +98,13 @@ interface CalendarProps {
 
 export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
   const halloween = useHalloween();
-  const [activeTab, setActiveTab] = useState<CalendarTab>('hours');
+  const christmas = useChristmas();
+  const { search } = useLocation();
+  // ?tab=events 等で初期タブを指定できる（無効な値・指定なしは従来どおり営業時間）
+  const [activeTab, setActiveTab] = useState<CalendarTab>(() => {
+    const tab = new URLSearchParams(search).get('tab');
+    return tabs.some((t) => t.id === tab) ? (tab as CalendarTab) : 'hours';
+  });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [weather, setWeather] = useState<DailyWeather[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
@@ -265,6 +274,8 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     const classes = [styles.day];
     if (halloween && isHalloweenDate(dateStr)) classes.push(styles.halloweenDay);
     if (halloween && ALL_NIGHT_DATES.includes(dateStr)) classes.push(styles.halloweenAllNight);
+    if (christmas && isChristmasDate(dateStr)) classes.push(styles.christmasDay);
+    if (christmas && CHRISTMAS_HOLIDAYS.includes(dateStr)) classes.push(styles.christmasHoliday);
     if (dateStr === today) classes.push(styles.today);
     if (dateStr === selectedDate) classes.push(styles.selected);
     if (dayOfWeek === 0 || HOLIDAYS[dateStr]) classes.push(styles.sunday);

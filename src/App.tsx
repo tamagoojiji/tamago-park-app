@@ -37,6 +37,7 @@ import AdminLayout from './components/admin/AdminLayout';
 import { hasAdminToken } from './api/admin';
 import { useAuth } from './contexts/auth';
 import { useHalloween } from './hooks/useHalloween';
+import { useChristmas } from './hooks/useChristmas';
 
 const FULLSCREEN_PATHS = ['/ep', '/restaurant'];
 
@@ -70,6 +71,7 @@ export default function App() {
   const location = useLocation();
   const { isLoading } = useAuth();
   const halloween = useHalloween();
+  const christmas = useChristmas();
 
   const isFullscreen = FULLSCREEN_PATHS.includes(location.pathname);
   const isAdmin = location.pathname.startsWith('/admin');
@@ -79,6 +81,12 @@ export default function App() {
     document.body.classList.toggle('halloween', halloween && !isAdmin);
     return () => document.body.classList.remove('halloween');
   }, [halloween, isAdmin]);
+
+  // クリスマス期間のカラースキン（ハロウィーンと重なる場合はハロウィーン優先・管理画面には当てない）
+  useEffect(() => {
+    document.body.classList.toggle('christmas', christmas && !halloween && !isAdmin);
+    return () => document.body.classList.remove('christmas');
+  }, [christmas, halloween, isAdmin]);
 
   if (isAdmin) {
     return (

@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/auth';
 import { myplanApi } from '../../../api/myplan';
 import { exportToPng, exportToPdf } from '../utils/pdfExport';
 import { isHalloweenDate } from '../../../data/halloween';
+import { isChristmasDate } from '../../../data/christmas';
 import TimelineView from './TimelineView';
 import styles from './components.module.css';
 
@@ -78,6 +79,7 @@ export default function StepConfirm({ plan, editingId, onSaved, onGoBack }: Prop
         attractions={plan.attractions.filter((a) => a.startTime)}
         shows={plan.shows}
         halloween={isHalloweenDate(plan.date)}
+        christmas={isChristmasDate(plan.date)}
       />
 
       {plan.memo && (

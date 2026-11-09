@@ -304,6 +304,31 @@
   text-align: center;
 }
 
+/* クリスマス枠（画像/PDF書き出しでも出るよう実要素で描画） */
+.timelineChristmas {
+  border: 3px solid #0F4D2E;
+  border-radius: 14px;
+}
+
+.xmFrameHead {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: #FFD27A;
+  background: #0F3B26;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.xmFrameFoot {
+  font-size: var(--text-xxs);
+  font-weight: 700;
+  color: #2E7D52;
+  margin-top: 12px;
+  text-align: center;
+}
+
 .timelineRow {
   display: flex;
   gap: 12px;

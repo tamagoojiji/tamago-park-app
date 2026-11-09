@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import type { PlanItem } from '../types';
 import type { ShowData } from '../api/shows';
-import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow, isHalloweenNightShow } from '../data/shows';
+import { getHoldMinutes, showTemplates, isOpenShow, isSummerNightShow, isHalloweenNightShow, isChristmasNightShow } from '../data/shows';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { useShowFavorites } from '../hooks/useShowFavorites';
 import { useHalloween } from '../hooks/useHalloween';
+import { useChristmas } from '../hooks/useChristmas';
 import styles from './ShowSchedule.module.css';
 
 interface ShowScheduleProps {
@@ -49,13 +50,14 @@ export default function ShowSchedule({
   const currentMinutes = useCurrentTime();
   const { isFav, toggleFav } = useShowFavorites();
   const halloween = useHalloween();
+  const christmas = useChristmas();
 
   const isToday = scheduleDate === today;
 
   const classified = useMemo<ClassifiedShows>(() => {
     // 夜のイベントを先に切り出し（最初の開始時刻順）、残りを open/regular に分類（二重表示を防ぐ）
     const isNight = (name: string) =>
-      isSummerNightShow(name) || (halloween && isHalloweenNightShow(name));
+      isSummerNightShow(name) || (halloween && isHalloweenNightShow(name)) || (christmas && isChristmasNightShow(name));
     const nightShows = shows
       .filter((s) => isNight(s.name))
       .sort((a, b) => timeToMinutes(a.times[0]) - timeToMinutes(b.times[0]));
@@ -109,7 +111,7 @@ export default function ShowSchedule({
         openShows,
       };
     }
-  }, [shows, isToday, currentMinutes, isFav, halloween]);
+  }, [shows, isToday, currentMinutes, isFav, halloween, christmas]);
 
   const isPlanAdded = (showName: string, time: string) =>
     planItems.some((p) => p.showName === showName && p.time === time);
@@ -327,6 +329,13 @@ export default function ShowSchedule({
               出演ダンサーを見る ›
             </a>
           </div>
+        ) : christmas ? (
+          <>
+            <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>
+              🎄 ホリデー・ナイト（{classified.nightShows.length}件）
+            </div>
+            {classified.nightShows.map((s) => renderShowCard(s, animIdx++))}
+          </>
         ) : (
           <>
             <div className={`${styles.sectionHeader} ${styles.sectionNight}`}>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SideMenu from './SideMenu';
 import { useHalloween } from '../hooks/useHalloween';
+import { useChristmas } from '../hooks/useChristmas';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -9,6 +10,7 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const halloween = useHalloween();
+  const christmas = useChristmas();
   const isHome = location.pathname === '/';
 
   const handleLogoClick = () => {
@@ -22,6 +24,12 @@ export default function Header() {
           <>
             <span className={styles.hwPumpkin} aria-hidden="true">🎃</span>
             <span className={styles.hwBats} aria-hidden="true">🦇🦇</span>
+          </>
+        )}
+        {christmas && !halloween && (
+          <>
+            <span className={styles.xmTree} aria-hidden="true">🎄</span>
+            <span className={styles.xmSnow} aria-hidden="true">❄️❄️</span>
           </>
         )}
         <h1

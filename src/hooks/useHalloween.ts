@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
-import { isHalloweenPeriodNow, localDateString } from '../data/halloween';
+import { isHalloweenPeriodNow } from '../data/halloween';
+import { subscribeDate, getDateSnapshot } from './localDateStore';
 
 const PREVIEW_KEY = 'tamago_hw';
 
@@ -19,35 +20,6 @@ function writePreview(value: string) {
   } catch {
     /* 保存できなくてもURLパラメータの間は表示できるので無視 */
   }
-}
-
-// 端末ローカル日付の共有ストア。開きっぱなしのセッションでも日付が変われば再renderされ、
-// 期間終了（11/9）の時点で通常表示へ戻る。タイマーは複数コンポーネントで1本だけ共有する。
-const listeners = new Set<() => void>();
-let currentDate = localDateString();
-let timerId: ReturnType<typeof setInterval> | undefined;
-
-function subscribeDate(onStoreChange: () => void) {
-  listeners.add(onStoreChange);
-  if (timerId === undefined) {
-    timerId = setInterval(() => {
-      const next = localDateString();
-      if (next === currentDate) return;
-      currentDate = next;
-      listeners.forEach((notify) => notify());
-    }, 60000);
-  }
-  return () => {
-    listeners.delete(onStoreChange);
-    if (listeners.size === 0 && timerId !== undefined) {
-      clearInterval(timerId);
-      timerId = undefined;
-    }
-  };
-}
-
-function getDateSnapshot() {
-  return currentDate;
 }
 
 // ハロウィーン表示ON/OFF。期間中は自動ON。

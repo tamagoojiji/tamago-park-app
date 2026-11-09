@@ -1,0 +1,14 @@
+/* クリスマス期間限定カラースキン（body.christmas のときだけ変数を上書き） */
+body.christmas {
+  --color-primary: #0F4D2E;
+  --color-primary-light: #2E7D52;
+  --color-primary-dark: #0A3620;
+  --color-accent: #B3222B;
+  --color-cta: #B3222B;
+  --color-footer-bg: #0F3B26;
+  --color-bg: #F3F6F2;
+
+  --marker-color: rgba(179, 34, 43, 0.22);
+  --marker-color-strong: rgba(179, 34, 43, 0.4);
+  --dashed-border: 2px dashed var(--color-accent);
+}
