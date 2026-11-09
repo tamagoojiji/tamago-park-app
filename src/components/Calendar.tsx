@@ -105,6 +105,11 @@ export default function Calendar({ planItems = [], onAddPlan }: CalendarProps) {
     const tab = new URLSearchParams(search).get('tab');
     return tabs.some((t) => t.id === tab) ? (tab as CalendarTab) : 'hours';
   });
+  // 表示中に ?tab= が変わったとき（ホームのバナーから /?tab=events へ遷移など）もタブを切り替える
+  const urlTab = new URLSearchParams(search).get('tab');
+  useEffect(() => {
+    if (tabs.some((t) => t.id === urlTab)) setActiveTab(urlTab as CalendarTab);
+  }, [urlTab]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [weather, setWeather] = useState<DailyWeather[]>([]);
   const [shows, setShows] = useState<ShowData[]>([]);
