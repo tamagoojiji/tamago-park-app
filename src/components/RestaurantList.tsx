@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RestaurantInfo, MenuItem, Shop, TabearukiMenu, RestaurantLocation, RestaurantHoursDay } from '../api/restaurants';
 import { fetchStoreMenus, fetchShops, fetchTabearukiMenus, fetchRestaurantLocations, fetchRestaurantHoursWeek } from '../api/restaurants';
 import {
@@ -87,6 +87,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
   const [isTabearukiLoading, setIsTabearukiLoading] = useState(true);
   const [restaurantLocations, setRestaurantLocations] = useState<Map<string, RestaurantLocation>>(new Map());
   const [isSavingCard, setIsSavingCard] = useState(false);
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     fetchRestaurantLocations()
@@ -172,6 +173,19 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
       setStep('category');
       setCategory(null);
     }
+  };
+
+  // 右スワイプ（左→右）で1つ前の画面へ戻る。縦スクロールと区別するため横移動が主のときだけ反応
+  const handleSwipeStart = (e: React.TouchEvent) => {
+    swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+  const handleSwipeEnd = (e: React.TouchEvent) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start || step === 'category') return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    if (dx > 60 && Math.abs(dy) < dx / 2) goBack();
   };
 
   const handleCategory = (cat: Category) => {
@@ -296,6 +310,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
 
   return (
     <>
+      <div className={styles.swipeArea} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       {step !== 'category' && (
         <button className={styles.backBtn} onClick={goBack}>
           ← 戻る
@@ -457,6 +472,7 @@ export default function RestaurantList({ restaurants, isLoading }: Props) {
           })()}
         </>
       )}
+      </div>
 
       {/* ボトムシート（レストラン） */}
       {selected && (

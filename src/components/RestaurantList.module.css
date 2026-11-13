@@ -727,3 +727,9 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* 右スワイプで戻る操作の受け皿。項目が少ない画面でも空白部分でスワイプできる高さを確保 */
+.swipeArea {
+  min-height: 60vh;
+  touch-action: pan-y;
+}
